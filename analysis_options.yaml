@@ -16,6 +16,13 @@ analyzer:
     - "Welcome Screen/**"
     - "kar_yab_home.dart"
     - ".agents/**"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   # The lint rules applied to this project can be customized in the
