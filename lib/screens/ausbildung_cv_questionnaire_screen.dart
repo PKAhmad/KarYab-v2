@@ -29,12 +29,18 @@ class AusbildungCvQuestionnaireScreen extends StatefulWidget {
   // starts empty. True when reached via "Edit answers" from the Ausbildung
   // document preview screen - prefill runs exactly as before.
   final bool isEditMode;
+  // Phase 3 wizard: see QuestionnaireScreen - the cv_documents row being
+  // drafted, and the wizard section to open first, when given.
+  final int? documentId;
+  final String? initialSection;
 
   const AusbildungCvQuestionnaireScreen({
     super.key,
     required this.language,
     this.voiceMode = false,
     this.isEditMode = false,
+    this.documentId,
+    this.initialSection,
   });
 
   @override

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -9,16 +10,21 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/karyab_data.dart';
+import '../models/cv_style.dart';
 import '../models/document_template.dart';
 import '../models/user_profile.dart';
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
+import '../services/ats_checker.dart';
 import '../services/cv_pdf_generator.dart';
 import '../services/tts_service.dart';
 import '../utils/navigation_helpers.dart';
 import '../utils/pdf_save_helper.dart';
+import '../widgets/ats_check_panel.dart';
+import '../widgets/cv_style_editor.dart';
 import '../widgets/document_template_picker.dart';
 import '../ui/karyab_ui.dart';
+import 'personal_data_screen.dart';
 import 'questionnaire_screen.dart';
 
 
@@ -38,12 +44,18 @@ class CvPreviewScreen extends StatefulWidget {
   // content (edit bar + template row + preview + bottom buttons), no
   // duplicate header/background.
   final bool embedded;
+  // Phase 3: when this preview shows one saved cv_documents row (opened
+  // from the My CVs library), template + design changes persist to that
+  // row instead of the shared prefs keys, and the ATS checker reads the
+  // row's payload. Null for the classic profile-based flow.
+  final int? documentId;
 
   const CvPreviewScreen({
     super.key,
     required this.profile,
     this.templatePrefsKey = 'selected_cv_template_regular',
     this.embedded = false,
+    this.documentId,
   });
 
   @override
@@ -59,6 +71,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   Future<Uint8List>? _pdfFutureCache;
   Future<void>? _templateReadyFuture;
   DocumentTemplate _template = DocumentTemplate.atsBlue;
+  CvCustomisation _style = CvCustomisation.defaults;
+  List<AtsCheckItem>? _atsItems;
+  bool _atsLoading = false;
   bool _saving  = false;
   String _refName            = '';
   String _refPhone           = '';
@@ -89,6 +104,28 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   }
 
   Future<void> _initTemplate() async {
+    // Document flow: template + design live on the cv_documents row; no
+    // first-run picker pop (the user picked this document in the library).
+    if (widget.documentId != null) {
+      try {
+        final rec =
+            await KaryabData.documents?.getCvDocument(widget.documentId!);
+        if (rec != null) {
+          if (rec.templateId != null) {
+            _template = DocumentTemplateInfo.fromStorageKey(rec.templateId);
+          }
+          _style = CvCustomisation.fromColumns(
+            accentColor: rec.accentColor,
+            fontSize: rec.fontSize,
+            spacing: rec.spacing,
+            showPhoto: rec.showPhoto,
+          );
+        }
+      } catch (_) {}
+      if (mounted) setState(() {});
+      return;
+    }
+    await _loadStyle();
     final storedKey = await KaryabData.profile.getString(widget.templatePrefsKey);
     if (storedKey != null) {
       _template = DocumentTemplateInfo.fromStorageKey(storedKey);
@@ -104,6 +141,55 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     setState(() {});
   }
 
+  String get _stylePrefsKey => 'cv_style_${widget.templatePrefsKey}';
+
+  Future<void> _loadStyle() async {
+    try {
+      final raw = await KaryabData.profile.getString(_stylePrefsKey);
+      if (raw != null && raw.isNotEmpty) {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map<String, dynamic>) {
+          _style = CvCustomisation.fromMap(decoded);
+        }
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _persistStyle(CvCustomisation style) async {
+    try {
+      if (widget.documentId != null) {
+        await KaryabData.documents?.updateCvDocument(
+          widget.documentId!,
+          accentColor: style.accentColorHex,
+          fontSize: style.fontSize,
+          spacing: style.spacing,
+          showPhoto: style.showPhoto,
+        );
+      } else {
+        await KaryabData.profile
+            .setString(_stylePrefsKey, jsonEncode(style.toMap()));
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _changeStyle() async {
+    final lang = context.read<LanguageProvider>().language;
+    await showCvStyleEditor(
+      context,
+      language: lang,
+      current: _style,
+      onChanged: (next) {
+        if (!mounted) return;
+        setState(() {
+          _style = next;
+          _pdfFutureCache = null;
+          _atsItems = null;
+        });
+        _persistStyle(next);
+      },
+    );
+  }
+
   Future<void> _changeTemplate() async {
     await _ensureTemplateReady();
     if (!mounted) return;
@@ -113,8 +199,84 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     setState(() {
       _template = chosen;
       _pdfFutureCache = null;
+      _atsItems = null;
     });
-    await saveSelectedDocumentTemplate(widget.templatePrefsKey, chosen);
+    if (widget.documentId != null) {
+      try {
+        await KaryabData.documents?.updateCvDocument(widget.documentId!,
+            templateId: chosen.storageKey);
+      } catch (_) {}
+    } else {
+      await saveSelectedDocumentTemplate(widget.templatePrefsKey, chosen);
+    }
+  }
+
+  // ── ATS check ───────────────────────────────────────────────────────────
+
+  Future<void> _runAtsCheck() async {
+    if (_atsLoading) return;
+    setState(() => _atsLoading = true);
+    try {
+      await _ensureTemplateReady();
+      final bytes = await _getPdf();
+      Map<String, dynamic> payload = {};
+      if (widget.documentId != null) {
+        final rec =
+            await KaryabData.documents?.getCvDocument(widget.documentId!);
+        if (rec != null) payload = rec.payload;
+      } else {
+        payload =
+            await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
+      }
+      final items = runAtsChecks(
+        profile: _effectiveProfile,
+        template: _template,
+        payload: payload,
+        kind: 'job',
+        showPhoto: _style.showPhoto,
+        pageCount: countPdfPages(bytes),
+      );
+      if (mounted) {
+        setState(() {
+          _atsItems = items;
+          _atsLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _atsLoading = false);
+    }
+  }
+
+  Future<void> _onAtsTap(AtsCheckItem item) async {
+    final lang = context.read<LanguageProvider>().language;
+    final prefs = await SharedPreferences.getInstance();
+    final voiceMode = prefs.getBool('voice_mode') ?? false;
+    if (!mounted) return;
+    if (item.section == 'personal') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PersonalDataScreen(
+            language: lang,
+            voiceMode: voiceMode,
+            nextCvType: 'job',
+          ),
+        ),
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QuestionnaireScreen(
+          language: lang,
+          voiceMode: voiceMode,
+          isEditMode: true,
+          documentId: widget.documentId,
+          initialSection: item.section,
+        ),
+      ),
+    );
   }
 
   Future<void> _loadRefData() async {
@@ -187,7 +349,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
   Future<Uint8List> _buildPdf() async {
     await _ensureTemplateReady();
-    return generateCv(_effectiveProfile, _template);
+    return generateCv(_effectiveProfile, _template, style: _style);
   }
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -206,7 +368,8 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
       // so a single failed attempt can't leave the button permanently stuck
       // replaying the same rejected cached future on every subsequent tap.
       await _ensureTemplateReady();
-      final bytes = await generateCv(_effectiveProfile, _template);
+      final bytes =
+          await generateCv(_effectiveProfile, _template, style: _style);
       final saved = await savePdfToDownloads(bytes, _pdfFilename);
 
       if (!mounted) return;
@@ -247,6 +410,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
           language: lang,
           voiceMode: voiceMode,
           isEditMode: true,
+          documentId: widget.documentId,
         ),
       ),
     );
@@ -316,8 +480,22 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildTemplateRow(),
+                  const SizedBox(height: 6),
+                  CvStyleRow(
+                    language: lang,
+                    style: _style,
+                    onChange: _changeStyle,
+                  ),
                   const SizedBox(height: 8),
                   _buildCvPreview(),
+                  const SizedBox(height: 12),
+                  AtsCheckPanel(
+                    language: lang,
+                    items: _atsItems,
+                    loading: _atsLoading,
+                    onExpand: _runAtsCheck,
+                    onTapItem: _onAtsTap,
+                  ),
                 ],
               ),
             ),
@@ -465,9 +643,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
         child: SizedBox(
           height: 440,
           child: PdfPreview(
-            key: ValueKey(_template),
+            key: ValueKey('${_template.name}_${_style.hashCode}'),
             build: (PdfPageFormat format) =>
-                generateCv(_effectiveProfile, _template),
+                generateCv(_effectiveProfile, _template, style: _style),
             canChangeOrientation: false,
             canChangePageFormat: false,
             canDebug: false,

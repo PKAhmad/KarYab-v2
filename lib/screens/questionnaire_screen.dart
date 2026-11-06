@@ -30,12 +30,19 @@ class QuestionnaireScreen extends StatefulWidget {
   // empty. True when reached via "Edit answers" from the CV preview screen -
   // prefill runs exactly as before so existing answers reload for editing.
   final bool isEditMode;
+  // Phase 3 wizard: the cv_documents row this questionnaire is drafting
+  // (null for the classic profile-only flow), and the wizard section to
+  // open first (ATS check jump-to-fix), when given.
+  final int? documentId;
+  final String? initialSection;
 
   const QuestionnaireScreen({
     super.key,
     required this.language,
     required this.voiceMode,
     this.isEditMode = false,
+    this.documentId,
+    this.initialSection,
   });
 
   @override

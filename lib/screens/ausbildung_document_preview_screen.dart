@@ -1,19 +1,26 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 
+import '../data/karyab_data.dart';
+import '../models/cv_style.dart';
 import '../models/document_template.dart';
 import '../models/user_profile.dart';
 import '../services/analytics_service.dart';
+import '../services/ats_checker.dart';
 import '../services/cv_pdf_generator.dart';
 import '../utils/navigation_helpers.dart';
 import '../utils/pdf_save_helper.dart';
+import '../widgets/ats_check_panel.dart';
+import '../widgets/cv_style_editor.dart';
 import '../widgets/document_template_picker.dart';
 import '../ui/karyab_ui.dart';
 
 import 'ausbildung_cv_questionnaire_screen.dart';
+import 'personal_data_screen.dart';
 
 // Deliberately independent from the regular home-screen CV flow's
 // 'selected_cv_template_regular' key — the Ausbildung flow's template
@@ -36,12 +43,17 @@ class AusbildungDocumentPreviewScreen extends StatefulWidget {
   // shared header/background - this screen then renders only its body
   // content (edit bar + CV section), no duplicate header/background.
   final bool embedded;
+  // Phase 3: the cv_documents row being previewed, when opened from the
+  // My CVs library - template/design persist to the row and the ATS
+  // checker reads its payload. Null for the classic flow.
+  final int? documentId;
 
   const AusbildungDocumentPreviewScreen({
     super.key,
     required this.profile,
     required this.language,
     this.embedded = false,
+    this.documentId,
   });
 
   @override
@@ -56,6 +68,9 @@ class _AusbildungDocumentPreviewScreenState
 
   late String _lang;
   DocumentTemplate _cvTemplate = DocumentTemplate.atsBlue;
+  CvCustomisation _style = CvCustomisation.defaults;
+  List<AtsCheckItem>? _atsItems;
+  bool _atsLoading = false;
   bool _saving = false;
 
   @override
@@ -67,6 +82,34 @@ class _AusbildungDocumentPreviewScreenState
   }
 
   Future<void> _loadCvTemplate() async {
+    if (widget.documentId != null) {
+      try {
+        final rec =
+            await KaryabData.documents?.getCvDocument(widget.documentId!);
+        if (rec != null) {
+          if (rec.templateId != null) {
+            _cvTemplate = DocumentTemplateInfo.fromStorageKey(rec.templateId);
+          }
+          _style = CvCustomisation.fromColumns(
+            accentColor: rec.accentColor,
+            fontSize: rec.fontSize,
+            spacing: rec.spacing,
+            showPhoto: rec.showPhoto,
+          );
+        }
+      } catch (_) {}
+      if (mounted) setState(() {});
+      return;
+    }
+    try {
+      final raw = await KaryabData.profile.getString('cv_style_ausbildung');
+      if (raw != null && raw.isNotEmpty) {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map<String, dynamic>) {
+          _style = CvCustomisation.fromMap(decoded);
+        }
+      }
+    } catch (_) {}
     final t = await loadSelectedDocumentTemplate(kAusbildungCvTemplatePrefsKey);
     if (mounted) setState(() => _cvTemplate = t);
   }
@@ -74,8 +117,114 @@ class _AusbildungDocumentPreviewScreenState
   Future<void> _pickCvTemplate() async {
     final chosen = await showDocumentTemplatePicker(context, current: _cvTemplate);
     if (!mounted || chosen == _cvTemplate) return;
-    setState(() => _cvTemplate = chosen);
-    await saveSelectedDocumentTemplate(kAusbildungCvTemplatePrefsKey, chosen);
+    setState(() {
+      _cvTemplate = chosen;
+      _atsItems = null;
+    });
+    if (widget.documentId != null) {
+      try {
+        await KaryabData.documents?.updateCvDocument(widget.documentId!,
+            templateId: chosen.storageKey);
+      } catch (_) {}
+    } else {
+      await saveSelectedDocumentTemplate(kAusbildungCvTemplatePrefsKey, chosen);
+    }
+  }
+
+  Future<void> _changeStyle() async {
+    await showCvStyleEditor(
+      context,
+      language: _lang,
+      current: _style,
+      onChanged: (next) {
+        if (!mounted) return;
+        setState(() {
+          _style = next;
+          _atsItems = null;
+        });
+        _persistStyle(next);
+      },
+    );
+  }
+
+  Future<void> _persistStyle(CvCustomisation style) async {
+    try {
+      if (widget.documentId != null) {
+        await KaryabData.documents?.updateCvDocument(
+          widget.documentId!,
+          accentColor: style.accentColorHex,
+          fontSize: style.fontSize,
+          spacing: style.spacing,
+          showPhoto: style.showPhoto,
+        );
+      } else {
+        await KaryabData.profile
+            .setString('cv_style_ausbildung', jsonEncode(style.toMap()));
+      }
+    } catch (_) {}
+  }
+
+  // ── ATS check ───────────────────────────────────────────────────────────
+
+  Future<void> _runAtsCheck() async {
+    if (_atsLoading) return;
+    setState(() => _atsLoading = true);
+    try {
+      final bytes = await generateCv(widget.profile, _cvTemplate,
+          isAusbildungCv: true, style: _style);
+      Map<String, dynamic> payload = {};
+      if (widget.documentId != null) {
+        final rec =
+            await KaryabData.documents?.getCvDocument(widget.documentId!);
+        if (rec != null) payload = rec.payload;
+      } else {
+        payload =
+            await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
+      }
+      final items = runAtsChecks(
+        profile: widget.profile,
+        template: _cvTemplate,
+        payload: payload,
+        kind: 'ausbildung',
+        showPhoto: _style.showPhoto,
+        pageCount: countPdfPages(bytes),
+      );
+      if (mounted) {
+        setState(() {
+          _atsItems = items;
+          _atsLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _atsLoading = false);
+    }
+  }
+
+  void _onAtsTap(AtsCheckItem item) {
+    if (item.section == 'personal') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PersonalDataScreen(
+            language: _lang,
+            voiceMode: false,
+            nextCvType: 'ausbildung',
+          ),
+        ),
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AusbildungCvQuestionnaireScreen(
+          language: _lang,
+          isEditMode: true,
+          documentId: widget.documentId,
+          initialSection: item.section,
+        ),
+      ),
+    );
   }
 
   // Same destination every other "Home" button in the app uses — clears the
@@ -98,12 +247,13 @@ class _AusbildungDocumentPreviewScreenState
         context,
         MaterialPageRoute(
           builder: (_) => AusbildungCvQuestionnaireScreen(
-              language: _lang, isEditMode: true),
+              language: _lang, isEditMode: true, documentId: widget.documentId),
         ),
       );
 
-  Future<Uint8List> _buildCvBytes(PdfPageFormat format) =>
-      generateCv(widget.profile, _cvTemplate, isAusbildungCv: true);
+  Future<Uint8List> _buildCvBytes(PdfPageFormat format) => generateCv(
+      widget.profile, _cvTemplate,
+      isAusbildungCv: true, style: _style);
 
   String get _pdfFilename {
     final name = widget.profile.fullName.replaceAll(' ', '_');
@@ -114,8 +264,8 @@ class _AusbildungDocumentPreviewScreenState
     if (_saving) return;
     setState(() => _saving = true);
     try {
-      final bytes =
-          await generateCv(widget.profile, _cvTemplate, isAusbildungCv: true);
+      final bytes = await generateCv(widget.profile, _cvTemplate,
+          isAusbildungCv: true, style: _style);
       final saved = await savePdfToDownloads(bytes, _pdfFilename);
 
       if (!mounted) return;
@@ -205,6 +355,14 @@ class _AusbildungDocumentPreviewScreenState
               child: Column(
                 children: [
                   _buildCvSection(),
+                  const SizedBox(height: 12),
+                  AtsCheckPanel(
+                    language: _lang,
+                    items: _atsItems,
+                    loading: _atsLoading,
+                    onExpand: _runAtsCheck,
+                    onTapItem: _onAtsTap,
+                  ),
                   const SizedBox(height: 14),
                   _buildAusbildungPostingsButton(),
                 ],
@@ -342,13 +500,19 @@ class _AusbildungDocumentPreviewScreenState
               ),
             ],
           ),
+          const SizedBox(height: 8),
+          CvStyleRow(
+            language: _lang,
+            style: _style,
+            onChange: _changeStyle,
+          ),
           const SizedBox(height: 12),
           ClipRRect(
             borderRadius: BorderRadius.circular(14),
             child: SizedBox(
               height: 440,
               child: PdfPreview(
-                key: ValueKey(_cvTemplate),
+                key: ValueKey('${_cvTemplate.name}_${_style.hashCode}'),
                 build: _buildCvBytes,
                 canChangeOrientation: false,
                 canChangePageFormat: false,
