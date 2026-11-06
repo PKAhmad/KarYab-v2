@@ -12,13 +12,16 @@ import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
+import '../services/cv_completion.dart';
 import '../services/tts_service.dart';
 import '../ui/karyab_ui.dart';
 import '../utils/navigation_helpers.dart';
 import '../widgets/cv_upload_info_sheet.dart';
+import '../widgets/home_dashboard.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
 import 'my_cvs_screen.dart';
+import 'my_letters_screen.dart';
 
 class IntroductionScreen extends StatefulWidget {
   final String language;
@@ -53,6 +56,14 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   bool    _voiceMode = false;
   bool    _isLoading = true;
   DateTime? _lastBackPressAt;
+
+  // Phase 5 home dashboard state (real data only, loaded in
+  // _loadSavedData): profile completion percent and the newest
+  // unfinished CV document, if any.
+  bool    _dashHasData = false;
+  int     _dashProfilePercent = 0;
+  String? _dashContinueName;
+  int?    _dashContinuePercent;
 
   void _onSoundChange() {
     if (!mounted) return;
@@ -161,6 +172,33 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
               nonEmpty('schulabschluss');
         } catch (_) {}
       }
+      // Phase 5 dashboard: completion of the most complete CV profile
+      // plus the newest unfinished CV document (Phase 3 bookkeeping).
+      int dashPercent = 0;
+      String? dashContinueName;
+      int? dashContinuePercent;
+      if (profileMap != null && profileMap.isNotEmpty) {
+        final jobPct = cvCompletionPercent(profileMap, 'job');
+        final ausPct = cvCompletionPercent(profileMap, 'ausbildung');
+        dashPercent = jobPct > ausPct ? jobPct : ausPct;
+      }
+      try {
+        final docs = KaryabData.documents;
+        if (docs != null) {
+          final all = await docs.listCvDocuments();
+          final drafts = all
+              .where((d) => !cvDocumentFinished(d.payload))
+              .toList()
+            ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+          if (drafts.isNotEmpty) {
+            dashContinueName = drafts.first.name;
+            dashContinuePercent =
+                cvCompletionPercent(drafts.first.payload, drafts.first.kind);
+          }
+        }
+      } catch (_) {
+        // Dashboard continue card is optional; never block home loading.
+      }
       final hasPhoto = photo.isNotEmpty && await File(photo).exists();
       final voiceMode = prefs.getBool('voice_mode') ?? false;
       final savedLang = prefs.getString('app_language');
@@ -175,6 +213,10 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           _userPhotoPath = hasPhoto ? photo : '';
           _ausbildungCvCreated = ausbildungExists;
           _voiceMode     = voiceMode;
+          _dashHasData = profileMap != null && profileMap.isNotEmpty;
+          _dashProfilePercent = dashPercent;
+          _dashContinueName = dashContinueName;
+          _dashContinuePercent = dashContinuePercent;
           if (savedLang != null) _lang = savedLang;
           _isLoading     = false;
         });
@@ -461,6 +503,167 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     kSnack(context, text);
   }
 
+  // ── Phase 5: dashboard + dock navigation ─────────────────────────────
+
+  void _openMyCvs() {
+    if (KaryabData.documents == null) {
+      // Degraded storage mode: fall back to the classic preview flow.
+      _openSavedCv();
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            MyCvsScreen(language: _lang, voiceMode: _voiceMode),
+      ),
+    );
+  }
+
+  void _openMinijobs() {
+    Navigator.pushNamed(
+      context,
+      '/jobfinder',
+      arguments: {
+        'language': _lang,
+        'voiceMode': _voiceMode,
+        'jobType': 'mj',
+      },
+    );
+  }
+
+  String get _dockHomeLabel {
+    switch (_lang) {
+      case 'ps': return 'کور';
+      case 'fa': return 'خانه';
+      default:   return 'Home';
+    }
+  }
+
+  String get _dockJobsLabel {
+    switch (_lang) {
+      case 'ps': return 'کارونه';
+      case 'fa': return 'کارها';
+      default:   return 'Jobs';
+    }
+  }
+
+  String get _dockDocsLabel {
+    switch (_lang) {
+      case 'ps': return 'زما سیوي';
+      case 'fa': return 'CVهای من';
+      default:   return 'My CVs';
+    }
+  }
+
+  String get _dockMoreLabel {
+    switch (_lang) {
+      case 'ps': return 'نور';
+      case 'fa': return 'بیشتر';
+      default:   return 'More';
+    }
+  }
+
+  String get _myLettersLabel {
+    switch (_lang) {
+      case 'ps': return 'زما پوښلیکونه';
+      case 'fa': return 'نامه‌های من';
+      default:   return 'My Cover Letters';
+    }
+  }
+
+  void _onDockTap(int index) {
+    switch (index) {
+      case 0:
+        break; // Already home.
+      case 1:
+        Navigator.pushNamed(context, '/jobfinder', arguments: _lang);
+        break;
+      case 2:
+        Navigator.pushNamed(
+          context,
+          '/ausbildung',
+          arguments: {'language': _lang, 'voiceMode': _voiceMode},
+        );
+        break;
+      case 3:
+        _openMyCvs();
+        break;
+      case 4:
+        _showMoreSheet();
+        break;
+    }
+  }
+
+  void _showMoreSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        Widget entry(IconData icon, String label, VoidCallback onTap) {
+          return ListTile(
+            leading: Icon(icon, color: navy),
+            title: Text(
+              label,
+              style: TextStyle(
+                fontFamily: karyabFontFamily(_lang),
+                color: navy,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(ctx);
+              onTap();
+            },
+          );
+        }
+
+        return Container(
+          decoration: kSheetDecoration,
+          padding: const EdgeInsets.fromLTRB(8, 12, 8, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const KSheetHandle(),
+              const SizedBox(height: 10),
+              entry(Icons.mail_rounded, _myLettersLabel, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MyLettersScreen(
+                        language: _lang, voiceMode: _voiceMode),
+                  ),
+                );
+              }),
+              entry(Icons.description_rounded, _viewCvLabel, _openSavedCv),
+              entry(Icons.add_circle_outline_rounded, _newCvLabel,
+                  _goToQuestionnaire),
+              entry(Icons.upload_file_rounded, _uploadDifferentCvLabel,
+                  () => _uploadCv()),
+              entry(Icons.translate_rounded, _learnGermanLabel, () {
+                Navigator.pushNamed(
+                  context,
+                  '/deutsch-courses',
+                  arguments: {'language': _lang, 'voiceMode': _voiceMode},
+                );
+              }),
+              const SizedBox(height: 6),
+              const Text(
+                'KarYab v1.0',
+                style: TextStyle(
+                  color: KColors.textSecondary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   String get _noCvFoundText {
     switch (_lang) {
       case 'ps': return 'ستاسی سییوی پیدا نشوه، لطفاً نوی سییوی جوړ کړی.';
@@ -575,6 +778,21 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                         constraints: const BoxConstraints(maxWidth: 430),
                         child: Column(
                           children: [
+                            // ── Phase 5 dashboard (real data only) ─────
+                            if (_dashHasData) ...[
+                              HomeDashboard(
+                                language: _lang,
+                                profilePercent: _dashProfilePercent,
+                                continueName: _dashContinueName,
+                                continuePercent: _dashContinuePercent,
+                                onContinue: _dashContinueName != null
+                                    ? _openMyCvs
+                                    : null,
+                                onMinijobs: _openMinijobs,
+                              ),
+                              const SizedBox(height: 14),
+                            ],
+
                             // ── State 1: New user ──────────────────────────
                             // Bug fix: this used to gate on _cvCreated alone,
                             // so a user who completed only an Ausbildung CV
@@ -1056,16 +1274,34 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                   ),
                 ),
 
-                // ── Fixed version footer ───────────────────────────────────
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 8, 0, 12),
-                  child: Text(
-                    'KarYab v1.0',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: KColors.textSecondary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w400,
+                // ── Phase 5 floating glass dock ────────────────────────
+                // Home is the host screen, so the dock is its bottom
+                // bar (currentIndex 0); other sections push as before.
+                // The version string moved into the More sheet.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 430),
+                    child: KGlassDock(
+                      items: [
+                        KDockItem(
+                            icon: Icons.home_rounded, label: _dockHomeLabel),
+                        KDockItem(
+                            icon: Icons.work_rounded, label: _dockJobsLabel),
+                        const KDockItem(
+                            icon: Icons.school_rounded, label: 'Ausbildung'),
+                        KDockItem(
+                            icon: Icons.folder_rounded,
+                            label: _dockDocsLabel),
+                        KDockItem(
+                            icon: Icons.more_horiz_rounded,
+                            label: _dockMoreLabel),
+                      ],
+                      currentIndex: 0,
+                      onTap: _onDockTap,
+                      textDirection:
+                          _isRtl ? TextDirection.rtl : TextDirection.ltr,
+                      fontFamily: karyabFontFamily(_lang),
                     ),
                   ),
                 ),
