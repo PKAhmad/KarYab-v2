@@ -1,0 +1,55 @@
+name: Build debug APK
+
+# Builds the Karyab v2 debug APK on GitHub's runners (the local dev VM
+# cannot run the Gradle daemon). Manual trigger + every push to v2.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the v2 branch
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Flutter 3.47.9
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.9'
+          channel: stable
+
+      # lib/config/secrets.dart is gitignored and absent from the repo.
+      # Generate the same empty placeholder locally used for analyze:
+      # no real values, so in-app Azure voice (TTS) stays inactive in
+      # this build, which is expected.
+      - name: Create secrets placeholder (empty values only)
+        run: |
+          cat > lib/config/secrets.dart <<'EOF'
+          // CI-generated placeholder. Real keys are never committed.
+          class Secrets {
+            static const String azureTtsKey = '';
+            static const String feedbackWebhookUrl = '';
+          }
+          EOF
+
+      - name: Fetch dependencies
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: karyab-v2-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
