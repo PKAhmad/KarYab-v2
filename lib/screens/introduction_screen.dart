@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
@@ -118,19 +118,20 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         await prefs.remove('cv_language');
         await prefs.setBool('belgium_cleanup_done', true);
       }
-      final created = prefs.getBool('cv_created') ?? false;
-      final cvType  = prefs.getString('cv_type') ?? '';
-      final name    = prefs.getString('questionnaire_full_name')
-                          ?.isNotEmpty == true
-                          ? prefs.getString('questionnaire_full_name')!
-                          : prefs.getString('user_name') ?? '';
+      final created = await KaryabData.profile.getBool('cv_created');
+      final cvType  = await KaryabData.profile.getString('cv_type') ?? '';
+      final savedFullName =
+          await KaryabData.profile.getString('questionnaire_full_name');
+      final name    = savedFullName?.isNotEmpty == true
+                          ? savedFullName!
+                          : await KaryabData.profile.getString('user_name') ?? '';
       String city  = '';
       String photo = '';
       bool ausbildungExists = false;
-      final profileJson = prefs.getString('saved_profile');
-      if (profileJson != null && profileJson.isNotEmpty) {
+      final profileMap = await KaryabData.profile.loadProfileMap();
+      if (profileMap != null && profileMap.isNotEmpty) {
         try {
-          final map = jsonDecode(profileJson) as Map<String, dynamic>;
+          final map = profileMap;
           city  = map['city']      as String? ?? '';
           photo = map['photoPath'] as String? ?? '';
           // Bug fix: this used to require ausbildungEduInstitutions/
@@ -329,14 +330,13 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
             language: _lang,
             voiceMode: widget.voiceMode,
             onComplete: (name, phone, email) async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setString('uploaded_cv_path', pickedPath);
-              await prefs.setBool('cv_created', true);
-              await prefs.setString('cv_type', 'uploaded');
-              await prefs.setString('questionnaire_full_name', name);
-              await prefs.setString('user_name', name);
-              await prefs.setString('user_phone', phone);
-              await prefs.setString('user_email', email);
+              await KaryabData.profile.setString('uploaded_cv_path', pickedPath);
+              await KaryabData.profile.setBool('cv_created', true);
+              await KaryabData.profile.setString('cv_type', 'uploaded');
+              await KaryabData.profile.setString('questionnaire_full_name', name);
+              await KaryabData.profile.setString('user_name', name);
+              await KaryabData.profile.setString('user_phone', phone);
+              await KaryabData.profile.setString('user_email', email);
               if (!mounted) return;
               Navigator.pop(context);
               setState(() {
@@ -367,10 +367,10 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   Future<void> _openSavedCv() async {
     try {
-      final prefs  = await SharedPreferences.getInstance();
-      final cvType = prefs.getString('cv_type') ?? '';
+      final cvType = await KaryabData.profile.getString('cv_type') ?? '';
       if (cvType == 'uploaded') {
-        final path = prefs.getString('uploaded_cv_path') ?? '';
+        final path =
+            await KaryabData.profile.getString('uploaded_cv_path') ?? '';
         if (path.isEmpty) return;
         final exists = await File(path).exists();
         if (!exists) {
@@ -403,9 +403,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         }
         return;
       }
-      final profileJson = prefs.getString('saved_profile');
-      if (profileJson == null || profileJson.isEmpty) return;
-      final map = jsonDecode(profileJson) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map == null || map.isEmpty) return;
       String? opt(String k) {
         final v = map[k] as String? ?? '';
         return v.isEmpty ? null : v;

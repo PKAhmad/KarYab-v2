@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -9,6 +8,7 @@ import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../models/document_template.dart';
 import '../models/user_profile.dart';
 import '../providers/language_provider.dart';
@@ -89,8 +89,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   }
 
   Future<void> _initTemplate() async {
-    final prefs = await SharedPreferences.getInstance();
-    final storedKey = prefs.getString(widget.templatePrefsKey);
+    final storedKey = await KaryabData.profile.getString(widget.templatePrefsKey);
     if (storedKey != null) {
       _template = DocumentTemplateInfo.fromStorageKey(storedKey);
       if (mounted) setState(() {});
@@ -120,10 +119,8 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
   Future<void> _loadRefData() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw != null) {
-        final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map != null) {
         if (mounted) {
           final empStr      = (map['previousEmployers'] as String?) ?? '';
           final titlesStr   = (map['previousJobTitles'] as String?) ?? '';
@@ -267,11 +264,10 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   Future<void> _saveCvStatus() async {
     try {
       print('DEBUG saving cv_created = true');
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('cv_created', true);
-      await prefs.setString(
+      await KaryabData.profile.setBool('cv_created', true);
+      await KaryabData.profile.setString(
           'user_name', widget.profile.fullName.split(' ').first);
-      await prefs.setString(
+      await KaryabData.profile.setString(
           'questionnaire_full_name', widget.profile.fullName);
       print('DEBUG cv_created saved successfully');
     } catch (_) {}
@@ -288,12 +284,11 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
           '${tempDir.path}/Lebenslauf_${cleanName.isEmpty ? 'Bewerber' : cleanName}.pdf';
       final tempFile = File(tempCvPath);
       await tempFile.writeAsBytes(bytes);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('temp_cv_path', tempFile.path);
-      await prefs.setString(
+      await KaryabData.profile.setString('temp_cv_path', tempFile.path);
+      await KaryabData.profile.setString(
           'temp_cv_timestamp', DateTime.now().toIso8601String());
-      await prefs.setBool('cv_created', true);
-      await prefs.setString(
+      await KaryabData.profile.setBool('cv_created', true);
+      await KaryabData.profile.setString(
           'questionnaire_full_name', widget.profile.fullName);
     } catch (_) {}
     if (!mounted) return;

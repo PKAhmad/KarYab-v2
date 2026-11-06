@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/document_template.dart';
+import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../services/analytics_service.dart';
 import '../services/cv_pdf_generator.dart';
@@ -227,8 +227,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
   // Anschreiben are pre-ticked only if the app knows the user created them.
   Future<void> _loadUnterlagen() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_kUnterlagenPrefsKey);
+      final raw = await KaryabData.profile.getString(_kUnterlagenPrefsKey);
       final ticked = <String>{};
       final custom = <String>[];
       if (raw != null && raw.isNotEmpty) {
@@ -241,8 +240,10 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
           if (t.isNotEmpty && !custom.contains(t)) custom.add(t);
         }
       } else {
-        if (prefs.getBool('cv_created') ?? false) ticked.add('lebenslauf');
-        if (prefs.getBool(_kAnschreibenCreatedKey) ?? false) {
+        if (await KaryabData.profile.getBool('cv_created')) {
+          ticked.add('lebenslauf');
+        }
+        if (await KaryabData.profile.getBool(_kAnschreibenCreatedKey)) {
           ticked.add('anschreiben');
         }
       }
@@ -268,8 +269,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
 
   Future<void> _saveUnterlagen() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(
+      await KaryabData.profile.setString(
         _kUnterlagenPrefsKey,
         jsonEncode({'ticked': _ticked.toList(), 'custom': _custom}),
       );
@@ -303,8 +303,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
 
   Future<void> _markAnschreibenCreated() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_kAnschreibenCreatedKey, true);
+      await KaryabData.profile.setBool(_kAnschreibenCreatedKey, true);
     } catch (_) {}
   }
 

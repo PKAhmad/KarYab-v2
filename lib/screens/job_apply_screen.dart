@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../data/karyab_data.dart';
 import 'in_app_browser_screen.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -147,16 +146,22 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   }
 
   Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
+    final store = KaryabData.profile;
+    final qName     = await store.getString('questionnaire_full_name') ?? '';
+    final userName  = await store.getString('user_name')  ?? '';
+    final userPhone = await store.getString('user_phone') ?? '';
+    final userEmail = await store.getString('user_email') ?? '';
+    final userStreet = await store.getString('user_street') ?? '';
+    final userCity  = await store.getString('user_city')   ?? '';
+    final userPostal = await store.getString('user_postal') ?? '';
     if (!mounted) return;
     setState(() {
-      final qName = prefs.getString('questionnaire_full_name') ?? '';
-      _userName        = qName.isNotEmpty ? qName : (prefs.getString('user_name') ?? '');
-      _userPhone       = prefs.getString('user_phone')       ?? '';
-      _userEmail       = prefs.getString('user_email')       ?? '';
-      _userStreet      = prefs.getString('user_street')      ?? '';
-      _userCity        = prefs.getString('user_city')        ?? '';
-      _userPostal      = prefs.getString('user_postal')      ?? '';
+      _userName   = qName.isNotEmpty ? qName : userName;
+      _userPhone  = userPhone;
+      _userEmail  = userEmail;
+      _userStreet = userStreet;
+      _userCity   = userCity;
+      _userPostal = userPostal;
     });
   }
 
@@ -460,10 +465,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   Future<void> _preCoverLetterToTemp() async {
     try {
-      final prefs  = await SharedPreferences.getInstance();
-      final street = prefs.getString('user_street') ?? '';
-      final postal = prefs.getString('user_postal') ?? '';
-      final city   = prefs.getString('user_city')   ?? '';
+      final street = await KaryabData.profile.getString('user_street') ?? '';
+      final postal = await KaryabData.profile.getString('user_postal') ?? '';
+      final city   = await KaryabData.profile.getString('user_city')   ?? '';
 
       final font     = pw.Font.helvetica();
       final boldFont = pw.Font.helveticaBold();
@@ -569,7 +573,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
       final coverPath =
           '${tempDir.path}/Anschreiben_${cleanCompany}_$cleanJob.pdf';
       await File(coverPath).writeAsBytes(bytes);
-      await prefs.setString('temp_cover_path', coverPath);
+      await KaryabData.profile.setString('temp_cover_path', coverPath);
     } catch (_) {}
   }
 
@@ -810,15 +814,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   // target position. Mirrors ChooseCvTypeScreen._openLetterDocument()'s own
   // 'saved_profile' load + no-data gating.
   Future<void> _openCoverLetterCreation(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString('saved_profile');
     UserProfile? profile;
-    if (raw != null && raw.isNotEmpty) {
-      try {
-        profile = UserProfile.fromMap(jsonDecode(raw) as Map<String, dynamic>);
-      } catch (_) {
-        profile = null;
-      }
+    try {
+      profile = await KaryabData.profile.loadProfile();
+    } catch (_) {
+      profile = null;
     }
     if (profile == null) {
       if (context.mounted) _snack(context, _noProfileForLetterMsg);
@@ -1982,12 +1982,13 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
   }
 
   Future<Map<String, File?>> _findCurrentFiles() async {
-    final prefs = await SharedPreferences.getInstance();
     File? cvFile;
     File? coverFile;
 
-    final tempCvPath    = prefs.getString('temp_cv_path')    ?? '';
-    final tempCoverPath = prefs.getString('temp_cover_path') ?? '';
+    final tempCvPath =
+        await KaryabData.profile.getString('temp_cv_path') ?? '';
+    final tempCoverPath =
+        await KaryabData.profile.getString('temp_cover_path') ?? '';
 
     if (tempCvPath.isNotEmpty) {
       final f = File(tempCvPath);
@@ -2014,14 +2015,15 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         final bytes = await _generateCoverLetterBytes();
         coverFile = File(coverPath);
         await coverFile.writeAsBytes(bytes);
-        await prefs.setString('temp_cover_path', coverPath);
+        await KaryabData.profile.setString('temp_cover_path', coverPath);
       } catch (_) {}
     }
 
     // Fallback for CV: uploaded file
     if (cvFile == null) {
-      final uploadedPath = prefs.getString('uploaded_cv_path') ?? '';
-      final cvType       = prefs.getString('cv_type')          ?? '';
+      final uploadedPath =
+          await KaryabData.profile.getString('uploaded_cv_path') ?? '';
+      final cvType = await KaryabData.profile.getString('cv_type') ?? '';
       if (cvType == 'uploaded' && uploadedPath.isNotEmpty) {
         final f = File(uploadedPath);
         if (await f.exists()) cvFile = f;
@@ -2188,10 +2190,9 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
   }
 
   Future<Uint8List> _generateCoverLetterBytes() async {
-    final prefs = await SharedPreferences.getInstance();
-    final street = prefs.getString('user_street') ?? '';
-    final postal = prefs.getString('user_postal') ?? '';
-    final city   = prefs.getString('user_city')   ?? '';
+    final street = await KaryabData.profile.getString('user_street') ?? '';
+    final postal = await KaryabData.profile.getString('user_postal') ?? '';
+    final city   = await KaryabData.profile.getString('user_city')   ?? '';
 
     final font     = pw.Font.helvetica();
     final boldFont = pw.Font.helveticaBold();
@@ -2606,12 +2607,13 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
   }
 
   Future<Map<String, File?>> _findCurrentFiles() async {
-    final prefs = await SharedPreferences.getInstance();
     File? cvFile;
     File? coverFile;
 
-    final tempCvPath    = prefs.getString('temp_cv_path')    ?? '';
-    final tempCoverPath = prefs.getString('temp_cover_path') ?? '';
+    final tempCvPath =
+        await KaryabData.profile.getString('temp_cv_path') ?? '';
+    final tempCoverPath =
+        await KaryabData.profile.getString('temp_cover_path') ?? '';
 
     if (tempCvPath.isNotEmpty) {
       final f = File(tempCvPath);
@@ -2625,8 +2627,9 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
 
     // Fallback for CV: uploaded file
     if (cvFile == null) {
-      final uploadedPath = prefs.getString('uploaded_cv_path') ?? '';
-      final cvType       = prefs.getString('cv_type')          ?? '';
+      final uploadedPath =
+          await KaryabData.profile.getString('uploaded_cv_path') ?? '';
+      final cvType = await KaryabData.profile.getString('cv_type') ?? '';
       if (cvType == 'uploaded' && uploadedPath.isNotEmpty) {
         final f = File(uploadedPath);
         if (await f.exists()) cvFile = f;
