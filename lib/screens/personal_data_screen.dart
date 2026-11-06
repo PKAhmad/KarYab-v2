@@ -1,7 +1,8 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
+
+import '../ui/karyab_ui.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -270,7 +271,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         backgroundColor: const Color(0xFFF7FAFF),
         body: Stack(
           children: [
-            const _BackgroundGlow(),
+            const KBackgroundGlow(),
             SafeArea(
               child: Column(
                 children: [
@@ -442,7 +443,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   }
 
   Widget _buildTitleCard() {
-    return _GlassSurface(
+    return KGlassSurface(
       borderRadius: 20,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       child: Directionality(
@@ -835,7 +836,7 @@ class _QCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _GlassSurface(
+    return KGlassSurface(
       borderRadius: 20,
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1096,7 +1097,7 @@ class _NavBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: _GlassSurface(
+      child: KGlassSurface(
         width: 44,
         height: 44,
         borderRadius: 14,
@@ -1107,95 +1108,6 @@ class _NavBtn extends StatelessWidget {
   }
 }
 
-class _BackgroundGlow extends StatelessWidget {
-  const _BackgroundGlow();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Stack(
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFF9FBFF), Color(0xFFEFF6FF), Color(0xFFF7FFF2)],
-            ),
-          ),
-          child: SizedBox.expand(),
-        ),
-        Positioned(top: 70,   left: -42,  child: _Orb(size: 170, color: Color(0x6639EA2B))),
-        Positioned(top: 135,  right: -65, child: _Orb(size: 170, color: Color(0x44FFB86B))),
-        Positioned(bottom: 95, left: -60, child: _Orb(size: 210, color: Color(0x3339EA2B))),
-      ],
-    );
-  }
-}
 
-class _Orb extends StatelessWidget {
-  final double size;
-  final Color color;
-  const _Orb({required this.size, required this.color});
 
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 35, sigmaY: 35),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-      ),
-    );
-  }
-}
-
-class _GlassSurface extends StatelessWidget {
-  final Widget child;
-  final double? width;
-  final double? height;
-  final double borderRadius;
-  final EdgeInsetsGeometry padding;
-
-  const _GlassSurface({
-    required this.child,
-    this.width,
-    this.height,
-    required this.borderRadius,
-    required this.padding,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: Container(
-          width: width ?? double.infinity,
-          height: height,
-          padding: padding,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.62),
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.18),
-                  blurRadius: 24,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 8)),
-              BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2)),
-            ],
-          ),
-          child: child,
-        ),
-      ),
-    );
-  }
-}

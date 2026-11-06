@@ -1,5 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+
+import '../ui/karyab_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/analytics_service.dart';
@@ -118,7 +119,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       backgroundColor: const Color(0xFFF7FAFF),
       body: Stack(
         children: [
-          const _BackgroundGlow(),
+          const KBackgroundGlow(),
           SafeArea(
             child: Center(
               child: LayoutBuilder(
@@ -208,60 +209,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 }
 
-class _BackgroundGlow extends StatelessWidget {
-  const _BackgroundGlow();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Stack(
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FBFF),
-                Color(0xFFEFF6FF),
-                Color(0xFFF7FFF2),
-              ],
-            ),
-          ),
-          child: SizedBox.expand(),
-        ),
-        Positioned(top: 70, left: -42, child: _Orb(size: 170, color: Color(0x6639EA2B))),
-        Positioned(top: 135, right: -65, child: _Orb(size: 170, color: Color(0x44FFB86B))),
-        Positioned(bottom: 95, left: -60, child: _Orb(size: 210, color: Color(0x3339EA2B))),
-        Positioned(bottom: -30, right: 14, child: _Orb(size: 145, color: Color(0x5539EA2B))),
-        Positioned(top: 20, left: 30, child: _Orb(size: 170, color: Color(0x30FF8FA3))),
-      ],
-    );
-  }
-}
-
-class _Orb extends StatelessWidget {
-  final double size;
-  final Color color;
-
-  const _Orb({required this.size, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 35, sigmaY: 35),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 
 class _HeroGlassCard extends StatelessWidget {
@@ -275,10 +223,9 @@ class _HeroGlassCard extends StatelessWidget {
       clipBehavior: Clip.none,
       alignment: Alignment.topCenter,
       children: [
-        _GlassSurface(
+        KGlassSurface(
           borderRadius: 36,
           padding: EdgeInsets.fromLTRB(14, 50, 14, 14),
-          shadowOpacity: 0.13,
           child: Column(
             children: [
               _KarYabWordMark(),
@@ -329,12 +276,11 @@ class _LogoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _GlassSurface(
+    return const KGlassSurface(
       width: 70,
       height: 66,
       borderRadius: 22,
       padding: EdgeInsets.zero,
-      shadowOpacity: 0.10,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -468,12 +414,11 @@ class _HeroFeature extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _GlassSurface(
+        KGlassSurface(
           width: 36,
           height: 36,
           borderRadius: 12,
           padding: EdgeInsets.zero,
-          shadowOpacity: 0.08,
           child: Icon(icon, color: const Color(0xFF4B5B6E), size: 16),
         ),
         const SizedBox(height: 5),
@@ -658,10 +603,9 @@ class _InfoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _GlassSurface(
+    return const KGlassSurface(
       borderRadius: 20,
       padding: EdgeInsets.fromLTRB(10, 8, 8, 8),
-      shadowOpacity: 0.06,
       child: Row(
         children: [
           CircleAvatar(
@@ -779,61 +723,4 @@ class _PageDots extends StatelessWidget {
   }
 }
 
-class _GlassSurface extends StatelessWidget {
-  final Widget child;
-  final double? width;
-  final double? height;
-  final double borderRadius;
-  final EdgeInsetsGeometry padding;
-  final double shadowOpacity;
 
-  const _GlassSurface({
-    required this.child,
-    this.width,
-    this.height,
-    required this.borderRadius,
-    required this.padding,
-    this.shadowOpacity = 0.09,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: Container(
-          width: width ?? double.infinity,
-          height: height,
-          padding: padding,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.62),
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.18),
-                blurRadius: 24,
-                spreadRadius: 2,
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 8,
-                spreadRadius: 0,
-                offset: const Offset(0, 2),
-              ),
-              BoxShadow(
-                color: Colors.white.withValues(alpha: 0.9),
-                blurRadius: 0,
-                spreadRadius: 0,
-                offset: const Offset(-2, -2),
-              ),
-            ],
-          ),
-          child: child,
-        ),
-      ),
-    );
-  }
-}
