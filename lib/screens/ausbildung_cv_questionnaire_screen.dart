@@ -3,8 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
+import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../services/analytics_service.dart';
 import '../services/tts_service.dart';
@@ -237,10 +236,8 @@ class _AusbildungCvQuestionnaireScreenState
 
   Future<void> _loadExisting() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw == null || raw.isEmpty) return;
-      final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map == null || map.isEmpty) return;
       final langsRaw = map['languages'] as String? ?? '';
       final profRaw  = map['languageProficiency'] as String? ?? '';
       final langs = langsRaw.isEmpty ? <String>[] : langsRaw.split(',');
@@ -409,11 +406,7 @@ class _AusbildungCvQuestionnaireScreenState
 
     var map = <String, dynamic>{};
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw != null && raw.isNotEmpty) {
-        map = jsonDecode(raw) as Map<String, dynamic>;
-      }
+      map = await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
     } catch (_) {}
 
     // Berufserfahrung und Praktika - shared keys with
@@ -439,8 +432,7 @@ class _AusbildungCvQuestionnaireScreenState
     map['ausbildungTargetOccupationUri'] = _selectedOccupation?.uri ?? '';
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('saved_profile', jsonEncode(map));
+      await KaryabData.profile.saveProfileMap(map);
     } catch (_) {}
 
     final profile = UserProfile.fromMap(map);

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../models/document_template.dart';
 import '../ui/karyab_ui.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CV template picker — a bottom sheet shown before CV generation so the user
-// can pick one of the 5 visual templates. Persists the choice to
-// SharedPreferences under whatever key the caller passes in — this picker is
+// can pick one of the 5 visual templates. Persists the choice via the
+// data layer (lib/data/) under whatever key the caller passes in — this picker is
 // reused by multiple independent flows (e.g. the regular CV screen and,
 // separately, Ausbildung), each of which MUST use its own distinct key so
 // their template choices never share state.
@@ -20,14 +20,13 @@ import '../ui/karyab_ui.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<DocumentTemplate> loadSelectedDocumentTemplate(String prefsKey) async {
-  final prefs = await SharedPreferences.getInstance();
-  return DocumentTemplateInfo.fromStorageKey(prefs.getString(prefsKey));
+  return DocumentTemplateInfo.fromStorageKey(
+      await KaryabData.profile.getString(prefsKey));
 }
 
 Future<void> saveSelectedDocumentTemplate(
     String prefsKey, DocumentTemplate template) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(prefsKey, template.storageKey);
+  await KaryabData.profile.setString(prefsKey, template.storageKey);
 }
 
 /// Shows the template picker bottom sheet and returns the chosen template.
@@ -249,14 +248,13 @@ class _MissingThumbnail extends StatelessWidget {
 
 Future<AnschreibenTemplate> loadSelectedAnschreibenTemplate(
     String prefsKey) async {
-  final prefs = await SharedPreferences.getInstance();
-  return AnschreibenTemplateInfo.fromStorageKey(prefs.getString(prefsKey));
+  return AnschreibenTemplateInfo.fromStorageKey(
+      await KaryabData.profile.getString(prefsKey));
 }
 
 Future<void> saveSelectedAnschreibenTemplate(
     String prefsKey, AnschreibenTemplate template) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(prefsKey, template.storageKey);
+  await KaryabData.profile.setString(prefsKey, template.storageKey);
 }
 
 /// Shows the Anschreiben template picker bottom sheet and returns the chosen
@@ -432,14 +430,13 @@ class _AnschreibenTemplateCard extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<DeckblattTemplate> loadSelectedDeckblattTemplate(String prefsKey) async {
-  final prefs = await SharedPreferences.getInstance();
-  return DeckblattTemplateInfo.fromStorageKey(prefs.getString(prefsKey));
+  return DeckblattTemplateInfo.fromStorageKey(
+      await KaryabData.profile.getString(prefsKey));
 }
 
 Future<void> saveSelectedDeckblattTemplate(
     String prefsKey, DeckblattTemplate template) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(prefsKey, template.storageKey);
+  await KaryabData.profile.setString(prefsKey, template.storageKey);
 }
 
 /// Shows the Deckblatt template picker bottom sheet and returns the chosen

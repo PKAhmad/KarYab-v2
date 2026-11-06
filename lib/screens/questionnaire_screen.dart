@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
@@ -207,10 +207,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   // per spec.
   Future<void> _loadSharedData() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw == null || raw.isEmpty) return;
-      final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map == null || map.isEmpty) return;
 
       final companies  = _splitCsv(map['previousEmployers'] as String? ?? '');
       final roles      = _splitCsv(map['previousJobTitles'] as String? ?? '');
@@ -357,11 +355,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     // reached - read it back from 'saved_profile' rather than asking again.
     var map = <String, dynamic>{};
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw != null && raw.isNotEmpty) {
-        map = jsonDecode(raw) as Map<String, dynamic>;
-      }
+      map = await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
     } catch (_) {}
 
     map['skill']                 = _skills.join(',');
@@ -388,8 +382,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     map['sharedItSkills']         = itSkills.join(',');
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('saved_profile', jsonEncode(map));
+      await KaryabData.profile.saveProfileMap(map);
     } catch (_) {}
 
     final profile = UserProfile.fromMap(map);

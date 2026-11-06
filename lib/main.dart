@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'constants/app_colors.dart';
+import 'data/karyab_data.dart';
 import 'providers/language_provider.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/education_screen.dart';
@@ -22,6 +23,10 @@ import 'models/user_profile.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  // v2 data layer: opens the Drift database and imports the v1
+  // SharedPreferences profile/documents on first launch. Never throws -
+  // on any failure the app keeps using the v1 store (see data/karyab_data.dart).
+  await KaryabData.init();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,

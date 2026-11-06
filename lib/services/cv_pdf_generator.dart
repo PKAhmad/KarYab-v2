@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math' show Random;
 import 'dart:typed_data';
@@ -6,8 +5,8 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../models/document_template.dart';
 import '../models/user_profile.dart';
 
@@ -230,7 +229,7 @@ String _deckblattClean(String? v) {
   return t == '\u2014' ? '' : t;
 }
 
-// ── Ausbildung questionnaire data (read directly from SharedPreferences) ───
+// ── Ausbildung questionnaire data (read via the data layer, lib/data/) ───
 
 class _AusbildungData {
   final List<_CvJob> jobs;
@@ -275,12 +274,10 @@ List<String> _splitCsv(String raw) =>
 
 Future<_AusbildungData> _loadAusbildungData() async {
   try {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString('saved_profile');
-    if (raw == null || raw.isEmpty) {
+    final map = await KaryabData.profile.loadProfileMap();
+    if (map == null || map.isEmpty) {
       return const _AusbildungData();
     }
-    final map = jsonDecode(raw) as Map<String, dynamic>;
     String s(String key) => (map[key] as String?) ?? '';
 
     // NOTE: work-experience entries (Berufserfahrung) are shared between
@@ -361,8 +358,7 @@ String _targetPosition(UserProfile p, _AusbildungData ausbildung, bool isAusbild
 // they're never fabricated into this list.
 Future<List<String>> _loadAttachments() async {
   try {
-    final prefs = await SharedPreferences.getInstance();
-    final cvCreated = prefs.getBool('cv_created') ?? false;
+    final cvCreated = await KaryabData.profile.getBool('cv_created');
     return cvCreated ? const ['Lebenslauf'] : const [];
   } catch (_) {
     return const [];

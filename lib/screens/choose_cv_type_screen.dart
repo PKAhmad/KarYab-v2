@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../services/analytics_service.dart';
 import '../services/tts_service.dart';
@@ -66,10 +64,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
 
   Future<bool> _hasPersonalData() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw == null || raw.isEmpty) return false;
-      final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map == null || map.isEmpty) return false;
       String v(String key) => (map[key] as String? ?? '').trim();
       return v('fullName').isNotEmpty &&
           v('phone').isNotEmpty &&
@@ -159,10 +155,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
 
   Future<UserProfile?> _loadProfile() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw == null || raw.isEmpty) return null;
-      final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map == null || map.isEmpty) return null;
       return UserProfile.fromMap(map);
     } catch (_) {
       return null;

@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
 import '../services/tts_service.dart';
@@ -221,10 +222,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
 
   Future<void> _loadUserSkillFilter() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw == null || raw.isEmpty) return;
-      final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map == null || map.isEmpty) return;
       final skillStr = (map['skill'] as String?) ?? '';
       if (skillStr.isEmpty) return;
       for (final skill in skillStr.split(',').map((s) => s.trim())) {

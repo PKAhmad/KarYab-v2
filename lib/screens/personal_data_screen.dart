@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -6,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../services/analytics_service.dart';
 import '../services/tts_service.dart';
 import 'ausbildung_cv_questionnaire_screen.dart';
@@ -100,10 +99,8 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   // step is reached with some (but not all) shared fields already set.
   Future<void> _loadExisting() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      if (raw == null || raw.isEmpty) return;
-      final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map == null || map.isEmpty) return;
       final fullName = map['fullName'] as String? ?? '';
       final phone    = map['phone'] as String? ?? '';
       final email    = map['email'] as String? ?? '';
@@ -162,11 +159,8 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
 
     final (street, city) = _splitAddress();
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('saved_profile');
-      final map = raw != null && raw.isNotEmpty
-          ? jsonDecode(raw) as Map<String, dynamic>
-          : <String, dynamic>{};
+      final map =
+          await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
 
       map['fullName']  = name;
       map['phone']     = phone;
@@ -179,13 +173,13 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       map['dobYear']   = _dobYear?.toString() ?? '';
       map['photoPath'] = _photoPath ?? '';
 
-      await prefs.setString('saved_profile', jsonEncode(map));
-      await prefs.setString('user_phone', phone);
-      await prefs.setString('user_email', _emailCtrl.text.trim());
-      await prefs.setString('user_street', street);
-      await prefs.setString('user_city', city);
-      await prefs.setString('user_postal', '');
-      await prefs.setString('questionnaire_full_name', name);
+      await KaryabData.profile.saveProfileMap(map);
+      await KaryabData.profile.setString('user_phone', phone);
+      await KaryabData.profile.setString('user_email', _emailCtrl.text.trim());
+      await KaryabData.profile.setString('user_street', street);
+      await KaryabData.profile.setString('user_city', city);
+      await KaryabData.profile.setString('user_postal', '');
+      await KaryabData.profile.setString('questionnaire_full_name', name);
     } catch (_) {}
 
     if (!mounted) return;

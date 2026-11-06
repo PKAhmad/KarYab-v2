@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/karyab_data.dart';
 import '../providers/language_provider.dart';
 import '../services/tts_service.dart';
 import '../utils/location_helpers.dart';
@@ -56,10 +54,8 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
   Future<void> _loadCity() async {
     String? profileCity;
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw   = prefs.getString('saved_profile');
-      if (raw != null && raw.isNotEmpty) {
-        final map = jsonDecode(raw) as Map<String, dynamic>;
+      final map = await KaryabData.profile.loadProfileMap();
+      if (map != null && map.isNotEmpty) {
         final city = (map['city'] as String?) ?? '';
         if (city.isNotEmpty) profileCity = city;
       }
