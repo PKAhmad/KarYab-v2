@@ -30,17 +30,27 @@ import 'pdf_merge.dart';
 // ones could NOT be embedded so the UI can tell the user.
 // ─────────────────────────────────────────────────────────────────────────────
 
-Future<({pw.Font regular, pw.Font bold, pw.Font italic})>? _fontsFuture;
+Future<({pw.Font regular, pw.Font bold, pw.Font italic, pw.Font arabic, pw.Font arabicBold})>?
+    _fontsFuture;
 
-Future<({pw.Font regular, pw.Font bold, pw.Font italic})> _loadLetterFonts() {
+Future<({pw.Font regular, pw.Font bold, pw.Font italic, pw.Font arabic, pw.Font arabicBold})>
+    _loadLetterFonts() {
   return _fontsFuture ??= () async {
     final regular = await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
     final bold = await rootBundle.load('assets/fonts/Roboto-Bold.ttf');
     final italic = await rootBundle.load('assets/fonts/Roboto-Italic.ttf');
+    // Noto Naskh Arabic as fallback (Phase 5), same rationale as the CV
+    // generator: user names/places in Arabic script must not lose glyphs.
+    final arabic =
+        await rootBundle.load('assets/fonts/NotoNaskhArabic-Regular.ttf');
+    final arabicBold =
+        await rootBundle.load('assets/fonts/NotoNaskhArabic-Bold.ttf');
     return (
       regular: pw.Font.ttf(regular),
       bold: pw.Font.ttf(bold),
       italic: pw.Font.ttf(italic),
+      arabic: pw.Font.ttf(arabic),
+      arabicBold: pw.Font.ttf(arabicBold),
     );
   }();
 }
@@ -77,6 +87,12 @@ Future<Uint8List> generateLetterPdf(
 
   doc.addPage(
     pw.MultiPage(
+      theme: pw.ThemeData.withFont(
+        base: fonts.regular,
+        bold: fonts.bold,
+        italic: fonts.italic,
+        fontFallback: [fonts.arabic, fonts.arabicBold],
+      ),
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.fromLTRB(48, 56, 48, 56),
       build: (context) => [

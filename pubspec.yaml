@@ -57,3 +57,13 @@ flutter:
           weight: 700
         - asset: assets/fonts/Roboto-Italic.ttf
           style: italic
+    # Arabic script for Pashto/Dari UI text (Phase 5). Static hinted TTFs
+    # from the official Noto project (notofonts/notofonts.github.io),
+    # SIL Open Font License 1.1, see assets/fonts/NotoNaskhArabic_OFL.txt.
+    # Verified 2026-11-06: cmap covers the Pashto-specific letters
+    # U+067C U+0689 U+0691 U+0696 U+069A U+06BC U+06D0 in both weights.
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/fonts/NotoNaskhArabic-Regular.ttf
+        - asset: assets/fonts/NotoNaskhArabic-Bold.ttf
+          weight: 700

@@ -634,8 +634,34 @@ class _Fonts {
   final pw.Font regular;
   final pw.Font bold;
   final pw.Font italic;
-  const _Fonts(this.regular, this.bold, this.italic);
+
+  /// Noto Naskh Arabic (bundled, Phase 5) - used only as a font FALLBACK
+  /// so user data written in Arabic script (a name typed in Pashto/Dari
+  /// letters, a home-country city or school) renders instead of dropping
+  /// glyphs Roboto does not have. German/Latin text is unaffected: Roboto
+  /// stays the primary font of every template.
+  final pw.Font arabic;
+  final pw.Font arabicBold;
+
+  const _Fonts(
+    this.regular,
+    this.bold,
+    this.italic, {
+    required this.arabic,
+    required this.arabicBold,
+  });
 }
+
+/// Page theme carrying the Arabic fallback fonts. Local text styles keep
+/// their explicit Roboto fonts; the pdf package resolves any rune Roboto
+/// lacks against [_Fonts.arabic]/[_Fonts.arabicBold] via the theme's
+/// default-style fontFallback chain.
+pw.ThemeData _pdfTheme(_Fonts fonts) => pw.ThemeData.withFont(
+      base: fonts.regular,
+      bold: fonts.bold,
+      italic: fonts.italic,
+      fontFallback: [fonts.arabic, fonts.arabicBold],
+    );
 
 Future<_Fonts>? _fontsFuture;
 
@@ -647,10 +673,16 @@ Future<_Fonts> _loadFonts() {
         await rootBundle.load('assets/fonts/Roboto-Bold.ttf');
     final ByteData italicData =
         await rootBundle.load('assets/fonts/Roboto-Italic.ttf');
+    final ByteData arabicData =
+        await rootBundle.load('assets/fonts/NotoNaskhArabic-Regular.ttf');
+    final ByteData arabicBoldData =
+        await rootBundle.load('assets/fonts/NotoNaskhArabic-Bold.ttf');
     return _Fonts(
       pw.Font.ttf(regularData),
       pw.Font.ttf(boldData),
       pw.Font.ttf(italicData),
+      arabic: pw.Font.ttf(arabicData),
+      arabicBold: pw.Font.ttf(arabicBoldData),
     );
   }();
 }
@@ -921,6 +953,7 @@ Future<Uint8List> _buildAtsBlue(
 
   doc.addPage(
     pw.MultiPage(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.fromLTRB(42, 40, 42, 40),
       build: (context) => [
@@ -1143,6 +1176,7 @@ Future<Uint8List> _buildDarkSidebar(
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.SizedBox(
@@ -1466,6 +1500,7 @@ Future<Uint8List> _buildNavyHeader(
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.SizedBox(
@@ -1788,6 +1823,7 @@ Future<Uint8List> _buildBlueTriangle(
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.SizedBox(
@@ -2144,6 +2180,7 @@ Future<Uint8List> _buildBraunIconSet(
 
   doc.addPage(
     pw.MultiPage(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => [
@@ -2348,6 +2385,7 @@ Future<Uint8List> _buildWeissBraunSchlicht(
 
   doc.addPage(
     pw.MultiPage(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => [
@@ -2660,6 +2698,7 @@ Future<Uint8List> _buildAnschreibenBlauMinimal(UserProfile p, _AusbildungData au
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.fromLTRB(48, 56, 48, 56),
       build: (context) => pw.Column(
@@ -2740,6 +2779,7 @@ Future<Uint8List> _buildAnschreibenBeigeEleganz(UserProfile p, _AusbildungData a
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.Stack(
@@ -2856,6 +2896,7 @@ Future<Uint8List> _buildAnschreibenBoldHeadlineGrau(UserProfile p, _AusbildungDa
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.fromLTRB(48, 48, 48, 48),
       build: (context) => pw.Column(
@@ -2942,6 +2983,7 @@ Future<Uint8List> _buildAnschreibenBraunIconSet(UserProfile p, _AusbildungData a
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.Stack(
@@ -3042,6 +3084,7 @@ Future<Uint8List> _buildAnschreibenGrauSchlicht(UserProfile p, _AusbildungData a
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.fromLTRB(48, 48, 48, 48),
       build: (context) => pw.Column(
@@ -3156,6 +3199,7 @@ Future<Uint8List> _buildAnschreibenWeissBraunSchlicht(UserProfile p, _Ausbildung
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.Stack(
@@ -3314,6 +3358,7 @@ Future<Uint8List> _buildDeckblattBraunIconSet(
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.Stack(
@@ -3404,6 +3449,7 @@ Future<Uint8List> _buildDeckblattWeissBraunSchlicht(
 
   doc.addPage(
     pw.Page(
+      theme: _pdfTheme(fonts),
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.zero,
       build: (context) => pw.Stack(
