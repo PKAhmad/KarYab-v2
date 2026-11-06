@@ -35,6 +35,7 @@ jobs:
       # this build, which is expected.
       - name: Create secrets placeholder (empty values only)
         run: |
+          mkdir -p lib/config
           cat > lib/config/secrets.dart <<'EOF'
           // CI-generated placeholder. Real keys are never committed.
           class Secrets {
