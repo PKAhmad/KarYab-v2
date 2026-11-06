@@ -20,12 +20,14 @@ import '../widgets/cv_upload_info_sheet.dart';
 import '../widgets/home_dashboard.dart';
 import '../services/account_strings.dart';
 import '../services/jobs_strings.dart';
+import '../services/work_permit_strings.dart';
 import '../widgets/feedback_sheet.dart';
 import 'account_screen.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
 import 'my_cvs_screen.dart';
 import 'my_letters_screen.dart';
+import 'work_permit_screen.dart';
 
 class IntroductionScreen extends StatefulWidget {
   final String language;
@@ -698,6 +700,16 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
               entry(Icons.feedback_rounded, JobsStrings.sendFeedback(_lang),
                   () {
                 showFeedbackSheet(context, language: _lang);
+              }),
+              entry(Icons.mark_email_read_outlined,
+                  WorkPermitStrings.title(_lang), () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => WorkPermitScreen(
+                        language: _lang, voiceMode: _voiceMode),
+                  ),
+                );
               }),
               entry(Icons.mail_rounded, _myLettersLabel, () {
                 Navigator.push(
