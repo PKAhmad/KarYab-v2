@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/tts_service.dart';
+import '../ui/karyab_ui.dart';
 
 /// Bottom sheet collecting name/phone/email after a user picks a CV file to
 /// upload, so the cover-letter flow has contact details to work with.
@@ -21,9 +22,11 @@ class CvUploadInfoSheet extends StatefulWidget {
 }
 
 class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
-  static const Color _navy = Color(0xFF091733);
-  static const Color _green = Color(0xFF39EA2B);
-  static const Color _muted = Color(0xFF65738A);
+  // Phase 8 restyle: colours come from the shared kit (KColors) instead of
+  // private copies. Values are identical to the old literals.
+  static const Color _navy = KColors.navy;
+  static const Color _green = KColors.green;
+  static const Color _muted = KColors.textSecondary;
 
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
@@ -173,7 +176,11 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
           controller: controller,
           keyboardType: keyboardType,
           textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
-          style: TextStyle(color: _navy, fontSize: fontSize),
+          style: TextStyle(
+            color: _navy,
+            fontSize: fontSize,
+            fontFamily: karyabFontFamily(widget.language),
+          ),
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
@@ -198,10 +205,7 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
     return Directionality(
       textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
       child: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFF7FAFF),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
+        decoration: kSheetDecoration,
         child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
             20,
@@ -213,16 +217,7 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD1D9E6),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
+              const Center(child: KSheetHandle()),
               const SizedBox(height: 20),
               Row(
                 textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
@@ -231,7 +226,7 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
                     width: 36,
                     height: 36,
                     decoration: const BoxDecoration(
-                      color: Color(0xFFEAFBE9),
+                      color: KColors.mint,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.description_rounded,
@@ -283,11 +278,11 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF081532), Color(0xFF07112B)],
+                      colors: [KColors.ctaStart, KColors.ctaEnd],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF07112B).withValues(alpha: 0.30),
+                        color: KColors.ctaEnd.withValues(alpha: 0.30),
                         blurRadius: 18,
                         offset: const Offset(0, 8),
                       ),
