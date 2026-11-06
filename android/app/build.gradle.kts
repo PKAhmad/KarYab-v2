@@ -26,7 +26,11 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        // Pinned explicitly (Phase 8): Google Play requires target API 36
+        // for new apps. Flutter 3.47.9's flutter.targetSdkVersion already
+        // defaults to 36, so this changes nothing today but keeps the
+        // requirement from drifting with a future Flutter upgrade.
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
