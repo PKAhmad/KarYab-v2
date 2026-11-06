@@ -21,7 +21,6 @@ class InAppBrowserScreen extends StatefulWidget {
 class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
-  String _currentUrl = '';
 
   @override
   void initState() {
@@ -31,16 +30,10 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
-            setState(() {
-              _isLoading = true;
-              _currentUrl = url;
-            });
+            setState(() => _isLoading = true);
           },
           onPageFinished: (url) {
-            setState(() {
-              _isLoading = false;
-              _currentUrl = url;
-            });
+            setState(() => _isLoading = false);
           },
           onWebResourceError: (error) {
             setState(() => _isLoading = false);

@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
@@ -65,49 +64,6 @@ class _Job {
 
 }
 
-class _JobDetail {
-  final String description;
-  final String? email;
-  final String? applicationUrl;
-  final String phone;
-  final String website;
-
-  const _JobDetail({
-    required this.description,
-    this.email,
-    this.applicationUrl,
-    this.phone = '',
-    this.website = '',
-  });
-
-  factory _JobDetail.fromJson(Map<String, dynamic> j) {
-    Map<String, dynamic> bew = {};
-    for (final k in j.keys) {
-      if (k.toLowerCase().startsWith('bewerbung')) {
-        bew = (j[k] as Map<String, dynamic>?) ?? {};
-        break;
-      }
-    }
-    final firma = j['firma'] as Map<String, dynamic>? ?? {};
-    final applicationUrl = (bew['url'] as String?)?.isNotEmpty == true
-        ? bew['url'] as String
-        : (j['externeURL'] as String?)?.isNotEmpty == true
-            ? j['externeURL'] as String
-            : j['allianzpartnerUrl'] as String?;
-    final email = (bew['email'] as String?)?.isNotEmpty == true
-        ? bew['email'] as String
-        : (firma['email'] as String?)?.isNotEmpty == true
-            ? firma['email'] as String
-            : null;
-    return _JobDetail(
-      description:    j['stellenbeschreibung'] as String? ?? '',
-      email:          email,
-      applicationUrl: applicationUrl,
-      phone:          firma['telefon']  as String? ?? '',
-      website:        firma['homepage'] as String? ?? '',
-    );
-  }
-}
 
 // ── Category descriptor ───────────────────────────────────────────────────────
 
@@ -165,8 +121,6 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
   static const _kApiKey   = 'jobboerse-jobsuche';
   static const _kBaseUrl  =
       'https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs';
-  static const _kDetailBase =
-      'https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobdetails';
 
   static const _kRadii = [5, 10, 25, 50, 100];
 
@@ -399,28 +353,9 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
 
   // ── API — job detail ───────────────────────────────────────────────────────
 
-  Future<_JobDetail> _fetchJobDetail(String refnr) async {
-    final encoded  = base64.encode(utf8.encode(refnr));
-    final uri      = Uri.parse('$_kDetailBase/$encoded');
-    final response = await http
-        .get(uri, headers: {'X-API-Key': _kApiKey})
-        .timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
-      return _JobDetail.fromJson(data);
-    }
-    throw Exception('HTTP ${response.statusCode}');
-  }
-
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   String _distanceLabel(_Job job) => job.locationDisplay;
-
-  String _buildAddress(_Job job) =>
-      [job.strasseHausnummer, job.plz, job.ort]
-          .where((s) => s.isNotEmpty)
-          .join(' ');
 
   static IconData _jobTypeIcon(String title) {
     final t = title.toLowerCase();
@@ -562,54 +497,11 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
     }
   }
 
-  String get _applyNowLabel {
-    switch (_lang) {
-      case 'ps': return 'غوښتنه وکړئ';
-      case 'fa': return 'درخواست دهید';
-      default:   return 'Apply Now';
-    }
-  }
-
-  String get _applyEmailLabel {
-    switch (_lang) {
-      case 'ps': return 'د ایمیل له لارې غوښتنه';
-      case 'fa': return 'درخواست از طریق ایمیل';
-      default:   return 'Apply via Email';
-    }
-  }
-
-  String get _skipLabel {
-    switch (_lang) {
-      case 'ps': return 'رد کړئ';
-      case 'fa': return 'رد کردن';
-      default:   return 'Skip';
-    }
-  }
-
   String get _searchHint {
     switch (_lang) {
       case 'ps': return 'کار ولټوئ...';
       case 'fa': return 'جستجوی کار...';
       default:   return 'Search jobs...';
-    }
-  }
-
-  String get _noEmailMessage {
-    switch (_lang) {
-      case 'ps':
-        return 'ایمیل ونه موندل شو. تاسو کولی شئ مستقیم دی کمپنی ادرس ته لاړ شی او هلته غوښتنه وکړئ';
-      case 'fa':
-        return 'ایمیل یافت نشد. می‌توانید مستقیماً در این مکان درخواست دهید.';
-      default:
-        return 'No email found. You can apply in person at this location.';
-    }
-  }
-
-  String get _openMapsLabel {
-    switch (_lang) {
-      case 'ps': return 'په ګوګل نقشه کې پرانیستل';
-      case 'fa': return 'باز کردن در Google Maps';
-      default:   return 'Find on Google Maps';
     }
   }
 
@@ -683,37 +575,6 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       _refetch();
     } finally {
       if (mounted) setState(() => _locating = false);
-    }
-  }
-
-  Future<void> _launchGmail(String email, String jobTitle) async {
-    final subject = 'Bewerbung: $jobTitle';
-    final body =
-        'Sehr geehrte Damen und Herren,\n\n'
-        'hiermit bewerbe ich mich auf die ausgeschriebene \n'
-        'Stelle als $jobTitle in Ihrem Unternehmen.\n\n'
-        'Ich bin motiviert, zuverlässig und lernbereit. \n'
-        'Ich freue mich auf die Möglichkeit, mich \n'
-        'persönlich vorzustellen.\n\n'
-        'Mit freundlichen Grüßen,\n'
-        'Ihr Bewerber';
-    final uri = Uri.parse(
-      'mailto:$email'
-      '?subject=${Uri.encodeComponent(subject)}'
-      '&body=${Uri.encodeComponent(body)}',
-    );
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) _snack('Could not open email app');
-    }
-  }
-
-  Future<void> _launchMaps(_Job job) async {
-    final q = '${job.company} ${job.strasseHausnummer} ${job.ort}'.trim();
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/${Uri.encodeComponent(q)}',
-    );
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) _snack('Could not open Maps');
     }
   }
 

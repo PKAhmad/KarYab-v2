@@ -188,18 +188,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
     return map[key] ?? key;
   }
 
-  static String _resolveList(
-    List<String> keys,
-    String lang, {
-    required Map<String, String> en,
-    required Map<String, String> ps,
-    required Map<String, String> fa,
-  }) {
-    if (keys.isEmpty) return '—';
-    final map = lang == 'ps' ? ps : lang == 'fa' ? fa : en;
-    return keys.map((k) => map[k] ?? k).join(', ');
-  }
-
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   @override

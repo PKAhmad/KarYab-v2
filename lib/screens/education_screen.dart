@@ -59,7 +59,6 @@ class _EducationScreenState extends State<EducationScreen> {
   }
 
   bool get _isRtl       => _lang == 'ps' || _lang == 'fa';
-  bool get _showSpeaker => _lang == 'ps' || _lang == 'fa';
 
   String get _question {
     switch (_lang) {

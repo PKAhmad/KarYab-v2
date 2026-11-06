@@ -687,39 +687,6 @@ class _InfoBox extends StatelessWidget {
   }
 }
 
-class _GermanyPin extends StatelessWidget {
-  static const Color green = Color(0xFF39EA2B);
-
-  const _GermanyPin();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 46,
-      height: 56,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Icon(Icons.map_rounded, color: Color(0xFFB9C2CE), size: 47),
-          Positioned(
-            top: 15,
-            right: 6,
-            child: Container(
-              width: 23,
-              height: 23,
-              decoration: const BoxDecoration(
-                color: Color(0xFFB9F5A9),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.location_on_rounded, color: green, size: 19),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ContinueButton extends StatelessWidget {
   static const Color green = Color(0xFF39EA2B);
 

@@ -21,13 +21,6 @@ import '../widgets/document_template_picker.dart';
 import '../ui/karyab_ui.dart';
 import 'questionnaire_screen.dart';
 
-// ── Data class ────────────────────────────────────────────────────────────────
-
-class _CvRow {
-  final String label;
-  final String value;
-  const _CvRow(this.label, this.value);
-}
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -62,19 +55,6 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   static const Color _green = KColors.green;
   static const Color _muted = KColors.textSecondary;
 
-  static String _countryFullName(String value) {
-    const map = {
-      'af': 'Afghanistan',
-      'pk': 'Pakistan',
-      'ir': 'Iran',
-      'iq': 'Iraq',
-      'sy': 'Syria',
-      'so': 'Somalia',
-      'er': 'Eritrea',
-      'other': 'Other',
-    };
-    return map[value] ?? value;
-  }
 
   Future<Uint8List>? _pdfFutureCache;
   Future<void>? _templateReadyFuture;
@@ -170,115 +150,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     super.dispose();
   }
 
-  // ── German key-label maps ─────────────────────────────────────────────────
-
-  static const Map<String, String> _skillDe = {
-    'lifting':        'Schwere Lasten tragen',
-    'cooking':        'Kochen',
-    'driving':        'Fahren / Transport',
-    'cleaning':       'Reinigung',
-    'fixing':         'Reparatur / Instandhaltung',
-    'packing':        'Packen / Lagerhaltung',
-    'security':       'Sicherheitsdienst',
-    'forklift':       'Gabelstapler',
-    'farming':        'Landwirtschaft',
-    'sales':          'Verkauf / Handel',
-    'sewing':         'Nähen / Schneiderei',
-    'construction':   'Bauarbeiten',
-    'mobile_repair':  'Handy-Reparatur',
-    'amazon_packing': 'Lagerlogistik',
-    'dhl':            'Paketdienst / Auslieferung',
-  };
-
-  static const Map<String, String> _workExpDe = {
-    'more2': 'Mehr als 2 Jahre Erfahrung',
-    'less2': 'Weniger als 2 Jahre Erfahrung',
-    'small': 'Nur einfache Tätigkeiten',
-    'never': 'Keine Berufserfahrung',
-  };
-
-  static const Map<String, String> _workTypeDe = {
-    'construction': 'Baugewerbe',
-    'cleaning':     'Gebäudereinigung',
-    'kitchen':      'Küche / Gastronomie',
-    'driving':      'Fahrertätigkeit',
-  };
-
-  static const Map<String, String> _toolsDe = {
-    'power_tools':   'Elektrowerkzeuge',
-    'kitchen_equip': 'Küchengeräte',
-    'tractor':       'Traktor / Schwere Fahrzeuge',
-    'no_tools':      'Keine Werkzeugerfahrung',
-  };
-
-  static const Map<String, String> _licenseDe = {
-    'german_license':  'Deutsches Führerschein (vorhanden)',
-    'foreign_license': 'Ausländisches Führerschein',
-    'want_license':    'Kein Führerschein (möchte erwerben)',
-    'no_license':      'Kein Führerschein',
-  };
-
-  static const Map<String, String> _langDe = {
-    'pashto':  'Paschtu',
-    'dari':    'Dari / Farsi',
-    'urdu':    'Urdu',
-    'arabic':  'Arabisch',
-    'english': 'Englisch',
-    'german':  'Deutsch',
-    'other':   'Andere',
-  };
-
-  static const Map<String, String> _availDe = {
-    'fulltime': 'Vollzeit (40 Std./Woche)',
-    'parttime': 'Teilzeit (20 Std./Woche)',
-    'flexible': 'Flexibel',
-    'weekends': 'Nur Wochenende',
-  };
-
-  static const Map<String, String> _startDe = {
-    'immediately': 'Sofort',
-    'two_weeks':   'Innerhalb von 2 Wochen',
-    'one_month':   'Innerhalb eines Monats',
-    'unsure':      'Noch nicht festgelegt',
-  };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  String _r(String? key, Map<String, String> map) {
-    if (key == null || key.isEmpty) return '—';
-    return map[key] ?? key;
-  }
-
-  String get _skillsText {
-    final s = widget.profile.skill;
-    if (s == null || s.isEmpty) return '—';
-    return s.split(',').map((k) => _r(k.trim(), _skillDe)).join(', ');
-  }
-
-  String get _langsText {
-    // Educated users (Task 4): each language shown with its CEFR level,
-    // e.g. "Deutsch – B1". Falls back to the old comma-joined key list for
-    // uneducated users / older saved profiles that never populated
-    // languageProficiency.
-    final prof = widget.profile.languageProficiency;
-    if (prof.isNotEmpty) {
-      return prof.entries.map((e) => '${e.key} – ${e.value}').join('\n');
-    }
-    final l = widget.profile.languages;
-    if (l.isEmpty) return '—';
-    return l.map((k) => _r(k.trim(), _langDe)).join(', ');
-  }
-
-  List<_CvRow> get _personalRows {
-    final p = widget.profile;
-    return [
-      _CvRow('Geburtsdatum', p.dobFormatted),
-      if (p.country != null && p.country!.isNotEmpty)
-        _CvRow('Geburtsort', _countryFullName(p.country!)),
-      if (p.country != null && p.country!.isNotEmpty)
-        _CvRow('Nationalität', _countryFullName(p.country!)),
-    ];
-  }
 
   List<String> get _effectiveEmployers {
     final fromProfile = widget.profile.previousEmployers;
@@ -295,66 +169,6 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     return fromProfile.isNotEmpty ? fromProfile : _loadedJobDurations;
   }
 
-  // FIX 3 — "None/No" style selections are recorded for the app's own
-  // logic (e.g. skipping the work-type question) but must never appear as
-  // a negative line item on the generated CV. Covers every known
-  // negative/absence sentinel used across the questionnaire's _Opt id
-  // values, not just tools/license.
-  static const Set<String> _negativeSentinels = {
-    'no_tools', 'no_license', 'never', 'no_ref',
-  };
-
-  bool _isNegative(String? value) =>
-      value != null && _negativeSentinels.contains(value);
-
-  // Task 3: each previous job as its own line item — "[Job Title] –
-  // [Company]" then the duration on its own line if captured — in the
-  // order they were entered, which the questionnaire instructs the user to
-  // fill most-recent-first (no explicit per-entry dates are captured, so
-  // entry order is the recency proxy).
-  List<_CvRow> get _experienceRows {
-    final p = widget.profile;
-    final rows = <_CvRow>[
-      if (p.workType != null)
-        _CvRow('Tätigkeitsbereich', _r(p.workType, _workTypeDe)),
-      if (p.workExperience != null && !_isNegative(p.workExperience))
-        _CvRow('Berufserfahrung', _r(p.workExperience, _workExpDe)),
-    ];
-    final employers  = _effectiveEmployers;
-    final titles      = _effectiveJobTitles;
-    final durations   = _effectiveJobDurations;
-    for (var i = 0; i < employers.length; i++) {
-      final title    = i < titles.length ? titles[i] : '';
-      final duration = i < durations.length ? durations[i] : '';
-      final headline = title.isNotEmpty ? '$title – ${employers[i]}' : employers[i];
-      final value    = duration.isNotEmpty ? '$headline\n$duration' : headline;
-      rows.add(_CvRow('Station ${i + 1}', value));
-    }
-    return rows;
-  }
-
-  List<_CvRow> get _skillRows {
-    final p = widget.profile;
-    return [
-      if (p.skill != null && p.skill!.isNotEmpty)
-        _CvRow('Tätigkeiten', _skillsText),
-      _CvRow('Sprachen', _langsText),
-      if (p.tools != null && !_isNegative(p.tools))
-        _CvRow('Werkzeugkenntnisse', _r(p.tools, _toolsDe)),
-      if (p.drivingLicense != null && !_isNegative(p.drivingLicense))
-        _CvRow('Führerschein', _r(p.drivingLicense, _licenseDe)),
-    ];
-  }
-
-  List<_CvRow> get _availabilityRows {
-    final p = widget.profile;
-    return [
-      if (p.startDate != null)
-        _CvRow('Arbeitsbeginn', _r(p.startDate, _startDe)),
-      if (p.availability != null)
-        _CvRow('Arbeitszeit', _r(p.availability, _availDe)),
-    ];
-  }
 
   // ── PDF Builder ───────────────────────────────────────────────────────────
   // Template-aware: waits for the template picker/preference to resolve
@@ -413,11 +227,6 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     } finally {
       if (mounted) setState(() => _saving = false);
     }
-  }
-
-  Future<void> _share() async {
-    final bytes = await _getPdf();
-    await Printing.sharePdf(bytes: bytes, filename: _pdfFilename);
   }
 
   void _goHome() {
@@ -677,206 +486,6 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     );
   }
 
-  // ── CV card (document) — superseded by _buildCvPreview() above; kept
-  // unused/unreferenced rather than deleted, see report for this task.
-  // ────────────────────────────────────────────────────────────────────────
-
-  Widget _buildCvCard() {
-    final p = widget.profile;
-    final profession = p.workType != null
-        ? _r(p.workType, _workTypeDe)
-        : _skillsText != '—' ? _skillsText : null;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-            color: Colors.white.withValues(alpha: 0.9), width: 1.2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 24,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
-          ),
-          BoxShadow(
-            color: Colors.white.withValues(alpha: 0.9),
-            blurRadius: 0,
-            spreadRadius: 0,
-            offset: const Offset(-2, -2),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Two-column header ─────────────────────────────────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left: photo + name + profession
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (p.photoPath != null) ...[
-                      ClipOval(
-                        child: Image.file(
-                          File(p.photoPath!),
-                          width: 70,
-                          height: 70,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                    Text(
-                      p.fullName,
-                      style: const TextStyle(
-                        color: _navy,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    if (profession != null) ...[
-                      const SizedBox(height: 3),
-                      Text(
-                        profession,
-                        style: const TextStyle(
-                          color: _muted,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Right: contact info
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (p.street.isNotEmpty || p.city.isNotEmpty)
-                    _contactLine(p.fullAddress),
-                  if (p.phone.isNotEmpty)
-                    _contactLine(p.phone),
-                  if (p.email.isNotEmpty)
-                    _contactLine(p.email),
-                ],
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-          Container(height: 2, color: _green),
-          const SizedBox(height: 16),
-
-          // ── CV sections ───────────────────────────────────────────────────
-          _buildSection('PERSÖNLICHE INFORMATIONEN', _personalRows),
-          if (_experienceRows.isNotEmpty)
-            _buildSection('BERUFSERFAHRUNG', _experienceRows),
-          _buildSection('FÄHIGKEITEN', _skillRows),
-          if (_availabilityRows.isNotEmpty)
-            _buildSection('VERFÜGBARKEIT', _availabilityRows),
-          if (_refName.isNotEmpty)
-            _buildSection('REFERENZ', [
-              _CvRow('Name', _refName),
-              if (_refPhone.isNotEmpty) _CvRow('Telefon', _refPhone),
-            ]),
-
-          const SizedBox(height: 8),
-          const Center(
-            child: Text(
-              'Erstellt mit KarYab – Die Job-App für Geflüchtete',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFF999999),
-                fontSize: 9,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _contactLine(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 3),
-      child: Text(
-        text,
-        textAlign: TextAlign.right,
-        style: const TextStyle(color: _muted, fontSize: 12),
-      ),
-    );
-  }
-
-  Widget _buildSection(String title, List<_CvRow> rows) {
-    if (rows.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(left: 8),
-          decoration: const BoxDecoration(
-            border: Border(
-              left: BorderSide(color: _green, width: 3),
-            ),
-          ),
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: _navy,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        ...rows.map(
-          (r) => Padding(
-            padding: const EdgeInsets.only(bottom: 5),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 115,
-                  child: Text(
-                    '${r.label}:',
-                    style: const TextStyle(
-                      color: Color(0xFF444444),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    r.value,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 14),
-      ],
-    );
-  }
 
   // ── Bottom buttons (fixed) ────────────────────────────────────────────────
 

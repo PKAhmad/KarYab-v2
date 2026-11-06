@@ -237,27 +237,11 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   // English-only per spec - see _newCvLabel above.
   String get _card1Title => 'Create CV/Cover letter';
 
-  String get _card1Subtitle {
-    switch (_lang) {
-      case 'ps': return 'خپل جرمني CV جوړ کړئ او د کارونو لپاره غوښتنه وکړئ';
-      case 'fa': return 'CV آلمانی بسازید و درخواست شغل دهید';
-      default:   return 'Build your German CV and apply for jobs';
-    }
-  }
-
   String get _card2Title {
     switch (_lang) {
       case 'ps': return 'غواړي چی نژدي کارونه پیدا کړي؟';
       case 'fa': return 'کارهای نزدیک من را پیدا کنید';
       default:   return 'Find Jobs Near Me';
-    }
-  }
-
-  String get _card2Subtitle {
-    switch (_lang) {
-      case 'ps': return 'د خپل سیمې کارونه وګورئ';
-      case 'fa': return 'مشاغل موجود در منطقه خود را مرور کنید';
-      default:   return 'Browse available jobs in your area';
     }
   }
 
@@ -310,14 +294,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
       case 'ps': return 'زه خپله CV لرم.';
       case 'fa': return 'من قبلاً CV دارم';
       default:   return 'I Already Have a CV';
-    }
-  }
-
-  String get _card3Subtitle {
-    switch (_lang) {
-      case 'ps': return 'PDF اپلوډ کړئ او کارونه پیدا کړئ';
-      case 'fa': return 'PDF آپلود کنید و کار پیدا کنید';
-      default:   return 'Upload PDF and find jobs';
     }
   }
 
