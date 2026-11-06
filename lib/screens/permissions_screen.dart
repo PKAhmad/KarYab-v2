@@ -627,8 +627,6 @@ class _Orb extends StatelessWidget {
 
 class _GlassSurface extends StatelessWidget {
   final Widget child;
-  final double? width;
-  final double? height;
   final double borderRadius;
   final EdgeInsetsGeometry padding;
   final double shadowOpacity;
@@ -638,7 +636,7 @@ class _GlassSurface extends StatelessWidget {
     required this.borderRadius,
     required this.padding,
     this.shadowOpacity = 0.09,
-  }) : width = null : height;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -647,8 +645,7 @@ class _GlassSurface extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
         child: Container(
-          width: width ?? double.infinity,
-          height: height,
+          width: double.infinity,
           padding: padding,
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.62),

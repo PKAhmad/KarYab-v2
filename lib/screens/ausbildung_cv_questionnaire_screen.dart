@@ -2218,7 +2218,6 @@ class _SectionCard extends StatelessWidget {
 class _TxtField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
-  final TextInputType type;
   final TextInputAction action;
   final ValueChanged<String>? onSubmitted;
 
@@ -2227,7 +2226,7 @@ class _TxtField extends StatelessWidget {
     required this.hint,
     this.action = TextInputAction.next,
     this.onSubmitted,
-  }) : type = TextInputType.text;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -2242,7 +2241,7 @@ class _TxtField extends StatelessWidget {
       ),
       child: TextField(
         controller: controller,
-        keyboardType: type,
+        keyboardType: TextInputType.text,
         textInputAction: action,
         onSubmitted: onSubmitted,
         textDirection: TextDirection.ltr,
