@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/jobs_strings.dart';
+import '../services/official_letter_strings.dart';
 import '../ui/karyab_ui.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -149,7 +150,6 @@ String homeTipFor(String lang, DateTime day) {
     default:
       return tip.en;
   }
-
 }
 
 class _RingPainter extends CustomPainter {
@@ -197,6 +197,10 @@ class HomeDashboard extends StatelessWidget {
   final VoidCallback onMinijobs;
   final DateTime? day;
 
+  // Phase 9: prominent entry card into the official-letters module.
+  // Optional so older call sites keep working; rendered when set.
+  final VoidCallback? onOfficialLetters;
+
   // Phase 7: real saved-jobs / tracker summary counts. All optional;
   // the summary row renders only for a count whose tap target exists.
   final int? savedJobsCount;
@@ -214,6 +218,7 @@ class HomeDashboard extends StatelessWidget {
     this.continuePercent,
     this.onContinue,
     this.day,
+    this.onOfficialLetters,
     this.savedJobsCount,
     this.onSavedJobs,
     this.applicationsCount,
@@ -258,8 +263,7 @@ class HomeDashboard extends StatelessWidget {
                         children: [
                           CustomPaint(
                             size: const Size(64, 64),
-                            painter:
-                                _RingPainter(profilePercent / 100),
+                            painter: _RingPainter(profilePercent / 100),
                           ),
                           Text(
                             '$profilePercent%',
@@ -279,10 +283,16 @@ class HomeDashboard extends StatelessWidget {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            homeDashText(language, 'percentComplete',
-                                percent: profilePercent),
+                            homeDashText(
+                              language,
+                              'percentComplete',
+                              percent: profilePercent,
+                            ),
                             style: _style(
-                                12, FontWeight.w600, KLiquid.textOnDarkSoft),
+                              12,
+                              FontWeight.w600,
+                              KLiquid.textOnDarkSoft,
+                            ),
                           ),
                         ],
                       ),
@@ -302,22 +312,31 @@ class HomeDashboard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.play_circle_fill_rounded,
-                                color: KColors.green, size: 20),
+                            const Icon(
+                              Icons.play_circle_fill_rounded,
+                              color: KColors.green,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 homeDashText(language, 'continueHeading'),
-                                style:
-                                    _style(13, FontWeight.w800, Colors.white),
+                                style: _style(
+                                  13,
+                                  FontWeight.w800,
+                                  Colors.white,
+                                ),
                               ),
                             ),
                             Text(
                               continueName!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: _style(12, FontWeight.w600,
-                                  KLiquid.textOnDarkSoft),
+                              style: _style(
+                                12,
+                                FontWeight.w600,
+                                KLiquid.textOnDarkSoft,
+                              ),
                             ),
                           ],
                         ),
@@ -347,8 +366,11 @@ class HomeDashboard extends StatelessWidget {
                           color: KColors.green.withValues(alpha: 0.18),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.bolt_rounded,
-                            color: KColors.green, size: 20),
+                        child: const Icon(
+                          Icons.bolt_rounded,
+                          color: KColors.green,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -357,14 +379,16 @@ class HomeDashboard extends StatelessWidget {
                           children: [
                             Text(
                               homeDashText(language, 'minijobs'),
-                              style:
-                                  _style(13, FontWeight.w800, Colors.white),
+                              style: _style(13, FontWeight.w800, Colors.white),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               homeDashText(language, 'minijobsSub'),
-                              style: _style(11, FontWeight.w600,
-                                  KLiquid.textOnDarkSoft),
+                              style: _style(
+                                11,
+                                FontWeight.w600,
+                                KLiquid.textOnDarkSoft,
+                              ),
                             ),
                           ],
                         ),
@@ -379,6 +403,66 @@ class HomeDashboard extends StatelessWidget {
                     ],
                   ),
                 ),
+                // Phase 9: official letters entry card (prominent:
+                // raised glass level, green icon disc, bold title)
+                if (onOfficialLetters != null) ...[
+                  const SizedBox(height: 14),
+                  KGlassPanel(
+                    level: KGlassLevel.l2,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                    onTap: onOfficialLetters,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: KColors.green.withValues(alpha: 0.22),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.mark_email_read_rounded,
+                            color: KColors.green,
+                            size: 23,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                OfficialLetterStrings.title(language),
+                                style: _style(
+                                  15,
+                                  FontWeight.w800,
+                                  Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                OfficialLetterStrings.homeCardSub(language),
+                                style: _style(
+                                  11.5,
+                                  FontWeight.w600,
+                                  KLiquid.textOnDarkSoft,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          _isRtl
+                              ? Icons.arrow_back_ios_new_rounded
+                              : Icons.arrow_forward_ios_rounded,
+                          color: Colors.white54,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 // Phase 7 summary row (real saved jobs + tracker data)
                 if ((savedJobsCount != null && onSavedJobs != null) ||
                     (applicationsCount != null && onTracker != null)) ...[
@@ -409,7 +493,7 @@ class HomeDashboard extends StatelessWidget {
                             sub: appliedCount == null
                                 ? null
                                 : '$appliedCount '
-                                    '${JobsStrings.statusName(language, 'applied')}',
+                                      '${JobsStrings.statusName(language, 'applied')}',
                             onTap: onTracker!,
                           ),
                         ),
@@ -421,8 +505,11 @@ class HomeDashboard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.lightbulb_rounded,
-                        color: KColors.green, size: 18),
+                    const Icon(
+                      Icons.lightbulb_rounded,
+                      color: KColors.green,
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -430,16 +517,14 @@ class HomeDashboard extends StatelessWidget {
                         children: [
                           Text(
                             homeDashText(language, 'tipTitle'),
-                            style: _style(
-                                11, FontWeight.w800, KColors.green),
+                            style: _style(11, FontWeight.w800, KColors.green),
                           ),
                           const SizedBox(height: 3),
                           Text(
                             tip,
                             style: TextStyle(
                               fontFamily: font,
-                              fontFamilyFallback:
-                                  karyabFontFallback(language),
+                              fontFamilyFallback: karyabFontFallback(language),
                               fontSize: 12.5,
                               height: 1.45,
                               fontWeight: FontWeight.w600,
@@ -478,10 +563,7 @@ class HomeDashboard extends StatelessWidget {
             children: [
               Icon(icon, color: KColors.green, size: 19),
               const SizedBox(width: 8),
-              Text(
-                '$count',
-                style: _style(17, FontWeight.w900, Colors.white),
-              ),
+              Text('$count', style: _style(17, FontWeight.w900, Colors.white)),
             ],
           ),
           const SizedBox(height: 5),
@@ -505,4 +587,3 @@ class HomeDashboard extends StatelessWidget {
     );
   }
 }
-

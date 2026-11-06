@@ -20,14 +20,14 @@ import '../widgets/cv_upload_info_sheet.dart';
 import '../widgets/home_dashboard.dart';
 import '../services/account_strings.dart';
 import '../services/jobs_strings.dart';
-import '../services/work_permit_strings.dart';
+import '../services/official_letter_strings.dart';
 import '../widgets/feedback_sheet.dart';
 import 'account_screen.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
 import 'my_cvs_screen.dart';
 import 'my_letters_screen.dart';
-import 'work_permit_screen.dart';
+import 'official_letters_screen.dart';
 
 class IntroductionScreen extends StatefulWidget {
   final String language;
@@ -44,36 +44,36 @@ class IntroductionScreen extends StatefulWidget {
 }
 
 class _IntroductionScreenState extends State<IntroductionScreen> {
-  static const Color navy  = KColors.navy;
+  static const Color navy = KColors.navy;
   static const Color green = KColors.green;
 
   String? _selectedCard;
-  String  _lang      = 'en';
-  bool    _cvCreated = false;
-  String  _cvType    = '';
-  String  _userName  = '';
-  String  _userCity  = '';
-  String  _userPhotoPath = '';
+  String _lang = 'en';
+  bool _cvCreated = false;
+  String _cvType = '';
+  String _userName = '';
+  String _userCity = '';
+  String _userPhotoPath = '';
   // No dedicated 'ausbildung_cv_created' flag exists (unlike the Job CV's
   // 'cv_created'/'cv_type') - the Ausbildung questionnaire/Schulabschluss
   // screens only ever write into 'saved_profile', so this is derived in
   // _loadSavedData() from the presence of that flow's own keys.
-  bool    _ausbildungCvCreated = false;
-  bool    _voiceMode = false;
-  bool    _isLoading = true;
+  bool _ausbildungCvCreated = false;
+  bool _voiceMode = false;
+  bool _isLoading = true;
   DateTime? _lastBackPressAt;
 
   // Phase 5 home dashboard state (real data only, loaded in
   // _loadSavedData): profile completion percent and the newest
   // unfinished CV document, if any.
-  bool    _dashHasData = false;
-  int     _dashProfilePercent = 0;
+  bool _dashHasData = false;
+  int _dashProfilePercent = 0;
   String? _dashContinueName;
   // Phase 7 dashboard summary (real JobsRepository counts).
-  int?    _dashSavedJobsCount;
-  int?    _dashApplicationsCount;
-  int?    _dashAppliedCount;
-  int?    _dashContinuePercent;
+  int? _dashSavedJobsCount;
+  int? _dashApplicationsCount;
+  int? _dashAppliedCount;
+  int? _dashContinuePercent;
 
   void _onSoundChange() {
     if (!mounted) return;
@@ -126,13 +126,16 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
       return;
     }
     _lastBackPressAt = now;
-    kSnack(context, 'Press back again to exit',
-        duration: const Duration(seconds: 2));
+    kSnack(
+      context,
+      'Press back again to exit',
+      duration: const Duration(seconds: 2),
+    );
   }
 
   Future<void> _loadSavedData() async {
     try {
-      final prefs   = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
       final alreadyCleaned = prefs.getBool('belgium_cleanup_done') ?? false;
       if (!alreadyCleaned) {
         await prefs.remove('selected_country');
@@ -141,20 +144,21 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         await prefs.setBool('belgium_cleanup_done', true);
       }
       final created = await KaryabData.profile.getBool('cv_created');
-      final cvType  = await KaryabData.profile.getString('cv_type') ?? '';
-      final savedFullName =
-          await KaryabData.profile.getString('questionnaire_full_name');
-      final name    = savedFullName?.isNotEmpty == true
-                          ? savedFullName!
-                          : await KaryabData.profile.getString('user_name') ?? '';
-      String city  = '';
+      final cvType = await KaryabData.profile.getString('cv_type') ?? '';
+      final savedFullName = await KaryabData.profile.getString(
+        'questionnaire_full_name',
+      );
+      final name = savedFullName?.isNotEmpty == true
+          ? savedFullName!
+          : await KaryabData.profile.getString('user_name') ?? '';
+      String city = '';
       String photo = '';
       bool ausbildungExists = false;
       final profileMap = await KaryabData.profile.loadProfileMap();
       if (profileMap != null && profileMap.isNotEmpty) {
         try {
           final map = profileMap;
-          city  = map['city']      as String? ?? '';
+          city = map['city'] as String? ?? '';
           photo = map['photoPath'] as String? ?? '';
           // Bug fix: this used to require ausbildungEduInstitutions/
           // ausbildungEscoSkills/schulabschluss to have actual content, but
@@ -178,7 +182,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           // stays as a value-based fallback alongside it.
           bool nonEmpty(String key) =>
               ((map[key] as String?) ?? '').trim().isNotEmpty;
-          ausbildungExists = map.containsKey('ausbildungEduInstitutions') ||
+          ausbildungExists =
+              map.containsKey('ausbildungEduInstitutions') ||
               nonEmpty('schulabschluss');
         } catch (_) {}
       }
@@ -196,14 +201,15 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         final docs = KaryabData.documents;
         if (docs != null) {
           final all = await docs.listCvDocuments();
-          final drafts = all
-              .where((d) => !cvDocumentFinished(d.payload))
-              .toList()
-            ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+          final drafts =
+              all.where((d) => !cvDocumentFinished(d.payload)).toList()
+                ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
           if (drafts.isNotEmpty) {
             dashContinueName = drafts.first.name;
-            dashContinuePercent =
-                cvCompletionPercent(drafts.first.payload, drafts.first.kind);
+            dashContinuePercent = cvCompletionPercent(
+              drafts.first.payload,
+              drafts.first.kind,
+            );
           }
         }
       } catch (_) {
@@ -218,8 +224,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           dashSavedJobs = (await jobsRepo.listSavedJobs()).length;
           final apps = await jobsRepo.listApplications();
           dashApplications = apps.length;
-          dashApplied =
-              apps.where((a) => a.status == 'applied').length;
+          dashApplied = apps.where((a) => a.status == 'applied').length;
         }
       } catch (_) {
         // Summary counts are optional; never block home loading.
@@ -231,13 +236,13 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
       print('DEBUG user_name: $name');
       if (mounted) {
         setState(() {
-          _cvCreated     = created;
-          _cvType        = cvType;
-          _userName      = name;
-          _userCity      = city;
+          _cvCreated = created;
+          _cvType = cvType;
+          _userName = name;
+          _userCity = city;
           _userPhotoPath = hasPhoto ? photo : '';
           _ausbildungCvCreated = ausbildungExists;
-          _voiceMode     = voiceMode;
+          _voiceMode = voiceMode;
           _dashHasData = profileMap != null && profileMap.isNotEmpty;
           _dashProfilePercent = dashPercent;
           _dashContinueName = dashContinueName;
@@ -246,7 +251,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           _dashApplicationsCount = dashApplications;
           _dashAppliedCount = dashApplied;
           if (savedLang != null) _lang = savedLang;
-          _isLoading     = false;
+          _isLoading = false;
         });
       }
     } catch (_) {
@@ -255,7 +260,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   }
 
   Future<void> _goToQuestionnaire() async {
-    final prefs     = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final voiceMode = prefs.getBool('voice_mode') ?? false;
     if (!mounted) return;
     // Routes through ChooseCvTypeScreen (Job CV / Ausbildung CV) instead of
@@ -266,14 +271,11 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     Navigator.pushNamed(
       context,
       '/choose-cv-type',
-      arguments: {
-        'language': _lang,
-        'voiceMode': voiceMode,
-      },
+      arguments: {'language': _lang, 'voiceMode': voiceMode},
     );
   }
 
-  bool get _isRtl       => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
   bool get _showSpeaker => _lang == 'ps' || _lang == 'fa';
 
   void _selectCard(String card, VoidCallback navigate) {
@@ -292,17 +294,23 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   String get _pageTitle {
     switch (_lang) {
-      case 'ps': return 'تاسو  کولای دلته لاندی کارونه ترسره کړئ';
-      case 'fa': return 'شما می‌توانید کارهای زیر را انجام دهید.';
-      default:   return 'Click on one of the options below to get started';
+      case 'ps':
+        return 'تاسو  کولای دلته لاندی کارونه ترسره کړئ';
+      case 'fa':
+        return 'شما می‌توانید کارهای زیر را انجام دهید.';
+      default:
+        return 'Click on one of the options below to get started';
     }
   }
 
   String get _pageSubtitle {
     switch (_lang) {
-      case 'ps': return 'د پیل لپاره یوه بټن کلیک کړئ';
-      case 'fa': return 'یک گزینه را برای شروع انتخاب کنید';
-      default:   return 'Choose an option to get started';
+      case 'ps':
+        return 'د پیل لپاره یوه بټن کلیک کړئ';
+      case 'fa':
+        return 'یک گزینه را برای شروع انتخاب کنید';
+      default:
+        return 'Choose an option to get started';
     }
   }
 
@@ -311,33 +319,45 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   String get _card2Title {
     switch (_lang) {
-      case 'ps': return 'غواړي چی نژدي کارونه پیدا کړي؟';
-      case 'fa': return 'کارهای نزدیک من را پیدا کنید';
-      default:   return 'Find Jobs Near Me';
+      case 'ps':
+        return 'غواړي چی نژدي کارونه پیدا کړي؟';
+      case 'fa':
+        return 'کارهای نزدیک من را پیدا کنید';
+      default:
+        return 'Find Jobs Near Me';
     }
   }
 
   String get _welcomeBack {
     switch (_lang) {
-      case 'ps': return 'ښه راغلاست،';
-      case 'fa': return 'خوش آمدید،';
-      default:   return 'Welcome back,';
+      case 'ps':
+        return 'ښه راغلاست،';
+      case 'fa':
+        return 'خوش آمدید،';
+      default:
+        return 'Welcome back,';
     }
   }
 
   String get _findJobsLabel {
     switch (_lang) {
-      case 'ps': return 'نژدي کارونه پیدا کړئ';
-      case 'fa': return 'کارهای نزدیک را پیدا کنید';
-      default:   return 'Find Jobs Near Me';
+      case 'ps':
+        return 'نژدي کارونه پیدا کړئ';
+      case 'fa':
+        return 'کارهای نزدیک را پیدا کنید';
+      default:
+        return 'Find Jobs Near Me';
     }
   }
 
   String get _viewCvLabel {
     switch (_lang) {
-      case 'ps': return 'زما جوړه شوی CV وګورئ';
-      case 'fa': return 'CV من را ببینید';
-      default:   return 'View / Download My CV';
+      case 'ps':
+        return 'زما جوړه شوی CV وګورئ';
+      case 'fa':
+        return 'CV من را ببینید';
+      default:
+        return 'View / Download My CV';
     }
   }
 
@@ -347,33 +367,45 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   String get _cvBadgeLabel {
     switch (_lang) {
-      case 'ps': return 'ستاسو CV جوړه شوی ده.✓';
-      case 'fa': return 'CV شما جور شد. ✓';
-      default:   return 'CV Created ✓';
+      case 'ps':
+        return 'ستاسو CV جوړه شوی ده.✓';
+      case 'fa':
+        return 'CV شما جور شد. ✓';
+      default:
+        return 'CV Created ✓';
     }
   }
 
   String get _uploadDifferentCvLabel {
     switch (_lang) {
-      case 'ps': return 'خپله CV اپلوډ کړئ';
-      case 'fa': return 'CV خود را اپلوډ کنید';
-      default:   return 'Upload Your own CV';
+      case 'ps':
+        return 'خپله CV اپلوډ کړئ';
+      case 'fa':
+        return 'CV خود را اپلوډ کنید';
+      default:
+        return 'Upload Your own CV';
     }
   }
 
   String get _card3Title {
     switch (_lang) {
-      case 'ps': return 'زه خپله CV لرم.';
-      case 'fa': return 'من قبلاً CV دارم';
-      default:   return 'I Already Have a CV';
+      case 'ps':
+        return 'زه خپله CV لرم.';
+      case 'fa':
+        return 'من قبلاً CV دارم';
+      default:
+        return 'I Already Have a CV';
     }
   }
 
   String get _learnGermanLabel {
     switch (_lang) {
-      case 'ps': return 'آلمانی زده کړئ';
-      case 'fa': return 'آلمانی یاد بگیرید';
-      default:   return 'Learn German';
+      case 'ps':
+        return 'آلمانی زده کړئ';
+      case 'fa':
+        return 'آلمانی یاد بگیرید';
+      default:
+        return 'Learn German';
     }
   }
 
@@ -401,10 +433,16 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
             language: _lang,
             voiceMode: widget.voiceMode,
             onComplete: (name, phone, email) async {
-              await KaryabData.profile.setString('uploaded_cv_path', pickedPath);
+              await KaryabData.profile.setString(
+                'uploaded_cv_path',
+                pickedPath,
+              );
               await KaryabData.profile.setBool('cv_created', true);
               await KaryabData.profile.setString('cv_type', 'uploaded');
-              await KaryabData.profile.setString('questionnaire_full_name', name);
+              await KaryabData.profile.setString(
+                'questionnaire_full_name',
+                name,
+              );
               await KaryabData.profile.setString('user_name', name);
               await KaryabData.profile.setString('user_phone', phone);
               await KaryabData.profile.setString('user_email', email);
@@ -412,8 +450,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
               Navigator.pop(context);
               setState(() {
                 _cvCreated = true;
-                _cvType    = 'uploaded';
-                _userName  = name;
+                _cvType = 'uploaded';
+                _userName = name;
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -421,8 +459,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                     _lang == 'ps'
                         ? 'CV اپلوډ شوه'
                         : _lang == 'fa'
-                            ? 'CV آپلود شد'
-                            : 'CV uploaded successfully',
+                        ? 'CV آپلود شد'
+                        : 'CV uploaded successfully',
                   ),
                   backgroundColor: KColors.green,
                 ),
@@ -446,30 +484,36 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         final exists = await File(path).exists();
         if (!exists) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              _lang == 'ps'
-                  ? 'د CV فایل ونه موندل شو'
-                  : _lang == 'fa'
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  _lang == 'ps'
+                      ? 'د CV فایل ونه موندل شو'
+                      : _lang == 'fa'
                       ? 'فایل CV پیدا نشد'
                       : 'CV file not found',
-            ),
-          ));
+                ),
+              ),
+            );
           }
           return;
         }
-        if (!await launchUrl(Uri.file(path),
-            mode: LaunchMode.externalApplication)) {
+        if (!await launchUrl(
+          Uri.file(path),
+          mode: LaunchMode.externalApplication,
+        )) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              _lang == 'ps'
-                  ? 'CV پرانستل نشوه'
-                  : _lang == 'fa'
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  _lang == 'ps'
+                      ? 'CV پرانستل نشوه'
+                      : _lang == 'fa'
                       ? 'CV باز نشد'
                       : 'Could not open CV file',
-            ),
-          ));
+                ),
+              ),
+            );
           }
         }
         return;
@@ -480,27 +524,28 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         final v = map[k] as String? ?? '';
         return v.isEmpty ? null : v;
       }
+
       final profile = UserProfile(
-        fullName:       map['fullName']      as String? ?? '',
-        phone:          map['phone']         as String? ?? '',
-        email:          map['email']         as String? ?? '',
-        street:         map['street']        as String? ?? '',
-        city:           map['city']          as String? ?? '',
-        languages:      (map['languages'] as String? ?? '').isEmpty
-                            ? []
-                            : (map['languages'] as String).split(','),
-        dobDay:         int.tryParse(map['dobDay']   as String? ?? ''),
-        dobMonth:       int.tryParse(map['dobMonth'] as String? ?? ''),
-        dobYear:        int.tryParse(map['dobYear']  as String? ?? ''),
-        country:        opt('country'),
-        skill:          opt('skill'),
+        fullName: map['fullName'] as String? ?? '',
+        phone: map['phone'] as String? ?? '',
+        email: map['email'] as String? ?? '',
+        street: map['street'] as String? ?? '',
+        city: map['city'] as String? ?? '',
+        languages: (map['languages'] as String? ?? '').isEmpty
+            ? []
+            : (map['languages'] as String).split(','),
+        dobDay: int.tryParse(map['dobDay'] as String? ?? ''),
+        dobMonth: int.tryParse(map['dobMonth'] as String? ?? ''),
+        dobYear: int.tryParse(map['dobYear'] as String? ?? ''),
+        country: opt('country'),
+        skill: opt('skill'),
         workExperience: opt('workExperience'),
-        workType:       opt('workType'),
-        tools:          opt('tools'),
+        workType: opt('workType'),
+        tools: opt('tools'),
         drivingLicense: opt('drivingLicense'),
-        availability:   opt('availability'),
-        startDate:      opt('startDate'),
-        photoPath:      opt('photoPath'),
+        availability: opt('availability'),
+        startDate: opt('startDate'),
+        photoPath: opt('photoPath'),
       );
       if (!mounted) return;
 
@@ -542,8 +587,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            MyCvsScreen(language: _lang, voiceMode: _voiceMode),
+        builder: (_) => MyCvsScreen(language: _lang, voiceMode: _voiceMode),
       ),
     );
   }
@@ -564,55 +608,76 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     );
   }
 
+  void _openOfficialLetters() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            OfficialLettersScreen(language: _lang, voiceMode: _voiceMode),
+      ),
+    );
+  }
+
   void _openMinijobs() {
     Navigator.pushNamed(
       context,
       '/jobfinder',
-      arguments: {
-        'language': _lang,
-        'voiceMode': _voiceMode,
-        'jobType': 'mj',
-      },
+      arguments: {'language': _lang, 'voiceMode': _voiceMode, 'jobType': 'mj'},
     );
   }
 
   String get _dockHomeLabel {
     switch (_lang) {
-      case 'ps': return 'کور';
-      case 'fa': return 'خانه';
-      default:   return 'Home';
+      case 'ps':
+        return 'کور';
+      case 'fa':
+        return 'خانه';
+      default:
+        return 'Home';
     }
   }
 
   String get _dockJobsLabel {
     switch (_lang) {
-      case 'ps': return 'کارونه';
-      case 'fa': return 'کارها';
-      default:   return 'Jobs';
+      case 'ps':
+        return 'کارونه';
+      case 'fa':
+        return 'کارها';
+      default:
+        return 'Jobs';
     }
   }
 
   String get _dockDocsLabel {
     switch (_lang) {
-      case 'ps': return 'زما سیوي';
-      case 'fa': return 'CVهای من';
-      default:   return 'My CVs';
+      case 'ps':
+        return 'زما سیوي';
+      case 'fa':
+        return 'CVهای من';
+      default:
+        return 'My CVs';
     }
   }
 
   String get _dockMoreLabel {
     switch (_lang) {
-      case 'ps': return 'نور';
-      case 'fa': return 'بیشتر';
-      default:   return 'More';
+      case 'ps':
+        return 'نور';
+      case 'fa':
+        return 'بیشتر';
+      default:
+        return 'More';
     }
   }
 
   String get _myLettersLabel {
     switch (_lang) {
-      case 'ps': return 'زما پوښلیکونه';
-      case 'fa': return 'نامه‌های من';
-      default:   return 'My Cover Letters';
+      case 'ps':
+        return 'زما پوښلیکونه';
+      case 'fa':
+        return 'نامه‌های من';
+      default:
+        return 'My Cover Letters';
     }
   }
 
@@ -671,60 +736,71 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
             children: [
               const KSheetHandle(),
               const SizedBox(height: 10),
-              entry(Icons.account_circle_rounded,
-                  AccountStrings.account(_lang), () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AccountScreen(
-                        language: _lang, voiceMode: _voiceMode),
-                  ),
-                );
-              }),
-              entry(Icons.bookmark_rounded, JobsStrings.savedJobs(_lang),
-                  () {
+              entry(
+                Icons.account_circle_rounded,
+                AccountStrings.account(_lang),
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          AccountScreen(language: _lang, voiceMode: _voiceMode),
+                    ),
+                  );
+                },
+              ),
+              entry(Icons.bookmark_rounded, JobsStrings.savedJobs(_lang), () {
                 Navigator.pushNamed(
                   context,
                   '/saved-jobs',
                   arguments: {'language': _lang, 'voiceMode': _voiceMode},
                 );
               }),
-              entry(Icons.fact_check_rounded,
-                  JobsStrings.myApplications(_lang), () {
-                Navigator.pushNamed(
-                  context,
-                  '/tracker',
-                  arguments: {'language': _lang, 'voiceMode': _voiceMode},
-                );
-              }),
-              entry(Icons.feedback_rounded, JobsStrings.sendFeedback(_lang),
-                  () {
-                showFeedbackSheet(context, language: _lang);
-              }),
-              entry(Icons.mark_email_read_outlined,
-                  WorkPermitStrings.title(_lang), () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => WorkPermitScreen(
-                        language: _lang, voiceMode: _voiceMode),
-                  ),
-                );
-              }),
+              entry(
+                Icons.fact_check_rounded,
+                JobsStrings.myApplications(_lang),
+                () {
+                  Navigator.pushNamed(
+                    context,
+                    '/tracker',
+                    arguments: {'language': _lang, 'voiceMode': _voiceMode},
+                  );
+                },
+              ),
+              entry(
+                Icons.feedback_rounded,
+                JobsStrings.sendFeedback(_lang),
+                () {
+                  showFeedbackSheet(context, language: _lang);
+                },
+              ),
+              entry(
+                Icons.mark_email_read_outlined,
+                OfficialLetterStrings.title(_lang),
+                () {
+                  _openOfficialLetters();
+                },
+              ),
               entry(Icons.mail_rounded, _myLettersLabel, () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MyLettersScreen(
-                        language: _lang, voiceMode: _voiceMode),
+                    builder: (_) =>
+                        MyLettersScreen(language: _lang, voiceMode: _voiceMode),
                   ),
                 );
               }),
               entry(Icons.description_rounded, _viewCvLabel, _openSavedCv),
-              entry(Icons.add_circle_outline_rounded, _newCvLabel,
-                  _goToQuestionnaire),
-              entry(Icons.upload_file_rounded, _uploadDifferentCvLabel,
-                  () => _uploadCv()),
+              entry(
+                Icons.add_circle_outline_rounded,
+                _newCvLabel,
+                _goToQuestionnaire,
+              ),
+              entry(
+                Icons.upload_file_rounded,
+                _uploadDifferentCvLabel,
+                () => _uploadCv(),
+              ),
               entry(Icons.translate_rounded, _learnGermanLabel, () {
                 Navigator.pushNamed(
                   context,
@@ -750,9 +826,12 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   String get _noCvFoundText {
     switch (_lang) {
-      case 'ps': return 'ستاسی سییوی پیدا نشوه، لطفاً نوی سییوی جوړ کړی.';
-      case 'fa': return ' سییوی یافت نشد. لطفاًسییوی نو بسازید.';
-      default:   return 'No CV found. Please create one first.';
+      case 'ps':
+        return 'ستاسی سییوی پیدا نشوه، لطفاً نوی سییوی جوړ کړی.';
+      case 'fa':
+        return ' سییوی یافت نشد. لطفاًسییوی نو بسازید.';
+      default:
+        return 'No CV found. Please create one first.';
     }
   }
 
@@ -768,11 +847,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         onPopInvokedWithResult: _onPopInvoked,
         child: const Scaffold(
           backgroundColor: KColors.pageBase,
-          body: Center(
-            child: CircularProgressIndicator(
-              color: KColors.green,
-            ),
-          ),
+          body: Center(child: CircularProgressIndicator(color: KColors.green)),
         ),
       );
     }
@@ -781,235 +856,555 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
       canPop: _lang != 'en',
       onPopInvokedWithResult: _onPopInvoked,
       child: Scaffold(
-      backgroundColor: KColors.pageBase,
-      body: Stack(
-        children: [
-          const KBackgroundGlow(),
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // ── Fixed top row ──────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      RichText(
-                        text: const TextSpan(
+        backgroundColor: KColors.pageBase,
+        body: Stack(
+          children: [
+            const KBackgroundGlow(),
+            SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // ── Fixed top row ──────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Kar',
+                                style: TextStyle(
+                                  color: navy,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.5,
+                                  height: 1,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Yab',
+                                style: TextStyle(
+                                  color: green,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.5,
+                                  height: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            TextSpan(
-                              text: 'Kar',
-                              style: TextStyle(
-                                color: navy,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
-                                height: 1,
-                              ),
+                            _LangPill(
+                              lang: _lang,
+                              onLanguageChanged: (newLang, voiceMode) {
+                                if (mounted) {
+                                  setState(() => _voiceMode = voiceMode);
+                                }
+                              },
                             ),
-                            TextSpan(
-                              text: 'Yab',
-                              style: TextStyle(
-                                color: green,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
-                                height: 1,
-                              ),
+                            const SizedBox(width: 8),
+                            KNavButton(
+                              icon: TtsService().soundEnabled
+                                  ? Icons.volume_up_rounded
+                                  : Icons.volume_off_rounded,
+                              active: TtsService().soundEnabled,
+                              hintPulse: TtsService().hintPulseActive,
+                              onTap: () {
+                                TtsService().toggleSound();
+                                setState(() {});
+                              },
                             ),
                           ],
                         ),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _LangPill(
-                            lang: _lang,
-                            onLanguageChanged: (newLang, voiceMode) {
-                              if (mounted) {
-                                setState(() => _voiceMode = voiceMode);
-                              }
-                            },
-                          ),
-                          const SizedBox(width: 8),
-                          KNavButton(
-                            icon: TtsService().soundEnabled
-                                ? Icons.volume_up_rounded
-                                : Icons.volume_off_rounded,
-                            active: TtsService().soundEnabled,
-                            hintPulse: TtsService().hintPulseActive,
-                            onTap: () {
-                              TtsService().toggleSound();
-                              setState(() {});
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // ── Scrollable content ─────────────────────────────────────
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 430),
-                        child: Column(
-                          children: [
-                            // ── Phase 5 dashboard (real data only) ─────
-                            if (_dashHasData) ...[
-                              HomeDashboard(
-                                language: _lang,
-                                profilePercent: _dashProfilePercent,
-                                continueName: _dashContinueName,
-                                continuePercent: _dashContinuePercent,
-                                onContinue: _dashContinueName != null
-                                    ? _openMyCvs
-                                    : null,
-                                onMinijobs: _openMinijobs,
-                                savedJobsCount: _dashSavedJobsCount,
-                                onSavedJobs: _openSavedJobs,
-                                applicationsCount: _dashApplicationsCount,
-                                appliedCount: _dashAppliedCount,
-                                onTracker: _openTracker,
-                              ),
-                              const SizedBox(height: 14),
-                            ],
+                  // ── Scrollable content ─────────────────────────────────────
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 430),
+                          child: Column(
+                            children: [
+                              // ── Phase 5 dashboard (real data only) ─────
+                              if (_dashHasData) ...[
+                                HomeDashboard(
+                                  language: _lang,
+                                  profilePercent: _dashProfilePercent,
+                                  continueName: _dashContinueName,
+                                  continuePercent: _dashContinuePercent,
+                                  onContinue: _dashContinueName != null
+                                      ? _openMyCvs
+                                      : null,
+                                  onMinijobs: _openMinijobs,
+                                  onOfficialLetters: _openOfficialLetters,
+                                  savedJobsCount: _dashSavedJobsCount,
+                                  onSavedJobs: _openSavedJobs,
+                                  applicationsCount: _dashApplicationsCount,
+                                  appliedCount: _dashAppliedCount,
+                                  onTracker: _openTracker,
+                                ),
+                                const SizedBox(height: 14),
+                              ],
 
-                            // ── State 1: New user ──────────────────────────
-                            // Bug fix: this used to gate on _cvCreated alone,
-                            // so a user who completed only an Ausbildung CV
-                            // (cv_created stays false - that flag is Job-CV-
-                            // specific) still saw the "New user" state
-                            // instead of "Returning user" with its View/
-                            // Download My CV button, regardless of which
-                            // Home button (Postings or Preview screen) they
-                            // used to get back here.
-                            if (!_cvCreated && !_ausbildungCvCreated) ...[
-                              KGlassSurface(
-                                borderRadius: 24,
-                                padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
-                                child: Column(
-                                  children: [
-                                    const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                                      textBaseline: TextBaseline.alphabetic,
+                              // ── Phase 9: official letters card for
+                              // users without a dashboard yet (the card
+                              // also lives inside the dashboard itself,
+                              // so it is visible in both home states) ──
+                              if (!_dashHasData) ...[
+                                KGlassSurface(
+                                  borderRadius: 24,
+                                  padding: const EdgeInsets.fromLTRB(
+                                    18,
+                                    16,
+                                    18,
+                                    16,
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: _openOfficialLetters,
+                                    behavior: HitTestBehavior.opaque,
+                                    child: Row(
                                       children: [
-                                        Text(
-                                          'Kar',
-                                          style: TextStyle(
-                                            color: navy,
-                                            fontSize: 26,
-                                            height: 1,
-                                            fontWeight: FontWeight.w900,
-                                            letterSpacing: -1,
+                                        Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            color: green.withValues(
+                                              alpha: 0.16,
+                                            ),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.mark_email_read_rounded,
+                                            color: green,
+                                            size: 23,
                                           ),
                                         ),
-                                        Text(
-                                          'Yab',
-                                          style: TextStyle(
-                                            color: green,
-                                            fontSize: 26,
-                                            height: 1,
-                                            fontWeight: FontWeight.w900,
-                                            letterSpacing: -1,
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                OfficialLetterStrings.title(
+                                                  _lang,
+                                                ),
+                                                style: TextStyle(
+                                                  fontFamily: karyabFontFamily(
+                                                    _lang,
+                                                  ),
+                                                  color: navy,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                OfficialLetterStrings.homeCardSub(
+                                                  _lang,
+                                                ),
+                                                style: TextStyle(
+                                                  fontFamily: karyabFontFamily(
+                                                    _lang,
+                                                  ),
+                                                  color: KColors.textSecondary,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(
+                                          _isRtl
+                                              ? Icons.arrow_back_ios_new_rounded
+                                              : Icons.arrow_forward_ios_rounded,
+                                          color: KColors.textSecondary,
+                                          size: 16,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                              ],
+
+                              // ── State 1: New user ──────────────────────────
+                              // Bug fix: this used to gate on _cvCreated alone,
+                              // so a user who completed only an Ausbildung CV
+                              // (cv_created stays false - that flag is Job-CV-
+                              // specific) still saw the "New user" state
+                              // instead of "Returning user" with its View/
+                              // Download My CV button, regardless of which
+                              // Home button (Postings or Preview screen) they
+                              // used to get back here.
+                              if (!_cvCreated && !_ausbildungCvCreated) ...[
+                                KGlassSurface(
+                                  borderRadius: 24,
+                                  padding: const EdgeInsets.fromLTRB(
+                                    20,
+                                    22,
+                                    20,
+                                    22,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.baseline,
+                                        textBaseline: TextBaseline.alphabetic,
+                                        children: [
+                                          Text(
+                                            'Kar',
+                                            style: TextStyle(
+                                              color: navy,
+                                              fontSize: 26,
+                                              height: 1,
+                                              fontWeight: FontWeight.w900,
+                                              letterSpacing: -1,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Yab',
+                                            style: TextStyle(
+                                              color: green,
+                                              fontSize: 26,
+                                              height: 1,
+                                              fontWeight: FontWeight.w900,
+                                              letterSpacing: -1,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 14),
+                                      Directionality(
+                                        textDirection: _isRtl
+                                            ? TextDirection.rtl
+                                            : TextDirection.ltr,
+                                        child: Text(
+                                          _pageTitle,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: navy,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w800,
+                                            height: 1.3,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Directionality(
+                                        textDirection: _isRtl
+                                            ? TextDirection.rtl
+                                            : TextDirection.ltr,
+                                        child: Text(
+                                          _pageSubtitle,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: KColors.textSecondary,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            height: 1.4,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Action grid — 2 columns, same tile style and
+                                // educated/uneducated sizing rule as State 2's
+                                // grid below. Educated users additionally get
+                                // the Ausbildung tile (5 tiles total); everyone
+                                // gets Create CV, Find Jobs, Upload CV and
+                                // Deutschkurs.
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: GridView.count(
+                                    crossAxisCount: 2,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    mainAxisSpacing: 12,
+                                    crossAxisSpacing: 12,
+                                    childAspectRatio: _voiceMode ? 0.95 : 1.25,
+                                    children: [
+                                      KGridTile(
+                                        icon: Icons.article_rounded,
+                                        iconColor: green,
+                                        label: _card1Title,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
+                                                _lang == 'ps'
+                                                    ? 'آیا غواړی چی د ځان لپاره یوه نوی سییوی جوړ کړي؟'
+                                                    : 'سییوی نو بسازید و کار پیدا کنید',
+                                                _lang,
+                                              )
+                                            : null,
+                                        onTap: () => _selectCard(
+                                          'cv',
+                                          _goToQuestionnaire,
+                                        ),
+                                      ),
+                                      KGridTile(
+                                        icon: Icons.work_rounded,
+                                        iconColor: KColors.blue,
+                                        label: _card2Title,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
+                                                _lang == 'ps'
+                                                    ? 'غواړي چی نژدي کارونه پیدا کړي؟'
+                                                    : 'کارهای نزدیک من را پیدا کنید',
+                                                _lang,
+                                              )
+                                            : null,
+                                        onTap: () => _selectCard('jobs', () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            '/jobfinder',
+                                            arguments: _lang,
+                                          );
+                                        }),
+                                      ),
+                                      KGridTile(
+                                        icon: Icons.upload_file_rounded,
+                                        iconColor: KColors.blue,
+                                        label: _card3Title,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
+                                                _lang == 'ps'
+                                                    ? 'زه خپله سییوی لرم'
+                                                    : 'من قبلاً سییوی دارم',
+                                                _lang,
+                                              )
+                                            : null,
+                                        onTap: () => _selectCard(
+                                          'upload',
+                                          () => _uploadCv(),
+                                        ),
+                                      ),
+                                      if (!_voiceMode)
+                                        KGridTile(
+                                          icon: Icons.school_rounded,
+                                          iconColor: KColors.blue,
+                                          // "Ausbildung" is always German — never
+                                          // translated to PS/FA, same principle
+                                          // as the Job Type filter.
+                                          label: 'Ausbildung',
+                                          isRtl: _isRtl,
+                                          showSpeaker: _showSpeaker,
+                                          compact: true,
+                                          onSpeaker: _showSpeaker
+                                              ? () => TtsService().speak(
+                                                  _lang == 'ps'
+                                                      ? 'د زده کړې کار ومومئ'
+                                                      : 'کارآموزی پیدا کنید',
+                                                  _lang,
+                                                )
+                                              : null,
+                                          onTap: () =>
+                                              _selectCard('ausbildung', () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  '/ausbildung',
+                                                  arguments: {
+                                                    'language': _lang,
+                                                    'voiceMode': _voiceMode,
+                                                  },
+                                                );
+                                              }),
+                                        ),
+                                      KGridTile(
+                                        icon: Icons.translate_rounded,
+                                        iconColor: KColors.purple,
+                                        label: _learnGermanLabel,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
+                                                _lang == 'ps'
+                                                    ? 'آلمانی زده کړئ'
+                                                    : 'آلمانی یاد بگیرید',
+                                                _lang,
+                                              )
+                                            : null,
+                                        onTap: () => _selectCard('deutsch', () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            '/deutsch-courses',
+                                            arguments: {
+                                              'language': _lang,
+                                              'voiceMode': _voiceMode,
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+
+                              // ── State 2: Returning user ────────────────────
+                              if (_cvCreated || _ausbildungCvCreated) ...[
+                                const SizedBox(height: 12),
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 15,
+                                  ),
+                                  child: KGlassSurface(
+                                    borderRadius: 22,
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      16,
+                                      16,
+                                      16,
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 54,
+                                          height: 54,
+                                          decoration: const BoxDecoration(
+                                            color: KColors.mint,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: _userPhotoPath.isNotEmpty
+                                              ? ClipOval(
+                                                  child: Image.file(
+                                                    File(_userPhotoPath),
+                                                    width: 54,
+                                                    height: 54,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stack,
+                                                        ) => const Icon(
+                                                          Icons.person_rounded,
+                                                          color: green,
+                                                          size: 30,
+                                                        ),
+                                                  ),
+                                                )
+                                              : const Icon(
+                                                  Icons.person_rounded,
+                                                  color: green,
+                                                  size: 30,
+                                                ),
+                                        ),
+                                        const SizedBox(width: 14),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: _isRtl
+                                                ? CrossAxisAlignment.end
+                                                : CrossAxisAlignment.start,
+                                            children: [
+                                              Directionality(
+                                                textDirection: _isRtl
+                                                    ? TextDirection.rtl
+                                                    : TextDirection.ltr,
+                                                child: Text(
+                                                  '$_welcomeBack${_displayName.isNotEmpty ? ' $_displayName' : ''}!',
+                                                  style: const TextStyle(
+                                                    color: navy,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w800,
+                                                    height: 1.2,
+                                                  ),
+                                                ),
+                                              ),
+                                              if (_userCity.isNotEmpty) ...[
+                                                const SizedBox(height: 3),
+                                                Text(
+                                                  '$_userCity, Deutschland',
+                                                  style: const TextStyle(
+                                                    color:
+                                                        KColors.textSecondary,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                              const SizedBox(height: 7),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 4,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: KColors.mintBadge,
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                child: Text(
+                                                  _cvBadgeLabel,
+                                                  style: const TextStyle(
+                                                    color:
+                                                        KColors.greenDarkBadge,
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 14),
-                                    Directionality(
-                                      textDirection: _isRtl
-                                          ? TextDirection.rtl
-                                          : TextDirection.ltr,
-                                      child: Text(
-                                        _pageTitle,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: navy,
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w800,
-                                          height: 1.3,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Directionality(
-                                      textDirection: _isRtl
-                                          ? TextDirection.rtl
-                                          : TextDirection.ltr,
-                                      child: Text(
-                                        _pageSubtitle,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: KColors.textSecondary,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          height: 1.4,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // Action grid — 2 columns, same tile style and
-                              // educated/uneducated sizing rule as State 2's
-                              // grid below. Educated users additionally get
-                              // the Ausbildung tile (5 tiles total); everyone
-                              // gets Create CV, Find Jobs, Upload CV and
-                              // Deutschkurs.
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: GridView.count(
-                                crossAxisCount: 2,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                mainAxisSpacing: 12,
-                                crossAxisSpacing: 12,
-                                childAspectRatio: _voiceMode ? 0.95 : 1.25,
-                                children: [
-                                  KGridTile(
-                                    icon: Icons.article_rounded,
-                                    iconColor: green,
-                                    label: _card1Title,
-                                    isRtl: _isRtl,
-                                    showSpeaker: _showSpeaker,
-                                    compact: !_voiceMode,
-                                    onSpeaker: _showSpeaker
-                                        ? () => TtsService().speak(
-                                              _lang == 'ps'
-                                                  ? 'آیا غواړی چی د ځان لپاره یوه نوی سییوی جوړ کړي؟'
-                                                  : 'سییوی نو بسازید و کار پیدا کنید',
-                                              _lang,
-                                            )
-                                        : null,
-                                    onTap: () =>
-                                        _selectCard('cv', _goToQuestionnaire),
                                   ),
-                                  KGridTile(
-                                    icon: Icons.work_rounded,
-                                    iconColor: KColors.blue,
-                                    label: _card2Title,
+                                ),
+
+                                const SizedBox(height: 12),
+
+                                // Search bar — Find Jobs (primary filled)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: KPrimaryCta(
+                                    icon: Icons.search_rounded,
+                                    label: _findJobsLabel,
                                     isRtl: _isRtl,
+                                    isSelected: _selectedCard == 'jobs',
                                     showSpeaker: _showSpeaker,
-                                    compact: !_voiceMode,
                                     onSpeaker: _showSpeaker
                                         ? () => TtsService().speak(
-                                              _lang == 'ps'
-                                                  ? 'غواړي چی نژدي کارونه پیدا کړي؟'
-                                                  : 'کارهای نزدیک من را پیدا کنید',
-                                              _lang,
-                                            )
+                                            _lang == 'ps'
+                                                ? 'د خپل ښار نژدي کارونه پیدا کړئ'
+                                                : 'کارهای نزدیک را پیدا کنید',
+                                            _lang,
+                                          )
                                         : null,
                                     onTap: () => _selectCard('jobs', () {
                                       Navigator.pushNamed(
@@ -1019,306 +1414,134 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                       );
                                     }),
                                   ),
-                                  KGridTile(
-                                    icon: Icons.upload_file_rounded,
-                                    iconColor: KColors.blue,
-                                    label: _card3Title,
-                                    isRtl: _isRtl,
-                                    showSpeaker: _showSpeaker,
-                                    compact: !_voiceMode,
-                                    onSpeaker: _showSpeaker
-                                        ? () => TtsService().speak(
-                                              _lang == 'ps'
-                                                  ? 'زه خپله سییوی لرم'
-                                                  : 'من قبلاً سییوی دارم',
-                                              _lang,
-                                            )
-                                        : null,
-                                    onTap: () =>
-                                        _selectCard('upload', () => _uploadCv()),
+                                ),
+
+                                const SizedBox(height: 14),
+
+                                // Action grid — 2 columns. Ausbildung is
+                                // restricted to educated users (voiceMode ==
+                                // false); uneducated users get a clean 2x2 of
+                                // the remaining four tiles.
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
                                   ),
-                                  if (!_voiceMode)
-                                    KGridTile(
-                                      icon: Icons.school_rounded,
-                                      iconColor: KColors.blue,
-                                      // "Ausbildung" is always German — never
-                                      // translated to PS/FA, same principle
-                                      // as the Job Type filter.
-                                      label: 'Ausbildung',
-                                      isRtl: _isRtl,
-                                      showSpeaker: _showSpeaker,
-                                      compact: true,
-                                      onSpeaker: _showSpeaker
-                                          ? () => TtsService().speak(
-                                                _lang == 'ps'
-                                                    ? 'د زده کړې کار ومومئ'
-                                                    : 'کارآموزی پیدا کنید',
-                                                _lang,
-                                              )
-                                          : null,
-                                      onTap: () => _selectCard('ausbildung', () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          '/ausbildung',
-                                          arguments: {
-                                            'language': _lang,
-                                            'voiceMode': _voiceMode,
-                                          },
-                                        );
-                                      }),
-                                    ),
-                                  KGridTile(
-                                    icon: Icons.translate_rounded,
-                                    iconColor: KColors.purple,
-                                    label: _learnGermanLabel,
-                                    isRtl: _isRtl,
-                                    showSpeaker: _showSpeaker,
-                                    compact: !_voiceMode,
-                                    onSpeaker: _showSpeaker
-                                        ? () => TtsService().speak(
-                                              _lang == 'ps'
-                                                  ? 'آلمانی زده کړئ'
-                                                  : 'آلمانی یاد بگیرید',
-                                              _lang,
-                                            )
-                                        : null,
-                                    onTap: () => _selectCard('deutsch', () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/deutsch-courses',
-                                        arguments: {
-                                          'language': _lang,
-                                          'voiceMode': _voiceMode,
-                                        },
-                                      );
-                                    }),
-                                  ),
-                                ],
-                                ),
-                              ),
-                            ],
-
-                            // ── State 2: Returning user ────────────────────
-                            if (_cvCreated || _ausbildungCvCreated) ...[
-                              const SizedBox(height: 12),
-                              Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 15),
-                                child: KGlassSurface(
-                                  borderRadius: 22,
-                                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 54,
-                                      height: 54,
-                                      decoration: const BoxDecoration(
-                                        color: KColors.mint,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: _userPhotoPath.isNotEmpty
-                                          ? ClipOval(
-                                              child: Image.file(
-                                                File(_userPhotoPath),
-                                                width: 54,
-                                                height: 54,
-                                                fit: BoxFit.cover,
-                                                errorBuilder:
-                                                    (context, error, stack) =>
-                                                        const Icon(
-                                                  Icons.person_rounded,
-                                                  color: green,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                            )
-                                          : const Icon(
-                                              Icons.person_rounded,
-                                              color: green,
-                                              size: 30,
-                                            ),
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: _isRtl
-                                            ? CrossAxisAlignment.end
-                                            : CrossAxisAlignment.start,
-                                        children: [
-                                          Directionality(
-                                            textDirection: _isRtl
-                                                ? TextDirection.rtl
-                                                : TextDirection.ltr,
-                                            child: Text(
-                                              '$_welcomeBack${_displayName.isNotEmpty ? ' $_displayName' : ''}!',
-                                              style: const TextStyle(
-                                                color: navy,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w800,
-                                                height: 1.2,
-                                              ),
-                                            ),
-                                          ),
-                                          if (_userCity.isNotEmpty) ...[
-                                            const SizedBox(height: 3),
-                                            Text(
-                                              '$_userCity, Deutschland',
-                                              style: const TextStyle(
-                                                color: KColors.textSecondary,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                          const SizedBox(height: 7),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: KColors.mintBadge,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Text(
-                                              _cvBadgeLabel,
-                                              style: const TextStyle(
-                                                color: KColors.greenDarkBadge,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              ),
-
-                              const SizedBox(height: 12),
-
-                              // Search bar — Find Jobs (primary filled)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: KPrimaryCta(
-                                  icon: Icons.search_rounded,
-                                  label: _findJobsLabel,
-                                  isRtl: _isRtl,
-                                  isSelected: _selectedCard == 'jobs',
-                                  showSpeaker: _showSpeaker,
-                                  onSpeaker: _showSpeaker
-                                      ? () => TtsService().speak(
-                                            _lang == 'ps'
-                                                ? 'د خپل ښار نژدي کارونه پیدا کړئ'
-                                                : 'کارهای نزدیک را پیدا کنید',
-                                            _lang,
-                                          )
-                                      : null,
-                                  onTap: () => _selectCard('jobs', () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/jobfinder',
-                                      arguments: _lang,
-                                    );
-                                  }),
-                                ),
-                              ),
-
-                              const SizedBox(height: 14),
-
-                              // Action grid — 2 columns. Ausbildung is
-                              // restricted to educated users (voiceMode ==
-                              // false); uneducated users get a clean 2x2 of
-                              // the remaining four tiles.
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: GridView.count(
-                                  crossAxisCount: 2,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  mainAxisSpacing: 12,
-                                  crossAxisSpacing: 12,
-                                  // Educated users get a 5th tile (Ausbildung)
-                                  // so their tiles need to be flatter/smaller
-                                  // to still fit one screen; uneducated stays
-                                  // at its current size.
-                                  childAspectRatio: _voiceMode ? 0.95 : 1.25,
-                                  children: [
-                                    KGridTile(
-                                      icon: Icons.add_circle_outline_rounded,
-                                      iconColor: green,
-                                      label: _newCvLabel,
-                                      isRtl: _isRtl,
-                                      showSpeaker: _showSpeaker,
-                                      compact: !_voiceMode,
-                                      onSpeaker: _showSpeaker
-                                          ? () => TtsService().speak(
+                                  child: GridView.count(
+                                    crossAxisCount: 2,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    mainAxisSpacing: 12,
+                                    crossAxisSpacing: 12,
+                                    // Educated users get a 5th tile (Ausbildung)
+                                    // so their tiles need to be flatter/smaller
+                                    // to still fit one screen; uneducated stays
+                                    // at its current size.
+                                    childAspectRatio: _voiceMode ? 0.95 : 1.25,
+                                    children: [
+                                      KGridTile(
+                                        icon: Icons.add_circle_outline_rounded,
+                                        iconColor: green,
+                                        label: _newCvLabel,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'نوی سییوی جوړ کړئ'
                                                     : 'ایجاد CV جدید',
                                                 _lang,
                                               )
-                                          : null,
-                                      onTap: _goToQuestionnaire,
-                                    ),
-                                    KGridTile(
-                                      icon: Icons.description_rounded,
-                                      iconColor: green,
-                                      label: _viewCvLabel,
-                                      isRtl: _isRtl,
-                                      showSpeaker: _showSpeaker,
-                                      compact: !_voiceMode,
-                                      onSpeaker: _showSpeaker
-                                          ? () => TtsService().speak(
+                                            : null,
+                                        onTap: _goToQuestionnaire,
+                                      ),
+                                      KGridTile(
+                                        icon: Icons.description_rounded,
+                                        iconColor: green,
+                                        label: _viewCvLabel,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'زما جوړه شوی سییوی ښکاره کړی'
                                                     : 'سییوی من را ببینید',
                                                 _lang,
                                               )
-                                          : null,
-                                      onTap: () { _openSavedCv(); },
-                                    ),
-                                    KGridTile(
-                                      icon: Icons.upload_file_rounded,
-                                      iconColor: KColors.blue,
-                                      label: _uploadDifferentCvLabel,
-                                      isRtl: _isRtl,
-                                      showSpeaker: _showSpeaker,
-                                      compact: !_voiceMode,
-                                      onSpeaker: _showSpeaker
-                                          ? () => TtsService().speak(
+                                            : null,
+                                        onTap: () {
+                                          _openSavedCv();
+                                        },
+                                      ),
+                                      KGridTile(
+                                        icon: Icons.upload_file_rounded,
+                                        iconColor: KColors.blue,
+                                        label: _uploadDifferentCvLabel,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'خپله سییوی اپلوډ کړئ'
                                                     : 'سییوی خود را اپلوډ کنید',
                                                 _lang,
                                               )
-                                          : null,
-                                      onTap: () => _uploadCv(),
-                                    ),
-                                    if (!_voiceMode)
-                                      KGridTile(
-                                        icon: Icons.school_rounded,
-                                        iconColor: KColors.blue,
-                                        // "Ausbildung" is always German —
-                                        // never translated to PS/FA, same
-                                        // principle as the Job Type filter.
-                                        label: 'Ausbildung',
-                                        isRtl: _isRtl,
-                                        showSpeaker: _showSpeaker,
-                                        compact: true,
-                                        onSpeaker: _showSpeaker
-                                            ? () => TtsService().speak(
+                                            : null,
+                                        onTap: () => _uploadCv(),
+                                      ),
+                                      if (!_voiceMode)
+                                        KGridTile(
+                                          icon: Icons.school_rounded,
+                                          iconColor: KColors.blue,
+                                          // "Ausbildung" is always German —
+                                          // never translated to PS/FA, same
+                                          // principle as the Job Type filter.
+                                          label: 'Ausbildung',
+                                          isRtl: _isRtl,
+                                          showSpeaker: _showSpeaker,
+                                          compact: true,
+                                          onSpeaker: _showSpeaker
+                                              ? () => TtsService().speak(
                                                   _lang == 'ps'
                                                       ? 'د زده کړې کار ومومئ'
                                                       : 'کارآموزی پیدا کنید',
                                                   _lang,
                                                 )
+                                              : null,
+                                          onTap: () =>
+                                              _selectCard('ausbildung', () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  '/ausbildung',
+                                                  arguments: {
+                                                    'language': _lang,
+                                                    'voiceMode': _voiceMode,
+                                                  },
+                                                );
+                                              }),
+                                        ),
+                                      KGridTile(
+                                        icon: Icons.translate_rounded,
+                                        iconColor: KColors.purple,
+                                        label: _learnGermanLabel,
+                                        isRtl: _isRtl,
+                                        showSpeaker: _showSpeaker,
+                                        compact: !_voiceMode,
+                                        onSpeaker: _showSpeaker
+                                            ? () => TtsService().speak(
+                                                _lang == 'ps'
+                                                    ? 'آلمانی زده کړئ'
+                                                    : 'آلمانی یاد بگیرید',
+                                                _lang,
+                                              )
                                             : null,
-                                        onTap: () => _selectCard('ausbildung', () {
+                                        onTap: () => _selectCard('deutsch', () {
                                           Navigator.pushNamed(
                                             context,
-                                            '/ausbildung',
+                                            '/deutsch-courses',
                                             arguments: {
                                               'language': _lang,
                                               'voiceMode': _voiceMode,
@@ -1326,79 +1549,62 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                           );
                                         }),
                                       ),
-                                    KGridTile(
-                                      icon: Icons.translate_rounded,
-                                      iconColor: KColors.purple,
-                                      label: _learnGermanLabel,
-                                      isRtl: _isRtl,
-                                      showSpeaker: _showSpeaker,
-                                      compact: !_voiceMode,
-                                      onSpeaker: _showSpeaker
-                                          ? () => TtsService().speak(
-                                                _lang == 'ps'
-                                                    ? 'آلمانی زده کړئ'
-                                                    : 'آلمانی یاد بگیرید',
-                                                _lang,
-                                              )
-                                          : null,
-                                      onTap: () => _selectCard('deutsch', () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          '/deutsch-courses',
-                                          arguments: {
-                                            'language': _lang,
-                                            'voiceMode': _voiceMode,
-                                          },
-                                        );
-                                      }),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                // ── Phase 5 floating glass dock ────────────────────────
-                // Home is the host screen, so the dock is its bottom
-                // bar (currentIndex 0); other sections push as before.
-                // The version string moved into the More sheet.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 430),
-                    child: KGlassDock(
-                      items: [
-                        KDockItem(
-                            icon: Icons.home_rounded, label: _dockHomeLabel),
-                        KDockItem(
-                            icon: Icons.work_rounded, label: _dockJobsLabel),
-                        const KDockItem(
-                            icon: Icons.school_rounded, label: 'Ausbildung'),
-                        KDockItem(
+                  // ── Phase 5 floating glass dock ────────────────────────
+                  // Home is the host screen, so the dock is its bottom
+                  // bar (currentIndex 0); other sections push as before.
+                  // The version string moved into the More sheet.
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 430),
+                      child: KGlassDock(
+                        items: [
+                          KDockItem(
+                            icon: Icons.home_rounded,
+                            label: _dockHomeLabel,
+                          ),
+                          KDockItem(
+                            icon: Icons.work_rounded,
+                            label: _dockJobsLabel,
+                          ),
+                          const KDockItem(
+                            icon: Icons.school_rounded,
+                            label: 'Ausbildung',
+                          ),
+                          KDockItem(
                             icon: Icons.folder_rounded,
-                            label: _dockDocsLabel),
-                        KDockItem(
+                            label: _dockDocsLabel,
+                          ),
+                          KDockItem(
                             icon: Icons.more_horiz_rounded,
-                            label: _dockMoreLabel),
-                      ],
-                      currentIndex: 0,
-                      onTap: _onDockTap,
-                      textDirection:
-                          _isRtl ? TextDirection.rtl : TextDirection.ltr,
-                      fontFamily: karyabFontFamily(_lang),
+                            label: _dockMoreLabel,
+                          ),
+                        ],
+                        currentIndex: 0,
+                        onTap: _onDockTap,
+                        textDirection: _isRtl
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        fontFamily: karyabFontFamily(_lang),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -1433,7 +1639,7 @@ class _MyCvScreen extends StatefulWidget {
 }
 
 class _MyCvScreenState extends State<_MyCvScreen> {
-  static const Color navy  = KColors.navy;
+  static const Color navy = KColors.navy;
   static const Color green = KColors.green;
 
   late String _selected; // 'job' or 'ausbildung'
@@ -1448,30 +1654,42 @@ class _MyCvScreenState extends State<_MyCvScreen> {
 
   String get _titleLabel {
     switch (widget.language) {
-      case 'ps': return 'زما CV';
-      case 'fa': return 'CV من';
-      default:   return 'My CV';
+      case 'ps':
+        return 'زما CV';
+      case 'fa':
+        return 'CV من';
+      default:
+        return 'My CV';
     }
   }
 
   String get _jobCvLabel {
     switch (widget.language) {
-      case 'ps': return 'د کار CV';
-      case 'fa': return 'رزومه کاری';
-      default:   return 'Job CV';
+      case 'ps':
+        return 'د کار CV';
+      case 'fa':
+        return 'رزومه کاری';
+      default:
+        return 'Job CV';
     }
   }
 
   String get _ausbildungCvLabel {
     switch (widget.language) {
-      case 'ps': return 'د زده کړې CV';
-      case 'fa': return 'رزومه کارآموزی';
-      default:   return 'Ausbildung CV';
+      case 'ps':
+        return 'د زده کړې CV';
+      case 'fa':
+        return 'رزومه کارآموزی';
+      default:
+        return 'Ausbildung CV';
     }
   }
 
-  void _goHome() =>
-      goHomeToIntroduction(context, language: widget.language, voiceMode: false);
+  void _goHome() => goHomeToIntroduction(
+    context,
+    language: widget.language,
+    voiceMode: false,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -1528,7 +1746,10 @@ class _MyCvScreenState extends State<_MyCvScreen> {
                   const SizedBox(height: 8),
                   Expanded(
                     child: _selected == 'job'
-                        ? CvPreviewScreen(profile: widget.profile, embedded: true)
+                        ? CvPreviewScreen(
+                            profile: widget.profile,
+                            embedded: true,
+                          )
                         : AusbildungDocumentPreviewScreen(
                             profile: widget.profile,
                             language: widget.language,
@@ -1587,9 +1808,10 @@ class _MyCvScreenState extends State<_MyCvScreen> {
         segment(value: 'job', label: _jobCvLabel, exists: widget.jobExists),
         const SizedBox(width: 10),
         segment(
-            value: 'ausbildung',
-            label: _ausbildungCvLabel,
-            exists: widget.ausbildungExists),
+          value: 'ausbildung',
+          label: _ausbildungCvLabel,
+          exists: widget.ausbildungExists,
+        ),
       ],
     );
   }
@@ -1609,9 +1831,12 @@ class _LangPill extends StatelessWidget {
 
   String get _label {
     switch (lang) {
-      case 'ps': return 'PS';
-      case 'fa': return 'FA';
-      default:   return 'EN';
+      case 'ps':
+        return 'PS';
+      case 'fa':
+        return 'FA';
+      default:
+        return 'EN';
     }
   }
 
@@ -1633,8 +1858,7 @@ class _LangPill extends StatelessWidget {
               // Switching TO English always forces the educated interface;
               // switching between Pashto/Dari leaves voiceMode untouched —
               // that was set explicitly on the education screen.
-              final voiceMode =
-                  newLang == 'en' ? false : currentVoiceMode;
+              final voiceMode = newLang == 'en' ? false : currentVoiceMode;
               final prefs = await SharedPreferences.getInstance();
               await prefs.setBool('voice_mode', voiceMode);
               await prefs.setString('app_language', newLang);
@@ -1651,22 +1875,19 @@ class _LangPill extends StatelessWidget {
 // ── Language picker bottom sheet ──────────────────────────────────────────────
 
 class _LanguagePicker extends StatelessWidget {
-  static const Color _navy  = KColors.navy;
+  static const Color _navy = KColors.navy;
   static const Color _green = KColors.green;
 
   final String currentLang;
   final ValueChanged<String> onSelect;
 
-  const _LanguagePicker({
-    required this.currentLang,
-    required this.onSelect,
-  });
+  const _LanguagePicker({required this.currentLang, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
     final langs = [
-      {'code': 'ps', 'native': 'پښتو',    'roman': 'Pashto'},
-      {'code': 'fa', 'native': 'دری',     'roman': 'Dari'},
+      {'code': 'ps', 'native': 'پښتو', 'roman': 'Pashto'},
+      {'code': 'fa', 'native': 'دری', 'roman': 'Dari'},
       {'code': 'en', 'native': 'English', 'roman': 'English'},
     ];
     return Container(
@@ -1695,7 +1916,9 @@ class _LanguagePicker extends StatelessWidget {
                 duration: const Duration(milliseconds: 150),
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 14),
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? _green.withValues(alpha: 0.08)
@@ -1729,8 +1952,11 @@ class _LanguagePicker extends StatelessWidget {
                     ),
                     const Spacer(),
                     if (isSelected)
-                      const Icon(Icons.check_circle_rounded,
-                          color: _green, size: 20),
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        color: _green,
+                        size: 20,
+                      ),
                   ],
                 ),
               ),
