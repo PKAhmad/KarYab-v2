@@ -977,25 +977,29 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
 
   // ── Loading / error / empty ───────────────────────────────────────────────
 
+  // Phase 5: glass skeleton rows during the real waiting state.
   Widget _buildLoading() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: KGlassSurface(
-          borderRadius: 20,
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(color: _green, strokeWidth: 2.5),
-              const SizedBox(height: 20),
-              Text(_loadingLbl,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: _navy, fontSize: 14, height: 1.5)),
-            ],
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            _loadingLbl,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: _navy,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-      ),
+        for (var i = 0; i < 5; i++) ...[
+          const KGlassSkeletonRow(),
+          const SizedBox(height: 12),
+        ],
+      ],
     );
   }
 

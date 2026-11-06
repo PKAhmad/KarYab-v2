@@ -146,9 +146,11 @@ String wizardSectionTitle(String lang, String section) {
   }
 }
 
-/// Animated liquid-style progress bar: a gradient fill whose width
-/// animates to [value] (0..1), with a soft highlight sweep. Static (no
-/// continuous animation) so it stays cheap on low-end phones.
+/// Animated liquid-style progress bar. Since Phase 5 this delegates to
+/// the kit's [KLiquidProgressBar]: same look (gradient liquid fill,
+/// 450ms ease-out), but the fill is a true fraction of the bar's own
+/// width (the Phase 3 version measured against the whole screen) and
+/// it grows from the correct side in RTL.
 class LiquidProgressBar extends StatelessWidget {
   final double value;
   final double height;
@@ -157,30 +159,7 @@ class LiquidProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final clamped = value.clamp(0.0, 1.0);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(height),
-      child: Stack(
-        children: [
-          Container(
-            height: height,
-            color: KColors.green.withValues(alpha: 0.15),
-          ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 450),
-            curve: Curves.easeOutCubic,
-            height: height,
-            width: MediaQuery.of(context).size.width * clamped,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF0E7A20), KColors.green],
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-          ),
-        ],
-      ),
-    );
+    return KLiquidProgressBar(value: value, height: height);
   }
 }
 

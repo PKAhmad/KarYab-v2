@@ -100,10 +100,15 @@ class JobFinderScreen extends StatefulWidget {
   final String language;
   final bool voiceMode;
 
+  /// Optional preselected job-type filter ('vz', 'tz' or 'mj'), used by
+  /// the home screen's Minijobs card (Phase 5). Null keeps the default.
+  final String? initialJobType;
+
   const JobFinderScreen({
     super.key,
     required this.language,
     this.voiceMode = false,
+    this.initialJobType,
   });
 
   @override
@@ -190,6 +195,13 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
   @override
   void initState() {
     super.initState();
+    // Phase 5 deep link: preselect the job-type filter when a valid key
+    // was passed (e.g. 'mj' from the home Minijobs card).
+    final initialType = widget.initialJobType;
+    if (initialType != null &&
+        _kJobTypes.any((t) => t.$1 == initialType)) {
+      _selectedJobType = initialType;
+    }
     AnalyticsService().logScreen('job_finder');
     TtsService().addListener(_onSoundChange);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1183,32 +1195,30 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
 
   // ── Loading state ──────────────────────────────────────────────────────────
 
+  // Phase 5: glass skeleton rows while the search is genuinely in
+  // flight (this builder only runs in ConnectionState.waiting).
   Widget _buildLoading() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: KGlassSurface(
-          borderRadius: 20,
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(
-                  color: _green, strokeWidth: 2.5),
-              const SizedBox(height: 20),
-              Text(
-                _loadingLabel,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: _navy,
-                  fontSize: 14,
-                  height: 1.5,
-                ),
-              ),
-            ],
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            _loadingLabel,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: _navy,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-      ),
+        for (var i = 0; i < 5; i++) ...[
+          const KGlassSkeletonRow(),
+          const SizedBox(height: 12),
+        ],
+      ],
     );
   }
 

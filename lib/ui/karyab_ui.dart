@@ -596,6 +596,607 @@ void kSnack(
   ));
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Liquid Glass v2 (Phase 5)
+//
+// The dark-side counterpart of the light glass above: the blueprint's
+// navy liquid backdrop + three glass levels for use ON that backdrop
+// (home hero, floating dock, sheets over the hero). The light kit
+// (KGlassSurface / KGlassCard) stays the system for the light form/list
+// screens; both share the same accent, radii and blur language.
+//
+// Guardrails baked in (blueprint §4.3, CEO's own v1 rule):
+//  * NO BackdropFilter inside scrolling list items - list items use the
+//    translucent-solid variant ([KGlassPanel.inList] or [KGlassCard]).
+//  * BackdropFilter only on static / hero / dock / sheet surfaces and
+//    always inside a RepaintBoundary.
+//  * Low-tier devices (see [KDeviceTier]) get half blur and a frozen
+//    backdrop; form text always sits on a minimum-opacity floor.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Tokens ───────────────────────────────────────────────────────────────────
+
+class KLiquid {
+  KLiquid._();
+
+  // Backdrop gradient (blueprint §4.1)
+  static const Color navyTop = Color(0xFF091733);
+  static const Color navyBottom = Color(0xFF0D2450);
+
+  // Animated colour fields over the gradient
+  static const Color fieldGreen = Color(0x0F39EA2B); // green at 6%
+  static const Color fieldBlue = Color(0x1A2D6BE4); // blue at 10%
+
+  // Glass levels on the dark backdrop: fill / border
+  static const Color l1Fill = Color(0x1AFFFFFF); // white 10%
+  static const Color l1Border = Color(0x2EFFFFFF); // white 18%
+  static const Color l2Fill = Color(0x29FFFFFF); // white 16%
+  static const Color l2Border = Color(0x3DFFFFFF); // white 24%
+  static const Color l3Fill = Color(0x14FFFFFF); // white 8%
+  static const Color l3Border = Color(0x2EFFFFFF); // white 18%
+
+  static const double l1Blur = 18;
+  static const double l2Blur = 26;
+  static const double l3Blur = 30;
+
+  // Text on the dark backdrop
+  static const Color textOnDark = Colors.white;
+  static const Color textOnDarkSoft = Color(0xFFDCE6F5);
+
+  /// Minimum-opacity floor for glass that carries form text on the dark
+  /// backdrop: the fill is composited over navy until it reaches this
+  /// effective opacity, so text stays readable outdoors.
+  static const double formTextFloor = 0.32;
+
+  // Floating dock: navy-tinted L2 glass (reads as one system with the
+  // navy CTA buttons and the language pill).
+  static const Color dockFill = Color(0xD9091733); // navy at 85%
+  static const Color dockBorder = Color(0x3DFFFFFF); // white 24%
+  static const Color dockPillFill = Color(0x2E39EA2B); // green at 18%
+  static const Color dockPillBorder = Color(0x5939EA2B); // green at 35%
+
+  // Radii
+  static const double radiusCard = 24;
+  static const double radiusDock = 28;
+  static const double radiusPill = 20;
+}
+
+/// Font family for a language code: Pashto/Dari render in the bundled
+/// Noto Naskh Arabic, everything else in Roboto. Wired app-wide through
+/// the MaterialApp theme (main.dart) and explicitly by the Phase 5
+/// widgets (dock, dashboard) whose hosts build their own text styles.
+String karyabFontFamily(String language) =>
+    (language == 'ps' || language == 'fa') ? 'NotoNaskhArabic' : 'Roboto';
+
+/// Fallback chain behind [karyabFontFamily]: Arabic first for ps/fa
+/// (Latin digits/glyphs fall back to Roboto), Roboto first otherwise.
+List<String> karyabFontFallback(String language) =>
+    (language == 'ps' || language == 'fa')
+        ? const ['Roboto']
+        : const ['NotoNaskhArabic'];
+
+// ── Device tier ──────────────────────────────────────────────────────────────
+
+/// Heuristic performance tier, deliberately simple and channel-free.
+///
+/// A device counts as low tier when the OS asks for reduced animations
+/// (accessibility or battery-saver driven) OR when its physical display
+/// is in the 2.1 MP class or below (720p/900p panels, the weakest GPUs
+/// KarYab ships to). 1080p devices (e.g. Redmi 9T) run the full glass;
+/// even there, list items never blur (see [KGlassPanel.inList]).
+/// [debugOverride] exists for tests and support builds.
+class KDeviceTier {
+  KDeviceTier._();
+
+  static bool? debugOverride;
+
+  static bool isLowTier(BuildContext context) {
+    if (debugOverride != null) return debugOverride!;
+    final mq = MediaQuery.of(context);
+    if (mq.disableAnimations) return true;
+    final physical = mq.size * mq.devicePixelRatio;
+    return physical.width * physical.height <= 2100000;
+  }
+
+  /// Blur sigma for this device: full on standard tier, halved when low.
+  static double blurFor(BuildContext context, double base) =>
+      isLowTier(context) ? base / 2 : base;
+
+  /// True when continuous animation must not run (system reduced motion
+  /// or low tier).
+  static bool reduceMotion(BuildContext context) =>
+      MediaQuery.of(context).disableAnimations || isLowTier(context);
+}
+
+// ── Liquid background ────────────────────────────────────────────────────────
+
+/// The Phase 5 backdrop: navy gradient with two soft colour fields that
+/// drift slowly against each other. The animation freezes (static first
+/// frame) under reduced motion / low tier, and the whole layer is one
+/// RepaintBoundary so the drift never repaints the content above it.
+class LiquidBackground extends StatefulWidget {
+  final Widget? child;
+
+  const LiquidBackground({super.key, this.child});
+
+  @override
+  State<LiquidBackground> createState() => _LiquidBackgroundState();
+}
+
+class _LiquidBackgroundState extends State<LiquidBackground>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _controller;
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Widget _fields(double t) {
+    // t in [0,1]: fields ease between two resting positions.
+    return Stack(
+      children: [
+        Positioned(
+          top: -70 + 26 * t,
+          left: -60 + 18 * t,
+          child: const KOrb(size: 230, color: KLiquid.fieldGreen),
+        ),
+        Positioned(
+          bottom: -80 + 20 * (1 - t),
+          right: -50 + 24 * t,
+          child: const KOrb(size: 260, color: KLiquid.fieldBlue),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final reduced = KDeviceTier.reduceMotion(context);
+    if (reduced) {
+      _controller?.stop();
+    } else if (_controller == null) {
+      _controller = AnimationController(
+        vsync: this,
+        duration: const Duration(seconds: 16),
+      )..repeat(reverse: true);
+    } else if (!_controller!.isAnimating) {
+      _controller!.repeat(reverse: true);
+    }
+    return RepaintBoundary(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [KLiquid.navyTop, KLiquid.navyBottom],
+              ),
+            ),
+          ),
+          if (reduced)
+            _fields(0.35)
+          else
+            AnimatedBuilder(
+              animation: _controller!,
+              builder: (context, _) => _fields(
+                Curves.easeInOut.transform(_controller!.value),
+              ),
+            ),
+          if (widget.child != null) widget.child!,
+        ],
+      ),
+    );
+  }
+}
+
+// ── Glass panel (dark backdrop levels) ───────────────────────────────────────
+
+enum KGlassLevel { l1, l2, l3 }
+
+/// A glass surface for the dark backdrop, at one of the three blueprint
+/// levels. Use [inList] inside scrolling lists: the panel then renders
+/// as a translucent solid (same fill/border/shadow, NO BackdropFilter),
+/// per the performance guardrail.
+class KGlassPanel extends StatelessWidget {
+  final Widget child;
+  final KGlassLevel level;
+  final double borderRadius;
+  final EdgeInsetsGeometry padding;
+  final bool inList;
+  final VoidCallback? onTap;
+
+  const KGlassPanel({
+    super.key,
+    required this.child,
+    this.level = KGlassLevel.l1,
+    this.borderRadius = KLiquid.radiusCard,
+    this.padding = EdgeInsets.zero,
+    this.inList = false,
+    this.onTap,
+  });
+
+  (Color, Color, double) get _spec {
+    switch (level) {
+      case KGlassLevel.l1:
+        return (KLiquid.l1Fill, KLiquid.l1Border, KLiquid.l1Blur);
+      case KGlassLevel.l2:
+        return (KLiquid.l2Fill, KLiquid.l2Border, KLiquid.l2Blur);
+      case KGlassLevel.l3:
+        return (KLiquid.l3Fill, KLiquid.l3Border, KLiquid.l3Blur);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final (fill, border, blur) = _spec;
+    final decoration = BoxDecoration(
+      color: fill,
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: Border.all(color: border, width: 1),
+      boxShadow: level == KGlassLevel.l1
+          ? null
+          : [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.28),
+                blurRadius: 26,
+                offset: const Offset(0, 12),
+              ),
+            ],
+    );
+    final Widget surface;
+    if (inList) {
+      surface = Container(
+        padding: padding,
+        decoration: decoration,
+        child: child,
+      );
+    } else {
+      surface = RepaintBoundary(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: KDeviceTier.blurFor(context, blur),
+              sigmaY: KDeviceTier.blurFor(context, blur),
+            ),
+            child: Container(
+              padding: padding,
+              decoration: decoration,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    }
+    if (onTap == null) return surface;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(borderRadius),
+        onTap: onTap,
+        child: surface,
+      ),
+    );
+  }
+}
+
+// ── Liquid progress bar ──────────────────────────────────────────────────────
+
+/// Liquid-fill progress bar: the fill animates to [value] with a
+/// three-stop green gradient (dark edge, bright crest) that reads as a
+/// liquid surface. Direction-aware: in RTL the fill grows from the
+/// right. Reduced motion snaps instead of animating. [onDark] switches
+/// the track to a white-based tone for the navy backdrop.
+class KLiquidProgressBar extends StatelessWidget {
+  final double value;
+  final double height;
+  final bool onDark;
+
+  const KLiquidProgressBar({
+    super.key,
+    required this.value,
+    this.height = 10,
+    this.onDark = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final clamped = value.clamp(0.0, 1.0);
+    final reduced = MediaQuery.of(context).disableAnimations;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(height),
+      child: Container(
+        height: height,
+        color: onDark
+            ? Colors.white.withValues(alpha: 0.16)
+            : KColors.green.withValues(alpha: 0.15),
+        child: TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: clamped),
+          duration:
+              reduced ? Duration.zero : const Duration(milliseconds: 450),
+          curve: Curves.easeOutCubic,
+          builder: (context, v, _) {
+            return Align(
+              alignment: AlignmentDirectional.centerStart,
+              widthFactor: v,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF0E7A20),
+                      KColors.green,
+                      Color(0xFF8CF582),
+                    ],
+                    stops: [0.0, 0.75, 1.0],
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+// ── Press scale ──────────────────────────────────────────────────────────────
+
+/// Wraps a tappable child with a subtle press scale (0.97). Purely
+/// visual: it listens without consuming gestures, so the child's own
+/// InkWell/onTap behaviour is unchanged. Reduced motion disables it.
+class KPressScale extends StatefulWidget {
+  final Widget child;
+
+  const KPressScale({super.key, required this.child});
+
+  @override
+  State<KPressScale> createState() => _KPressScaleState();
+}
+
+class _KPressScaleState extends State<KPressScale> {
+  bool _down = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final reduced = MediaQuery.of(context).disableAnimations;
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: (_) {
+        if (!reduced) setState(() => _down = true);
+      },
+      onPointerUp: (_) => setState(() => _down = false),
+      onPointerCancel: (_) => setState(() => _down = false),
+      child: AnimatedScale(
+        scale: _down ? 0.97 : 1.0,
+        duration: reduced ? Duration.zero : const Duration(milliseconds: 120),
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+// ── Glass skeleton (loading placeholder) ─────────────────────────────────────
+
+/// One shimmering placeholder row for job/document lists, in glass tone.
+/// Attach it to a REAL loading state only. The sweep is a slow opacity
+/// pulse of the highlight band; reduced motion renders it static.
+class KGlassSkeletonRow extends StatefulWidget {
+  const KGlassSkeletonRow({super.key});
+
+  @override
+  State<KGlassSkeletonRow> createState() => _KGlassSkeletonRowState();
+}
+
+class _KGlassSkeletonRowState extends State<KGlassSkeletonRow>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _controller;
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Widget _bar(double width, double height, double alpha) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: KColors.navy.withValues(alpha: alpha),
+        borderRadius: BorderRadius.circular(height / 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final reduced = MediaQuery.of(context).disableAnimations;
+    if (!reduced && _controller == null) {
+      _controller = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 1400),
+      )..repeat(reverse: true);
+    }
+    if (reduced) _controller?.stop();
+
+    Widget content(double pulse) {
+      return KGlassCard(
+        borderRadius: 18,
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: KColors.navy.withValues(alpha: 0.06 + 0.05 * pulse),
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _bar(150, 12, 0.10 + 0.06 * pulse),
+                  const SizedBox(height: 8),
+                  _bar(100, 10, 0.07 + 0.05 * pulse),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (reduced || _controller == null) return content(0.5);
+    return AnimatedBuilder(
+      animation: _controller!,
+      builder: (context, _) => content(_controller!.value),
+    );
+  }
+}
+
+// ── Floating glass dock ──────────────────────────────────────────────────────
+
+class KDockItem {
+  final IconData icon;
+  final String label;
+
+  const KDockItem({required this.icon, required this.label});
+}
+
+/// Floating L2 glass bottom dock with a sliding green glass pill behind
+/// the active item. Purely presentational: the host owns navigation and
+/// [currentIndex]. Direction-aware: pass the ambient [textDirection]
+/// (RTL mirrors item order and pill travel automatically).
+class KGlassDock extends StatelessWidget {
+  final List<KDockItem> items;
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+  final TextDirection textDirection;
+  final String fontFamily;
+
+  const KGlassDock({
+    super.key,
+    required this.items,
+    required this.currentIndex,
+    required this.onTap,
+    this.textDirection = TextDirection.ltr,
+    this.fontFamily = 'Roboto',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final reduced = MediaQuery.of(context).disableAnimations;
+    return Directionality(
+      textDirection: textDirection,
+      child: RepaintBoundary(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(KLiquid.radiusDock),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: KDeviceTier.blurFor(context, KLiquid.l2Blur),
+              sigmaY: KDeviceTier.blurFor(context, KLiquid.l2Blur),
+            ),
+            child: Container(
+              height: 68,
+              decoration: BoxDecoration(
+                color: KLiquid.dockFill,
+                borderRadius: BorderRadius.circular(KLiquid.radiusDock),
+                border: Border.all(color: KLiquid.dockBorder, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.30),
+                    blurRadius: 26,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final itemWidth = constraints.maxWidth / items.length;
+                  return Stack(
+                    children: [
+                      AnimatedPositionedDirectional(
+                        duration: reduced
+                            ? Duration.zero
+                            : const Duration(milliseconds: 320),
+                        curve: Curves.easeOutCubic,
+                        start: currentIndex * itemWidth + 6,
+                        top: 7,
+                        bottom: 7,
+                        width: itemWidth - 12,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: KLiquid.dockPillFill,
+                            borderRadius:
+                                BorderRadius.circular(KLiquid.radiusPill),
+                            border: Border.all(
+                                color: KLiquid.dockPillBorder, width: 1),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          for (var i = 0; i < items.length; i++)
+                            Expanded(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(
+                                      KLiquid.radiusPill),
+                                  onTap: () => onTap(i),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        items[i].icon,
+                                        size: 22,
+                                        color: i == currentIndex
+                                            ? KColors.green
+                                            : Colors.white70,
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        items[i].label,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily: fontFamily,
+                                          fontSize: 10,
+                                          fontWeight: i == currentIndex
+                                              ? FontWeight.w800
+                                              : FontWeight.w600,
+                                          color: i == currentIndex
+                                              ? Colors.white
+                                              : Colors.white70,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // ── Bottom sheet ─────────────────────────────────────────────────────────────
 
 // White sheet with a 24 top radius. Use as the decoration of the sheet's

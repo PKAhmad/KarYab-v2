@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'constants/app_colors.dart';
 import 'data/karyab_data.dart';
+import 'ui/karyab_ui.dart';
 import 'providers/language_provider.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/education_screen.dart';
@@ -45,7 +46,8 @@ class KarYabApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => LanguageProvider(),
-      child: MaterialApp(
+      child: Consumer<LanguageProvider>(
+        builder: (context, languageProvider, _) => MaterialApp(
       title: 'KarYab',
       debugShowCheckedModeBanner: false,
       navigatorObservers: [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)],
@@ -53,6 +55,11 @@ class KarYabApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: AppColors.background,
+        // Phase 5: Pashto/Dari render in the bundled Noto Naskh Arabic,
+        // everything else in Roboto. Only styles without an explicit
+        // fontFamily inherit this, so Latin screens are unchanged.
+        fontFamily: karyabFontFamily(languageProvider.language),
+        fontFamilyFallback: karyabFontFallback(languageProvider.language),
         colorScheme: const ColorScheme.dark(
           primary: AppColors.accent,
           surface: AppColors.surface,
@@ -142,7 +149,14 @@ class KarYabApp extends StatelessWidget {
             if (args is Map<String, dynamic>) {
               final lang      = args['language']  as String? ?? 'en';
               final voiceMode = args['voiceMode'] as bool?   ?? false;
-              return fade(JobFinderScreen(language: lang, voiceMode: voiceMode));
+              // Phase 5: the home Minijobs card deep-links with the
+              // Minijob filter preselected ('mj'/'tz'/'vz').
+              final jobType   = args['jobType']   as String?;
+              return fade(JobFinderScreen(
+                language: lang,
+                voiceMode: voiceMode,
+                initialJobType: jobType,
+              ));
             }
             final lang = args as String? ?? 'en';
             return fade(JobFinderScreen(language: lang));
@@ -196,6 +210,7 @@ class KarYabApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const WelcomeScreen());
         }
       },
+        ),
       ),
     );
   }
