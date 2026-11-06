@@ -1,0 +1,23 @@
+// KarYab Firestore security rules (Phase 6, cloud backup).
+//
+// STATUS: NOT DEPLOYED. This file is the source of truth to paste into
+// Firebase Console > Firestore Database > Rules on activation day
+// (see ~/workspace/karyab/v2/PHASE6-AUTH-REPORT.md checklist).
+//
+// Model: a user's backup lives at users/{uid}/backup/main. A signed-in
+// user may read and write ONLY their own user document tree. Everything
+// else is denied. There are no public reads anywhere.
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Default deny for everything else.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

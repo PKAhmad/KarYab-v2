@@ -18,6 +18,8 @@ import '../ui/karyab_ui.dart';
 import '../utils/navigation_helpers.dart';
 import '../widgets/cv_upload_info_sheet.dart';
 import '../widgets/home_dashboard.dart';
+import '../services/account_strings.dart';
+import 'account_screen.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
 import 'my_cvs_screen.dart';
@@ -627,6 +629,16 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
             children: [
               const KSheetHandle(),
               const SizedBox(height: 10),
+              entry(Icons.account_circle_rounded,
+                  AccountStrings.account(_lang), () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AccountScreen(
+                        language: _lang, voiceMode: _voiceMode),
+                  ),
+                );
+              }),
               entry(Icons.mail_rounded, _myLettersLabel, () {
                 Navigator.push(
                   context,
