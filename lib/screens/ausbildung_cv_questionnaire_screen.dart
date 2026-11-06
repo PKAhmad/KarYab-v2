@@ -2446,6 +2446,8 @@ class _TxtField extends StatelessWidget {
           hintStyle: const TextStyle(color: Color(0xFF65738A), fontSize: 14),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(14),
+          // Voice dictation (Phase 8); this field is always free text.
+          suffixIcon: KDictationButton(controller: controller),
         ),
       ),
     );

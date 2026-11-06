@@ -1,6 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/language_provider.dart';
+import '../services/dictation_service.dart';
+import '../services/dictation_strings.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared KarYab UI kit. Every value here is lifted unchanged from
@@ -596,6 +601,92 @@ void kSnack(
     behavior: SnackBarBehavior.floating,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
   ));
+}
+
+// ── Dictation (Phase 8) ──────────────────────────────────────────────────────
+
+/// Microphone suffix for free-text fields (Phase 8, blueprint §2.1).
+/// Dictates into [controller] in the current app language, appended
+/// after whatever the field already holds. When the phone cannot
+/// recognize the app language, tapping shows the localized
+/// not-available message instead of failing. [service] is injectable
+/// for tests; production uses the shared plugin-backed instance.
+class KDictationButton extends StatefulWidget {
+  final TextEditingController controller;
+  final DictationService? service;
+
+  const KDictationButton({super.key, required this.controller, this.service});
+
+  @override
+  State<KDictationButton> createState() => _KDictationButtonState();
+}
+
+class _KDictationButtonState extends State<KDictationButton> {
+  bool _listening = false;
+  String _baseText = '';
+
+  DictationService get _service =>
+      widget.service ?? DictationService.instance;
+
+  String get _language {
+    try {
+      final lang =
+          Provider.of<LanguageProvider>(context, listen: false).language;
+      return lang.isNotEmpty ? lang : 'de';
+    } catch (_) {
+      return 'de';
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_listening) _service.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggle() async {
+    if (_listening) {
+      await _service.stop();
+      if (mounted) setState(() => _listening = false);
+      return;
+    }
+    final lang = _language;
+    _baseText = widget.controller.text.trim();
+    final started = await _service.start(
+      languageCode: lang,
+      onResult: (words, isFinal) {
+        if (!mounted) return;
+        final text = _baseText.isEmpty
+            ? words
+            : (words.isEmpty ? _baseText : '$_baseText $words');
+        widget.controller.value = TextEditingValue(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+        if (isFinal && _listening) setState(() => _listening = false);
+      },
+    );
+    if (!mounted) return;
+    if (!started) {
+      kSnack(context, DictationStrings.notAvailable(lang),
+          kind: KSnackKind.info);
+      return;
+    }
+    setState(() => _listening = true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: DictationStrings.dictate(_language),
+      onPressed: _toggle,
+      icon: Icon(
+        _listening ? Icons.mic_rounded : Icons.mic_none_rounded,
+        color: _listening ? Colors.redAccent : KColors.greenDark,
+        size: 22,
+      ),
+    );
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

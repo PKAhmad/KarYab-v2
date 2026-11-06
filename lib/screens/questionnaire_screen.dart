@@ -3646,6 +3646,10 @@ class _TxtField extends StatelessWidget {
               color: Color(0xFF65738A), fontSize: 14),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(14),
+          // Voice dictation on free-text fields only (Phase 8).
+          suffixIcon: type == TextInputType.text
+              ? KDictationButton(controller: controller)
+              : null,
         ),
       ),
     );
