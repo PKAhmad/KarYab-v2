@@ -1,7 +1,6 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -693,22 +692,22 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-            color: Colors.white.withOpacity(0.9), width: 1.2),
+            color: Colors.white.withValues(alpha: 0.9), width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.18),
+            color: Colors.black.withValues(alpha: 0.18),
             blurRadius: 24,
             spreadRadius: 2,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             spreadRadius: 0,
             offset: const Offset(0, 2),
           ),
           BoxShadow(
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             blurRadius: 0,
             spreadRadius: 0,
             offset: const Offset(-2, -2),
@@ -891,14 +890,14 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
+        color: Colors.white.withValues(alpha: 0.85),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.9), width: 1.2),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),

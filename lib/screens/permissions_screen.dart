@@ -451,15 +451,15 @@ class _BigPermissionButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: granted
                     ? const Color(0xFFEAFBE9)
-                    : Colors.white.withOpacity(0.85),
+                    : Colors.white.withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: granted ? green : Colors.white.withOpacity(0.9),
+                  color: granted ? green : Colors.white.withValues(alpha: 0.9),
                   width: granted ? 2.2 : 1.2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
+                    color: Colors.black.withValues(alpha: 0.10),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -497,7 +497,7 @@ class _BigPermissionButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFFEAFBE9),
               shape: BoxShape.circle,
-              border: Border.all(color: green.withOpacity(0.4)),
+              border: Border.all(color: green.withValues(alpha: 0.4)),
             ),
             child: const Icon(Icons.volume_up_rounded, color: green, size: 24),
           ),
@@ -531,12 +531,12 @@ class _ContinueButton extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF07112B).withOpacity(0.30),
+            color: const Color(0xFF07112B).withValues(alpha: 0.30),
             blurRadius: 22,
             offset: const Offset(0, 13),
           ),
           BoxShadow(
-            color: green.withOpacity(0.22),
+            color: green.withValues(alpha: 0.22),
             blurRadius: 28,
             offset: const Offset(18, 16),
           ),
@@ -576,8 +576,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -635,12 +635,10 @@ class _GlassSurface extends StatelessWidget {
 
   const _GlassSurface({
     required this.child,
-    this.width,
-    this.height,
     required this.borderRadius,
     required this.padding,
     this.shadowOpacity = 0.09,
-  });
+  }) : width = null : height;
 
   @override
   Widget build(BuildContext context) {
@@ -653,24 +651,24 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withOpacity(0.85), width: 1.2),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 blurRadius: 0,
                 spreadRadius: 0,
                 offset: const Offset(-2, -2),

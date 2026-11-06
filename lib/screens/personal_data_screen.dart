@@ -516,10 +516,10 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 decoration: BoxDecoration(
                   color: sel
                       ? const Color(0xFFEAFBE9)
-                      : Colors.white.withOpacity(0.85),
+                      : Colors.white.withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: sel ? _green : Colors.white.withOpacity(0.9),
+                    color: sel ? _green : Colors.white.withValues(alpha: 0.9),
                     width: sel ? 2.0 : 1.2,
                   ),
                 ),
@@ -715,7 +715,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                   color: const Color(0xFFEAFBE9),
                   border: Border.all(
                     color:
-                        _photoPath != null ? _green : Colors.white.withOpacity(0.9),
+                        _photoPath != null ? _green : Colors.white.withValues(alpha: 0.9),
                     width: 2,
                   ),
                 ),
@@ -787,12 +787,12 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.2),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -873,7 +873,7 @@ class _QCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFEAFBE9),
                       shape: BoxShape.circle,
-                      border: Border.all(color: _green.withOpacity(0.4)),
+                      border: Border.all(color: _green.withValues(alpha: 0.4)),
                     ),
                     child: const Icon(Icons.volume_up_rounded,
                         color: _green, size: 15),
@@ -905,11 +905,11 @@ class _TxtField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.9)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.9)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
         ],
       ),
       child: TextField(
@@ -995,6 +995,11 @@ class _Drop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
+      // Deliberately still `value`, not the dart-fix suggested `initialValue`:
+      // the DOB day/month/year dropdowns are controlled by the parent and can
+      // be set programmatically (edit-mode prefill / reset), which
+      // `initialValue` would not reflect after first build.
+      // ignore: deprecated_member_use
       value: value,
       hint: Text(hint,
           style: const TextStyle(color: Color(0xFF65738A), fontSize: 12)),
@@ -1004,16 +1009,16 @@ class _Drop extends StatelessWidget {
       isExpanded: true,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.85),
+        fillColor: Colors.white.withValues(alpha: 0.85),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.9)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.9)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.9)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.9)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -1056,7 +1061,7 @@ class _BigButton extends StatelessWidget {
           color: const Color(0xFF39EA2B),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF39EA2B).withOpacity(0.35),
+              color: const Color(0xFF39EA2B).withValues(alpha: 0.35),
               blurRadius: 22,
               offset: const Offset(0, 12),
             ),
@@ -1113,8 +1118,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -1179,17 +1184,17 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withOpacity(0.85), width: 1.2),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.18),
+                  color: Colors.black.withValues(alpha: 0.18),
                   blurRadius: 24,
                   spreadRadius: 2,
                   offset: const Offset(0, 8)),
               BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
                   offset: const Offset(0, 2)),
             ],

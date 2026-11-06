@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -399,7 +398,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         if (path.isEmpty) return;
         final exists = await File(path).exists();
         if (!exists) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
               _lang == 'ps'
                   ? 'د CV فایل ونه موندل شو'
@@ -408,11 +408,13 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                       : 'CV file not found',
             ),
           ));
+          }
           return;
         }
         if (!await launchUrl(Uri.file(path),
             mode: LaunchMode.externalApplication)) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
               _lang == 'ps'
                   ? 'CV پرانستل نشوه'
@@ -421,6 +423,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                       : 'Could not open CV file',
             ),
           ));
+          }
         }
         return;
       }
@@ -611,11 +614,11 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                 padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
                                 child: Column(
                                   children: [
-                                    Row(
+                                    const Row(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment: CrossAxisAlignment.baseline,
                                       textBaseline: TextBaseline.alphabetic,
-                                      children: const [
+                                      children: [
                                         Text(
                                           'Kar',
                                           style: TextStyle(
@@ -1382,7 +1385,7 @@ class _LanguagePicker extends StatelessWidget {
                     horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? _green.withOpacity(0.08)
+                      ? _green.withValues(alpha: 0.08)
                       : KColors.pageBase,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(

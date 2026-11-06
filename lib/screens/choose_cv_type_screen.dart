@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -431,7 +430,7 @@ class _CvTypeCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: KColors.mint,
                 shape: BoxShape.circle,
-                border: Border.all(color: iconColor.withOpacity(0.3), width: 1),
+                border: Border.all(color: iconColor.withValues(alpha: 0.3), width: 1),
               ),
               child: Icon(icon, color: iconColor, size: 28),
             ),
@@ -472,7 +471,7 @@ class _CvTypeCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: KColors.mint,
                     shape: BoxShape.circle,
-                    border: Border.all(color: _green.withOpacity(0.4)),
+                    border: Border.all(color: _green.withValues(alpha: 0.4)),
                   ),
                   child: const Icon(Icons.volume_up_rounded,
                       color: _green, size: 17),

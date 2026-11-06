@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
@@ -874,24 +873,24 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.2),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.18),
+              color: Colors.black.withValues(alpha: 0.18),
               blurRadius: 24,
               spreadRadius: 2,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 8,
               spreadRadius: 0,
               offset: const Offset(0, 2),
             ),
             BoxShadow(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               blurRadius: 0,
               spreadRadius: 0,
               offset: const Offset(-2, -2),
@@ -1021,13 +1020,13 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         height: 40,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-              color: Colors.white.withOpacity(0.9), width: 1.2),
+              color: Colors.white.withValues(alpha: 0.9), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -1111,7 +1110,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? _green.withOpacity(0.10) : KColors.pageBase,
+          color: selected ? _green.withValues(alpha: 0.10) : KColors.pageBase,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: selected ? _green : KColors.borderSoft,
@@ -1211,13 +1210,13 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         height: 44,
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-              color: Colors.white.withOpacity(0.9), width: 1.2),
+              color: Colors.white.withValues(alpha: 0.9), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
             ),
           ],
@@ -1225,7 +1224,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         child: Row(
           textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           children: [
-            Icon(Icons.search_rounded, color: _muted, size: 20),
+            const Icon(Icons.search_rounded, color: _muted, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: TextField(
@@ -1283,7 +1282,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         decoration: BoxDecoration(
           color: KColors.mint,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _green.withOpacity(0.4)),
+          border: Border.all(color: _green.withValues(alpha: 0.4)),
         ),
         child: Row(
           children: [
@@ -1388,7 +1387,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: _green.withOpacity(0.30),
+                        color: _green.withValues(alpha: 0.30),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -1439,7 +1438,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.location_searching_rounded, color: _muted, size: 52),
+              const Icon(Icons.location_searching_rounded, color: _muted, size: 52),
               const SizedBox(height: 16),
               Text(
                 _cityPromptLabel,
@@ -1462,7 +1461,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: _green.withOpacity(0.30),
+                        color: _green.withValues(alpha: 0.30),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -1513,7 +1512,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.search_off_rounded, color: _muted, size: 52),
+              const Icon(Icons.search_off_rounded, color: _muted, size: 52),
               const SizedBox(height: 16),
               Text(
                 _emptyLabel,
@@ -1587,7 +1586,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
             color: KColors.mint,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-                color: _green.withOpacity(0.3), width: 1),
+                color: _green.withValues(alpha: 0.3), width: 1),
           ),
           child: Icon(icon, color: _green, size: 22),
         ),
@@ -1670,7 +1669,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
                 color: KColors.mint,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                    color: _green.withOpacity(0.3), width: 1),
+                    color: _green.withValues(alpha: 0.3), width: 1),
               ),
               child: Icon(icon, color: _green, size: 26),
             ),
@@ -1721,7 +1720,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
                     color: KColors.mint,
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: _green.withOpacity(0.3), width: 1),
+                        color: _green.withValues(alpha: 0.3), width: 1),
                   ),
                   child: const Icon(Icons.volume_up_rounded,
                       color: _green, size: 18),
@@ -1761,7 +1760,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: _green.withOpacity(0.30),
+                    color: _green.withValues(alpha: 0.30),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -1838,7 +1837,7 @@ class _LangPill extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: _navy.withOpacity(0.20),
+              color: _navy.withValues(alpha: 0.20),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -1930,7 +1929,7 @@ class _LanguagePicker extends StatelessWidget {
                     horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? _green.withOpacity(0.08)
+                      ? _green.withValues(alpha: 0.08)
                       : KColors.pageBase,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(

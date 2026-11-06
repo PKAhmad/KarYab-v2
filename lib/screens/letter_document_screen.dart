@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
@@ -808,7 +807,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
           _unterlagenHint,
           textDirection: dir,
           style: TextStyle(
-              color: _navy.withOpacity(0.65), fontSize: 12, height: 1.4),
+              color: _navy.withValues(alpha: 0.65), fontSize: 12, height: 1.4),
         ),
         const SizedBox(height: 8),
         for (final e in _kStdUnterlagen.entries)
@@ -827,7 +826,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
                           fontSize: 12,
                           fontWeight: FontWeight.w700)),
                   backgroundColor: KColors.mint,
-                  side: BorderSide(color: _green.withOpacity(0.5)),
+                  side: BorderSide(color: _green.withValues(alpha: 0.5)),
                   deleteIconColor: _navy,
                   onDeleted: () => setState(() => _custom.remove(c)),
                 ),
@@ -850,19 +849,19 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
                   counterText: '',
                   hintText: full ? _maxReachedLabel : _customHint,
                   hintStyle:
-                      TextStyle(color: _navy.withOpacity(0.45), fontSize: 12),
+                      TextStyle(color: _navy.withValues(alpha: 0.45), fontSize: 12),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.85),
+                  fillColor: Colors.white.withValues(alpha: 0.85),
                   isDense: true,
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(color: _navy.withOpacity(0.12)),
+                    borderSide: BorderSide(color: _navy.withValues(alpha: 0.12)),
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(color: _navy.withOpacity(0.08)),
+                    borderSide: BorderSide(color: _navy.withValues(alpha: 0.08)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -909,7 +908,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
               value: on,
               activeColor: _green,
               checkColor: _navy,
-              side: BorderSide(color: _navy.withOpacity(0.4), width: 1.4),
+              side: BorderSide(color: _navy.withValues(alpha: 0.4), width: 1.4),
               onChanged: (!on && full)
                   ? null
                   : (v) => _toggleUnterlage(key, v ?? false),
@@ -930,7 +929,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
                       textDirection:
                           _isRtl ? TextDirection.rtl : TextDirection.ltr,
                       style: TextStyle(
-                          color: _navy.withOpacity(0.55), fontSize: 11),
+                          color: _navy.withValues(alpha: 0.55), fontSize: 11),
                     ),
                 ],
               ),
@@ -957,7 +956,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
           _germanHint,
           textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
           style: TextStyle(
-              color: _navy.withOpacity(0.65), fontSize: 12, height: 1.4),
+              color: _navy.withValues(alpha: 0.65), fontSize: 12, height: 1.4),
         ),
         const SizedBox(height: 12),
         _letterField(_subjectLabel, _subjectCtrl, minLines: 1),

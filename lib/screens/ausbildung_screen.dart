@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
@@ -573,12 +572,12 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.2),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.18),
+              color: Colors.black.withValues(alpha: 0.18),
               blurRadius: 24,
               spreadRadius: 2,
               offset: const Offset(0, 8),
@@ -664,7 +663,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.location_searching_rounded, color: _muted, size: 52),
+              const Icon(Icons.location_searching_rounded, color: _muted, size: 52),
               const SizedBox(height: 16),
               Text(
                 _cityPromptLabel,
@@ -687,7 +686,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: _green.withOpacity(0.30),
+                        color: _green.withValues(alpha: 0.30),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -735,11 +734,11 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         height: 44,
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.2),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
           ],
         ),
         child: Row(
@@ -819,13 +818,13 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         height: 40,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-              color: Colors.white.withOpacity(0.9), width: 1.2),
+              color: Colors.white.withValues(alpha: 0.9), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -909,7 +908,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? _green.withOpacity(0.10) : KColors.pageBase,
+          color: selected ? _green.withValues(alpha: 0.10) : KColors.pageBase,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: selected ? _green : KColors.borderSoft,
@@ -1047,7 +1046,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.search_off_rounded, color: _muted, size: 52),
+              const Icon(Icons.search_off_rounded, color: _muted, size: 52),
               const SizedBox(height: 16),
               Text(_emptyLbl,
                   textAlign: TextAlign.center,
@@ -1056,7 +1055,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
               const SizedBox(height: 8),
               Text(_emptySuggestionLbl,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: _muted, fontSize: 12, height: 1.4)),
+                  style: const TextStyle(color: _muted, fontSize: 12, height: 1.4)),
             ],
           ),
         ),
@@ -1093,7 +1092,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
               decoration: BoxDecoration(
                 color: KColors.mint,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _green.withOpacity(0.3), width: 1),
+                border: Border.all(color: _green.withValues(alpha: 0.3), width: 1),
               ),
               child: const Icon(Icons.school_rounded, color: _green, size: 22),
             ),

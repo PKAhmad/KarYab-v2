@@ -82,12 +82,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   final _skillSearchCtrl = TextEditingController();
   final _refNameCtrl     = TextEditingController();
   final _refPhoneCtrl    = TextEditingController();
-  List<String> _skills        = [];
+  final List<String> _skills        = [];
   String?      _workExperience;
   String?      _workType;
   String?      _tools;
   String?      _drivingLicense;
-  List<String> _languages     = [];
+  final List<String> _languages     = [];
   String?      _availability;
   String?      _startDate;
   String?      _reference;
@@ -122,7 +122,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   // ── Q13 (educated) — per-language CEFR proficiency ─────────────────────────
   // Language (German display label) -> level. Populated as the user taps a
   // language chip then a level in the same motion.
-  Map<String, String> _languageProficiency = {};
+  final Map<String, String> _languageProficiency = {};
 
   // ── Effective voiceMode (with SharedPreferences fallback) ──────────────────
   late bool _voiceMode;
@@ -305,7 +305,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       SnackBar(
         content: Text(_maxLimitMsg,
             style: const TextStyle(color: Colors.white, fontSize: 13)),
-        backgroundColor: _navy.withOpacity(0.85),
+        backgroundColor: _navy.withValues(alpha: 0.85),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -457,7 +457,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
                       color: _lang == pair[0]
-                          ? _green.withOpacity(0.08)
+                          ? _green.withValues(alpha: 0.08)
                           : const Color(0xFFF7FAFF),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
@@ -556,7 +556,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAFBE9),
                   shape: BoxShape.circle,
-                  border: Border.all(color: _green.withOpacity(0.4)),
+                  border: Border.all(color: _green.withValues(alpha: 0.4)),
                 ),
                 child: const Icon(Icons.stop_rounded, color: _green, size: 18),
               ),
@@ -1330,10 +1330,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             decoration: BoxDecoration(
               color: sel
                   ? const Color(0xFFEAFBE9)
-                  : Colors.white.withOpacity(0.85),
+                  : Colors.white.withValues(alpha: 0.85),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: sel ? _green : Colors.white.withOpacity(0.9),
+                color: sel ? _green : Colors.white.withValues(alpha: 0.9),
                 width: sel ? 2.0 : 1.2,
               ),
             ),
@@ -1523,7 +1523,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               TtsService().speak(lbl, 'fa');
             }
             setState(() {
-              if (sel) _skills.remove(s.$1); else _skills.add(s.$1);
+              if (sel) {
+                _skills.remove(s.$1);
+              } else {
+                _skills.add(s.$1);
+              }
             });
           },
           // Opaque background — BackdropFilter compositing fix (see _bigChoices).
@@ -1540,9 +1544,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               ),
               boxShadow: sel
                   ? [BoxShadow(
-                      color: _green.withOpacity(0.15), blurRadius: 8)]
+                      color: _green.withValues(alpha: 0.15), blurRadius: 8)]
                   : [BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 6)],
             ),
             child: Padding(
@@ -1607,12 +1611,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
+            color: Colors.white.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.9)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.9)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
               ),
             ],
@@ -1641,7 +1645,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             final sel = _skills.contains(s.$1);
             return GestureDetector(
               onTap: () => setState(() {
-                if (sel) _skills.remove(s.$1); else _skills.add(s.$1);
+                if (sel) {
+                  _skills.remove(s.$1);
+                } else {
+                  _skills.add(s.$1);
+                }
               }),
               // Opaque background — BackdropFilter compositing fix.
               child: AnimatedContainer(
@@ -1695,7 +1703,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0xFFEAFBE9),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _green.withOpacity(0.5)),
+                          border: Border.all(color: _green.withValues(alpha: 0.5)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -1758,7 +1766,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               decoration: BoxDecoration(
                 color: sel
                     ? const Color(0xFFEAFBE9)
-                    : Colors.white.withOpacity(0.8),
+                    : Colors.white.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: sel ? const Color(0xFF39EA2B) : Colors.white,
@@ -1766,19 +1774,19 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.18),
+                    color: Colors.black.withValues(alpha: 0.18),
                     blurRadius: 24,
                     spreadRadius: 2,
                     offset: const Offset(0, 8),
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 8,
                     spreadRadius: 0,
                     offset: const Offset(0, 2),
                   ),
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     blurRadius: 0,
                     spreadRadius: 0,
                     offset: const Offset(-2, -2),
@@ -1965,7 +1973,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         border: Border.all(color: const Color(0xFFDDE4EF)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4)),
         ],
@@ -2197,7 +2205,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.55),
+        color: Colors.white.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFDDE4EF)),
       ),
@@ -2311,7 +2319,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFFEAFBE9),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: _green.withOpacity(0.5)),
+              border: Border.all(color: _green.withValues(alpha: 0.5)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -2546,8 +2554,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 child: Container(
                                   width: 44,
                                   height: 44,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFEAFBE9),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFEAFBE9),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(Icons.volume_up_rounded,
@@ -2616,7 +2624,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.6),
+        color: Colors.white.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFDDE4EF)),
       ),
@@ -2693,7 +2701,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFFEAFBE9),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: _green.withOpacity(0.5), width: 1.5),
+              border: Border.all(color: _green.withValues(alpha: 0.5), width: 1.5),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -3249,7 +3257,7 @@ class _QCard extends StatelessWidget {
                       color: const Color(0xFFEAFBE9),
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: _green.withOpacity(0.4)),
+                          color: _green.withValues(alpha: 0.4)),
                     ),
                     child: const Icon(Icons.volume_up_rounded,
                         color: _green, size: 15),
@@ -3287,12 +3295,12 @@ class _TxtField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.9)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
           ),
         ],
@@ -3348,8 +3356,8 @@ class _BigButton extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: isGreen
-                ? const Color(0xFF39EA2B).withOpacity(0.35)
-                : const Color(0xFF07112B).withOpacity(0.30),
+                ? const Color(0xFF39EA2B).withValues(alpha: 0.35)
+                : const Color(0xFF07112B).withValues(alpha: 0.30),
             blurRadius: 22,
             offset: const Offset(0, 12),
           ),
@@ -3401,7 +3409,7 @@ class _LangPill extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF091733).withOpacity(0.20),
+              color: const Color(0xFF091733).withValues(alpha: 0.20),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -3453,7 +3461,7 @@ class _NavIconBtn extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       decoration: BoxDecoration(
         color: hintPulse
-            ? const Color(0xFF091733).withOpacity(0.85)
+            ? const Color(0xFF091733).withValues(alpha: 0.85)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
       ),
@@ -3488,8 +3496,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -3567,25 +3575,25 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-                color: Colors.white.withOpacity(0.85), width: 1.2),
+                color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 blurRadius: 0,
                 spreadRadius: 0,
                 offset: const Offset(-2, -2),

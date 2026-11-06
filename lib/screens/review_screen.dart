@@ -323,7 +323,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: const Color(0xFFEAFBE9),
-                  border: Border.all(color: _green.withOpacity(0.4), width: 2),
+                  border: Border.all(color: _green.withValues(alpha: 0.4), width: 2),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: p.photoPath != null
@@ -386,7 +386,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFFEAFBE9),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: _green.withOpacity(0.4)),
+              border: Border.all(color: _green.withValues(alpha: 0.4)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -598,7 +598,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 child: Container(
                   height: 56,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(color: _navy, width: 1.8),
                   ),
@@ -655,7 +655,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF07112B).withOpacity(0.30),
+                        color: const Color(0xFF07112B).withValues(alpha: 0.30),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -889,7 +889,7 @@ class _GreenChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFEAFBE9),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _green.withOpacity(0.5)),
+        border: Border.all(color: _green.withValues(alpha: 0.5)),
       ),
       child: Text(
         label,
@@ -929,7 +929,7 @@ class _GlassIconBtn extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       decoration: BoxDecoration(
         color: hintPulse
-            ? const Color(0xFF091733).withOpacity(0.85)
+            ? const Color(0xFF091733).withValues(alpha: 0.85)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
       ),
@@ -963,8 +963,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -1042,25 +1042,25 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-                color: Colors.white.withOpacity(0.85), width: 1.2),
+                color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 blurRadius: 0,
                 spreadRadius: 0,
                 offset: const Offset(-2, -2),

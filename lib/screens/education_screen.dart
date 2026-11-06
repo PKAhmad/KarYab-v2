@@ -351,7 +351,7 @@ class _TopButton extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       decoration: BoxDecoration(
         color: hintPulse
-            ? const Color(0xFF091733).withOpacity(0.85)
+            ? const Color(0xFF091733).withValues(alpha: 0.85)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
       ),
@@ -445,17 +445,17 @@ class _OptionCard extends StatelessWidget {
             ? (isYes
                 ? const Color(0xF0F6FFF5)
                 : const Color(0xFFFFF5F5))
-            : Colors.white.withOpacity(0.62),
+            : Colors.white.withValues(alpha: 0.62),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: selected ? _accentColor : Colors.white.withOpacity(0.80),
+          color: selected ? _accentColor : Colors.white.withValues(alpha: 0.80),
           width: selected ? 2.0 : 1.2,
         ),
         boxShadow: [
           BoxShadow(
             color: selected
-                ? _accentColor.withOpacity(0.15)
-                : Colors.black.withOpacity(0.06),
+                ? _accentColor.withValues(alpha: 0.15)
+                : Colors.black.withValues(alpha: 0.06),
             blurRadius: selected ? 22 : 14,
             offset: const Offset(0, 10),
           ),
@@ -582,12 +582,12 @@ class _ContinueButton extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF07112B).withOpacity(0.30),
+              color: const Color(0xFF07112B).withValues(alpha: 0.30),
               blurRadius: 22,
               offset: const Offset(0, 13),
             ),
             BoxShadow(
-              color: green.withOpacity(0.22),
+              color: green.withValues(alpha: 0.22),
               blurRadius: 28,
               offset: const Offset(18, 16),
             ),
@@ -628,8 +628,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -705,25 +705,25 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
             border:
-                Border.all(color: Colors.white.withOpacity(0.85), width: 1.2),
+                Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 blurRadius: 0,
                 spreadRadius: 0,
                 offset: const Offset(-2, -2),

@@ -145,25 +145,25 @@ class KGlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-                color: Colors.white.withOpacity(0.85), width: 1.2),
+                color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 blurRadius: 0,
                 spreadRadius: 0,
                 offset: const Offset(-2, -2),
@@ -201,7 +201,7 @@ class KNavButton extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       decoration: BoxDecoration(
         color: hintPulse
-            ? KColors.navy.withOpacity(0.85)
+            ? KColors.navy.withValues(alpha: 0.85)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
       ),
@@ -250,7 +250,7 @@ class KLangPill extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: KColors.navy.withOpacity(0.20),
+              color: KColors.navy.withValues(alpha: 0.20),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -319,12 +319,12 @@ class KPrimaryCta extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: KColors.ctaEnd.withOpacity(0.30),
+              color: KColors.ctaEnd.withValues(alpha: 0.30),
               blurRadius: 22,
               offset: const Offset(0, 12),
             ),
             BoxShadow(
-              color: KColors.green.withOpacity(0.20),
+              color: KColors.green.withValues(alpha: 0.20),
               blurRadius: 26,
               offset: const Offset(14, 14),
             ),
@@ -345,7 +345,7 @@ class KPrimaryCta extends StatelessWidget {
                     width: 38,
                     height: 38,
                     decoration: BoxDecoration(
-                      color: KColors.green.withOpacity(0.18),
+                      color: KColors.green.withValues(alpha: 0.18),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(icon, color: KColors.green, size: 20),
@@ -432,13 +432,13 @@ class KGridTile extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.62),
+              color: Colors.white.withValues(alpha: 0.62),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                  color: Colors.white.withOpacity(0.85), width: 1.2),
+                  color: Colors.white.withValues(alpha: 0.85), width: 1.2),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 14,
                   offset: const Offset(0, 8),
                 ),
@@ -459,7 +459,7 @@ class KGridTile extends StatelessWidget {
                         width: iconBox,
                         height: iconBox,
                         decoration: BoxDecoration(
-                          color: iconColor.withOpacity(0.12),
+                          color: iconColor.withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(icon, color: iconColor, size: iconSize),
@@ -532,16 +532,16 @@ class KGlassCard extends StatelessWidget {
       duration: const Duration(milliseconds: 180),
       decoration: BoxDecoration(
         color: selected
-            ? KColors.green.withOpacity(0.07)
-            : Colors.white.withOpacity(0.62),
+            ? KColors.green.withValues(alpha: 0.07)
+            : Colors.white.withValues(alpha: 0.62),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: selected ? KColors.green : Colors.white.withOpacity(0.85),
+          color: selected ? KColors.green : Colors.white.withValues(alpha: 0.85),
           width: selected ? 2.0 : 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),

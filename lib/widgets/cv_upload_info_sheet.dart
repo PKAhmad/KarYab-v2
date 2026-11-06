@@ -287,7 +287,7 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF07112B).withOpacity(0.30),
+                        color: const Color(0xFF07112B).withValues(alpha: 0.30),
                         blurRadius: 18,
                         offset: const Offset(0, 8),
                       ),
@@ -311,7 +311,7 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
                   onTap: () => Navigator.pop(context),
                   child: Text(
                     _cancelLabel,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: _muted,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

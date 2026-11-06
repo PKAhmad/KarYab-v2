@@ -55,7 +55,9 @@ class TtsService {
   void removeListener(void Function() listener) => _listeners.remove(listener);
 
   void _notifyListeners() {
-    for (final l in List.of(_listeners)) l();
+    for (final l in List.of(_listeners)) {
+      l();
+    }
   }
 
   void _setPlaying(bool value) {

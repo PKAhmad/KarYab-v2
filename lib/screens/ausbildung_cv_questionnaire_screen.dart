@@ -822,7 +822,7 @@ class _AusbildungCvQuestionnaireScreenState
       SnackBar(
         content: Text(_maxLimitMsg,
             style: const TextStyle(color: Colors.white, fontSize: 13)),
-        backgroundColor: _navy.withOpacity(0.85),
+        backgroundColor: _navy.withValues(alpha: 0.85),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -836,7 +836,7 @@ class _AusbildungCvQuestionnaireScreenState
       SnackBar(
         content: Text(_maxReachedMsg,
             style: const TextStyle(color: Colors.white, fontSize: 13)),
-        backgroundColor: _navy.withOpacity(0.85),
+        backgroundColor: _navy.withValues(alpha: 0.85),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -1010,7 +1010,7 @@ class _AusbildungCvQuestionnaireScreenState
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.55),
+        color: Colors.white.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFDDE4EF)),
       ),
@@ -1155,7 +1155,7 @@ class _AusbildungCvQuestionnaireScreenState
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.55),
+        color: Colors.white.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFDDE4EF)),
       ),
@@ -1797,7 +1797,7 @@ class _AusbildungCvQuestionnaireScreenState
         decoration: BoxDecoration(
           color: const Color(0xFFEAFBE9),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _green.withOpacity(0.5)),
+          border: Border.all(color: _green.withValues(alpha: 0.5)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -2179,7 +2179,7 @@ class _SectionCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFEAFBE9),
                       shape: BoxShape.circle,
-                      border: Border.all(color: _green.withOpacity(0.4)),
+                      border: Border.all(color: _green.withValues(alpha: 0.4)),
                     ),
                     child: const Icon(Icons.volume_up_rounded,
                         color: _green, size: 15),
@@ -2225,20 +2225,19 @@ class _TxtField extends StatelessWidget {
   const _TxtField({
     required this.controller,
     required this.hint,
-    this.type = TextInputType.text,
     this.action = TextInputAction.next,
     this.onSubmitted,
-  });
+  }) : type = TextInputType.text;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.9)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.9)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
         ],
       ),
       child: TextField(
@@ -2287,7 +2286,7 @@ class _BigButton extends StatelessWidget {
           color: const Color(0xFF39EA2B),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF39EA2B).withOpacity(0.35),
+              color: const Color(0xFF39EA2B).withValues(alpha: 0.35),
               blurRadius: 22,
               offset: const Offset(0, 12),
             ),
@@ -2344,7 +2343,7 @@ class _NavBtn extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         decoration: BoxDecoration(
           color: hintPulse
-              ? const Color(0xFF091733).withOpacity(0.85)
+              ? const Color(0xFF091733).withValues(alpha: 0.85)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
@@ -2369,8 +2368,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -2440,21 +2439,21 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withOpacity(0.85), width: 1.2),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.18),
+                  color: Colors.black.withValues(alpha: 0.18),
                   blurRadius: 24,
                   spreadRadius: 2,
                   offset: const Offset(0, 8)),
               BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
                   offset: const Offset(0, 2)),
               BoxShadow(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   blurRadius: 0,
                   offset: const Offset(-2, -2)),
             ],

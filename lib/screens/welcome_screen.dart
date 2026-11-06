@@ -213,8 +213,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -271,16 +271,16 @@ class _HeroGlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return const Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.topCenter,
       children: [
         _GlassSurface(
           borderRadius: 36,
-          padding: const EdgeInsets.fromLTRB(14, 50, 14, 14),
+          padding: EdgeInsets.fromLTRB(14, 50, 14, 14),
           shadowOpacity: 0.13,
           child: Column(
-            children: const [
+            children: [
               _KarYabWordMark(),
               SizedBox(height: 5),
               Directionality(
@@ -312,7 +312,7 @@ class _HeroGlassCard extends StatelessWidget {
             ],
           ),
         ),
-        const Positioned(
+        Positioned(
           top: -22,
           child: _LogoTile(),
         ),
@@ -329,7 +329,7 @@ class _LogoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _GlassSurface(
+    return const _GlassSurface(
       width: 70,
       height: 66,
       borderRadius: 22,
@@ -337,7 +337,7 @@ class _LogoTile extends StatelessWidget {
       shadowOpacity: 0.10,
       child: Stack(
         alignment: Alignment.center,
-        children: const [
+        children: [
           Positioned(
             left: 17,
             top: 16,
@@ -445,9 +445,9 @@ class _HeroFeatures extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
+      children: [
         _HeroFeature(icon: Icons.work_rounded, label: 'Job Finder'),
         _HeroFeature(icon: Icons.article_rounded, label: 'CV Generator'),
         _HeroFeature(icon: Icons.volume_up_rounded, label: 'Voice Support'),
@@ -511,15 +511,15 @@ class _LanguageCard extends StatelessWidget {
       curve: Curves.easeOut,
       height: 116,
       decoration: BoxDecoration(
-        color: selected ? const Color(0xF0F6FFF5) : Colors.white.withOpacity(0.62),
+        color: selected ? const Color(0xF0F6FFF5) : Colors.white.withValues(alpha: 0.62),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: selected ? green : Colors.white.withOpacity(0.80),
+          color: selected ? green : Colors.white.withValues(alpha: 0.80),
           width: selected ? 1.8 : 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: selected ? green.withOpacity(0.17) : Colors.black.withOpacity(0.06),
+            color: selected ? green.withValues(alpha: 0.17) : Colors.black.withValues(alpha: 0.06),
             blurRadius: selected ? 24 : 16,
             offset: const Offset(0, 12),
           ),
@@ -556,7 +556,7 @@ class _LanguageCard extends StatelessWidget {
                       color: selected ? const Color(0xFFE9FFE6) : const Color(0xFFF7F9FC),
                       boxShadow: [
                         BoxShadow(
-                          color: selected ? green.withOpacity(0.22) : Colors.black.withOpacity(0.05),
+                          color: selected ? green.withValues(alpha: 0.22) : Colors.black.withValues(alpha: 0.05),
                           blurRadius: 18,
                           offset: const Offset(0, 8),
                         ),
@@ -658,12 +658,12 @@ class _InfoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _GlassSurface(
+    return const _GlassSurface(
       borderRadius: 20,
-      padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+      padding: EdgeInsets.fromLTRB(10, 8, 8, 8),
       shadowOpacity: 0.06,
       child: Row(
-        children: const [
+        children: [
           CircleAvatar(
             radius: 18,
             backgroundColor: Color(0xFFEAFBE9),
@@ -700,7 +700,7 @@ class _GermanyPin extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(Icons.map_rounded, color: const Color(0xFFB9C2CE), size: 47),
+          const Icon(Icons.map_rounded, color: Color(0xFFB9C2CE), size: 47),
           Positioned(
             top: 15,
             right: 6,
@@ -741,12 +741,12 @@ class _ContinueButton extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF07112B).withOpacity(0.30),
+            color: const Color(0xFF07112B).withValues(alpha: 0.30),
             blurRadius: 22,
             offset: const Offset(0, 13),
           ),
           BoxShadow(
-            color: green.withOpacity(0.22),
+            color: green.withValues(alpha: 0.22),
             blurRadius: 28,
             offset: const Offset(18, 16),
           ),
@@ -757,9 +757,9 @@ class _ContinueButton extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(34),
           onTap: onTap,
-          child: Row(
+          child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Text(
                 'Continue',
                 style: TextStyle(
@@ -840,24 +840,24 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withOpacity(0.85), width: 1.2),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 blurRadius: 0,
                 spreadRadius: 0,
                 offset: const Offset(-2, -2),

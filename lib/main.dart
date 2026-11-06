@@ -57,7 +57,7 @@ class KarYabApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: (settings) {
-        PageRouteBuilder<dynamic> _fade(Widget screen) => PageRouteBuilder(
+        PageRouteBuilder<dynamic> fade(Widget screen) => PageRouteBuilder(
               pageBuilder: (_, __, ___) => screen,
               transitionsBuilder: (_, animation, __, child) => FadeTransition(
                 opacity: CurvedAnimation(
@@ -78,7 +78,7 @@ class KarYabApp extends StatelessWidget {
             final lang = args is Map<String, dynamic>
                 ? args['language'] as String? ?? 'en'
                 : args as String? ?? 'en';
-            return _fade(EducationScreen(language: lang));
+            return fade(EducationScreen(language: lang));
           }
           case '/permissions': {
             final args = settings.arguments;
@@ -91,7 +91,7 @@ class KarYabApp extends StatelessWidget {
               lang      = args['language']  as String? ?? 'en';
               voiceMode = args['voiceMode'] == true;
             }
-            return _fade(PermissionsScreen(language: lang, voiceMode: voiceMode));
+            return fade(PermissionsScreen(language: lang, voiceMode: voiceMode));
           }
           case '/introduction': {
             final args = settings.arguments;
@@ -104,7 +104,7 @@ class KarYabApp extends StatelessWidget {
               lang      = args['language']  as String? ?? 'en';
               voiceMode = args['voiceMode'] == true;
             }
-            return _fade(IntroductionScreen(language: lang, voiceMode: voiceMode));
+            return fade(IntroductionScreen(language: lang, voiceMode: voiceMode));
           }
           case '/choose-cv-type': {
             final args = settings.arguments;
@@ -117,7 +117,7 @@ class KarYabApp extends StatelessWidget {
               lang      = args['language']  as String? ?? 'en';
               voiceMode = args['voiceMode'] == true;
             }
-            return _fade(ChooseCvTypeScreen(language: lang, voiceMode: voiceMode));
+            return fade(ChooseCvTypeScreen(language: lang, voiceMode: voiceMode));
           }
           case '/questionnaire': {
             final args = settings.arguments;
@@ -130,22 +130,22 @@ class KarYabApp extends StatelessWidget {
               lang      = args['language']  as String? ?? 'en';
               voiceMode = args['voiceMode'] == true;
             }
-            return _fade(QuestionnaireScreen(language: lang, voiceMode: voiceMode));
+            return fade(QuestionnaireScreen(language: lang, voiceMode: voiceMode));
           }
           case '/jobfinder': {
             final args = settings.arguments;
             if (args is Map<String, dynamic>) {
               final lang      = args['language']  as String? ?? 'en';
               final voiceMode = args['voiceMode'] as bool?   ?? false;
-              return _fade(JobFinderScreen(language: lang, voiceMode: voiceMode));
+              return fade(JobFinderScreen(language: lang, voiceMode: voiceMode));
             }
             final lang = args as String? ?? 'en';
-            return _fade(JobFinderScreen(language: lang));
+            return fade(JobFinderScreen(language: lang));
           }
           case '/job_apply': {
             final args =
                 settings.arguments as Map<String, String>? ?? const {};
-            return _fade(JobApplyScreen(
+            return fade(JobApplyScreen(
               jobTitle:       args['jobTitle']       ?? '',
               companyName:    args['companyName']    ?? '',
               jobLocation:    args['jobLocation']    ?? '',
@@ -163,29 +163,29 @@ class KarYabApp extends StatelessWidget {
           case '/cv_preview': {
             final profile = settings.arguments;
             if (profile is UserProfile) {
-              return _fade(CvPreviewScreen(profile: profile));
+              return fade(CvPreviewScreen(profile: profile));
             }
-            return _fade(const _CvPreviewPlaceholder());
+            return fade(const _CvPreviewPlaceholder());
           }
           case '/ausbildung': {
             final args = settings.arguments;
             if (args is Map<String, dynamic>) {
               final lang      = args['language']  as String? ?? 'en';
               final voiceMode = args['voiceMode'] as bool?   ?? false;
-              return _fade(AusbildungScreen(language: lang, voiceMode: voiceMode));
+              return fade(AusbildungScreen(language: lang, voiceMode: voiceMode));
             }
             final lang = args as String? ?? 'en';
-            return _fade(AusbildungScreen(language: lang));
+            return fade(AusbildungScreen(language: lang));
           }
           case '/deutsch-courses': {
             final args = settings.arguments;
             if (args is Map<String, dynamic>) {
               final lang      = args['language']  as String? ?? 'en';
               final voiceMode = args['voiceMode'] as bool?   ?? false;
-              return _fade(DeutschCoursesScreen(language: lang, voiceMode: voiceMode));
+              return fade(DeutschCoursesScreen(language: lang, voiceMode: voiceMode));
             }
             final lang = args as String? ?? 'en';
-            return _fade(DeutschCoursesScreen(language: lang));
+            return fade(DeutschCoursesScreen(language: lang));
           }
           default:
             return MaterialPageRoute(builder: (_) => const WelcomeScreen());

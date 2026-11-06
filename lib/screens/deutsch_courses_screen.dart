@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -201,7 +200,7 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
       backgroundColor: KColors.pageBase,
       body: Stack(
         children: [
-          KBackgroundGlow(accent: const Color(0x44B086FF)),
+          const KBackgroundGlow(accent: Color(0x44B086FF)),
           SafeArea(
             child: Column(
               children: [
@@ -330,7 +329,7 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
           Container(
             width: 36,
             height: 36,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: KColors.mint,
               shape: BoxShape.circle,
             ),
@@ -360,12 +359,12 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
+        color: Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.2),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.05), blurRadius: 8),
+              color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
         ],
       ),
       child: Row(
@@ -411,17 +410,17 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: Colors.white, width: 1.2),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8)),
             BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 2)),
           ],

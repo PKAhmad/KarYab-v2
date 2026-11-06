@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -72,7 +71,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   // ── Highlight animation ────────────────────────────────────────────────────
   late AnimationController _highlightController;
   late Animation<double>   _highlightAnimation;
-  bool _showHighlight = true;
+  final bool _showHighlight = true;
 
   // ── User data from shared_preferences ─────────────────────────────────────
 
@@ -574,7 +573,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
           .replaceAll(RegExp(r'[^\w\s]'), '')
           .replaceAll(' ', '_');
       final coverPath =
-          '${tempDir.path}/Anschreiben_${cleanCompany}_${cleanJob}.pdf';
+          '${tempDir.path}/Anschreiben_${cleanCompany}_$cleanJob.pdf';
       await File(coverPath).writeAsBytes(bytes);
       await prefs.setString('temp_cover_path', coverPath);
     } catch (_) {}
@@ -773,7 +772,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
       final cleanCompany = _cleanFilename(widget.companyName);
       final cleanJob     = _cleanFilename(widget.jobTitle);
-      final filename     = 'Anschreiben_${cleanCompany}_${cleanJob}.pdf';
+      final filename     = 'Anschreiben_${cleanCompany}_$cleanJob.pdf';
       final filePath     = '$downloadPath/$filename';
       final file = File(filePath);
       await file.writeAsBytes(bytes);
@@ -949,7 +948,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
               duration: const Duration(milliseconds: 250),
               decoration: BoxDecoration(
                 color: TtsService().hintPulseActive
-                    ? const Color(0xFF091733).withOpacity(0.85)
+                    ? const Color(0xFF091733).withValues(alpha: 0.85)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -1187,7 +1186,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         border: Border.all(color: const Color(0xFFFFF176), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1327,7 +1326,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.07),
+                color: Colors.black.withValues(alpha: 0.07),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -1673,7 +1672,7 @@ class _DashedBorderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color.withOpacity(opacity)
+      ..color = color.withValues(alpha: opacity)
       ..strokeWidth = 5.5
       ..style = PaintingStyle.stroke;
 
@@ -1736,24 +1735,24 @@ class _OptionCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.18),
+              color: Colors.black.withValues(alpha: 0.18),
               blurRadius: 24,
               spreadRadius: 2,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 8,
               spreadRadius: 0,
               offset: const Offset(0, 2),
             ),
             BoxShadow(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               blurRadius: 0,
               spreadRadius: 0,
               offset: const Offset(-2, -2),
@@ -1865,8 +1864,8 @@ class _BackgroundGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -2016,7 +2015,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
           .replaceAll(' ', '_');
       final tempDir   = await getTemporaryDirectory();
       final coverPath =
-          '${tempDir.path}/Anschreiben_${cleanCompany}_${cleanJob}.pdf';
+          '${tempDir.path}/Anschreiben_${cleanCompany}_$cleanJob.pdf';
       try {
         final bytes = await _generateCoverLetterBytes();
         coverFile = File(coverPath);
@@ -2811,7 +2810,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _isGenerating
-                          ? _green.withOpacity(0.6)
+                          ? _green.withValues(alpha: 0.6)
                           : _green,
                       foregroundColor: _navy,
                       padding:
@@ -3044,7 +3043,7 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: _green.withOpacity(0.15),
+                        color: _green.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -3358,25 +3357,25 @@ class _GlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.62),
+            color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-                color: Colors.white.withOpacity(0.85), width: 1.2),
+                color: Colors.white.withValues(alpha: 0.85), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 blurRadius: 0,
                 spreadRadius: 0,
                 offset: const Offset(-2, -2),
