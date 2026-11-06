@@ -766,28 +766,34 @@ class _LiquidBackgroundState extends State<LiquidBackground>
     } else if (!_controller!.isAnimating) {
       _controller!.repeat(reverse: true);
     }
+    // The stack sizes itself to the child; the gradient and the colour
+    // fields are Positioned.fill layers behind it, so the widget also
+    // works inside scroll views (unbounded height) - e.g. the home
+    // dashboard panel - and not only as a full-screen backdrop.
     return RepaintBoundary(
       child: Stack(
-        fit: StackFit.expand,
         children: [
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [KLiquid.navyTop, KLiquid.navyBottom],
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [KLiquid.navyTop, KLiquid.navyBottom],
+                ),
               ),
             ),
           ),
-          if (reduced)
-            _fields(0.35)
-          else
-            AnimatedBuilder(
-              animation: _controller!,
-              builder: (context, _) => _fields(
-                Curves.easeInOut.transform(_controller!.value),
-              ),
-            ),
+          Positioned.fill(
+            child: reduced
+                ? _fields(0.35)
+                : AnimatedBuilder(
+                    animation: _controller!,
+                    builder: (context, _) => _fields(
+                      Curves.easeInOut.transform(_controller!.value),
+                    ),
+                  ),
+          ),
           if (widget.child != null) widget.child!,
         ],
       ),
