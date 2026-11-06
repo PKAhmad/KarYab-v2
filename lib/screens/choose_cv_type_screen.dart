@@ -7,6 +7,7 @@ import '../services/tts_service.dart';
 import '../ui/karyab_ui.dart';
 import 'ausbildung_cv_questionnaire_screen.dart';
 import 'letter_document_screen.dart';
+import 'my_letters_screen.dart';
 import 'personal_data_screen.dart';
 import 'questionnaire_screen.dart';
 
@@ -35,7 +36,7 @@ class ChooseCvTypeScreen extends StatefulWidget {
 }
 
 class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
-  static const Color _navy  = KColors.navy;
+  static const Color _navy = KColors.navy;
   static const Color _green = KColors.green;
   static const Color _muted = KColors.textSecondary;
 
@@ -110,7 +111,10 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         context,
         MaterialPageRoute(
           builder: (_) => QuestionnaireScreen(
-              language: _lang, voiceMode: _voiceMode, isEditMode: false),
+            language: _lang,
+            voiceMode: _voiceMode,
+            isEditMode: false,
+          ),
         ),
       );
     } else {
@@ -118,7 +122,10 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         context,
         MaterialPageRoute(
           builder: (_) => AusbildungCvQuestionnaireScreen(
-              language: _lang, voiceMode: _voiceMode, isEditMode: false),
+            language: _lang,
+            voiceMode: _voiceMode,
+            isEditMode: false,
+          ),
         ),
       );
     }
@@ -139,15 +146,24 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
       _showNoDataSnack();
       return;
     }
+    if (cvType == 'cover_letter') {
+      // Phase 4: cover letters live in the library + block editor now.
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              MyLettersScreen(language: _lang, voiceMode: _voiceMode),
+        ),
+      );
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => LetterDocumentScreen(
           profile: profile,
           language: _lang,
-          docType: cvType == 'cover_letter'
-              ? LetterDocType.coverLetter
-              : LetterDocType.deckblatt,
+          docType: LetterDocType.deckblatt,
         ),
       ),
     );
@@ -171,33 +187,45 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
 
   String get _titleLabel {
     switch (_lang) {
-      case 'ps': return 'خپل غوښتنلیک اسناد جوړ کړئ';
-      case 'fa': return 'اسناد درخواست خود را بسازید';
-      default:   return 'Create Application Documents';
+      case 'ps':
+        return 'خپل غوښتنلیک اسناد جوړ کړئ';
+      case 'fa':
+        return 'اسناد درخواست خود را بسازید';
+      default:
+        return 'Create Application Documents';
     }
   }
 
   String get _subtitleLabel {
     switch (_lang) {
-      case 'ps': return 'هغه سند غوره کړئ چې غواړئ جوړ کړئ';
-      case 'fa': return 'سندی که می‌خواهید بسازید را انتخاب کنید';
-      default:   return 'Choose which document you want to create';
+      case 'ps':
+        return 'هغه سند غوره کړئ چې غواړئ جوړ کړئ';
+      case 'fa':
+        return 'سندی که می‌خواهید بسازید را انتخاب کنید';
+      default:
+        return 'Choose which document you want to create';
     }
   }
 
   String get _coverLetterLabel {
     switch (_lang) {
-      case 'ps': return 'د پوښتنلیک لیک';
-      case 'fa': return 'نامه پوششی';
-      default:   return 'Cover Letter';
+      case 'ps':
+        return 'د پوښتنلیک لیک';
+      case 'fa':
+        return 'نامه پوششی';
+      default:
+        return 'Cover Letter';
     }
   }
 
   String get _coverLetterSubtitle {
     switch (_lang) {
-      case 'ps': return 'ستاسو د معلوماتو پر بنسټ اتومات جوړ شوی';
-      case 'fa': return 'به‌طور خودکار از اطلاعات شما ساخته می‌شود';
-      default:   return 'Auto-generated from your saved details';
+      case 'ps':
+        return 'ستاسو د معلوماتو پر بنسټ اتومات جوړ شوی';
+      case 'fa':
+        return 'به‌طور خودکار از اطلاعات شما ساخته می‌شود';
+      default:
+        return 'Auto-generated from your saved details';
     }
   }
 
@@ -207,33 +235,45 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
 
   String get _deckblattSubtitle {
     switch (_lang) {
-      case 'ps': return 'د غوښتنلیک پوښ پاڼه، اتومات جوړ شوی';
-      case 'fa': return 'برگه روی جلد درخواست، به‌طور خودکار ساخته می‌شود';
-      default:   return 'Application cover page, auto-generated';
+      case 'ps':
+        return 'د غوښتنلیک پوښ پاڼه، اتومات جوړ شوی';
+      case 'fa':
+        return 'برگه روی جلد درخواست، به‌طور خودکار ساخته می‌شود';
+      default:
+        return 'Application cover page, auto-generated';
     }
   }
 
   String get _noDataMsg {
     switch (_lang) {
-      case 'ps': return 'لومړی خپل شخصي معلومات د CV په جوړولو سره اضافه کړئ';
-      case 'fa': return 'ابتدا با ساختن یک رزومه، اطلاعات شخصی خود را اضافه کنید';
-      default:   return 'Please create a Job CV or Ausbildung CV first to add your details';
+      case 'ps':
+        return 'لومړی خپل شخصي معلومات د CV په جوړولو سره اضافه کړئ';
+      case 'fa':
+        return 'ابتدا با ساختن یک رزومه، اطلاعات شخصی خود را اضافه کنید';
+      default:
+        return 'Please create a Job CV or Ausbildung CV first to add your details';
     }
   }
 
   String get _jobCvLabel {
     switch (_lang) {
-      case 'ps': return 'د دندې CV';
-      case 'fa': return 'رزومه شغلی';
-      default:   return 'Job CV';
+      case 'ps':
+        return 'د دندې CV';
+      case 'fa':
+        return 'رزومه شغلی';
+      default:
+        return 'Job CV';
     }
   }
 
   String get _jobCvSubtitle {
     switch (_lang) {
-      case 'ps': return 'د کار موندلو لپاره';
-      case 'fa': return 'برای پیدا کردن یک شغل';
-      default:   return 'For finding a job in Germany';
+      case 'ps':
+        return 'د کار موندلو لپاره';
+      case 'fa':
+        return 'برای پیدا کردن یک شغل';
+      default:
+        return 'For finding a job in Germany';
     }
   }
 
@@ -242,9 +282,12 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
 
   String get _ausbildungCvSubtitle {
     switch (_lang) {
-      case 'ps': return 'د زده کړې کار لپاره غوښتنلیک';
-      case 'fa': return 'برای درخواست کارآموزی (Ausbildung)';
-      default:   return 'For applying to vocational training (Ausbildung)';
+      case 'ps':
+        return 'د زده کړې کار لپاره غوښتنلیک';
+      case 'fa':
+        return 'برای درخواست کارآموزی (Ausbildung)';
+      default:
+        return 'For applying to vocational training (Ausbildung)';
     }
   }
 
@@ -294,8 +337,9 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             loading: _checking,
-                            onSpeak: () =>
-                                _speak('$_ausbildungCvLabel. $_ausbildungCvSubtitle'),
+                            onSpeak: () => _speak(
+                              '$_ausbildungCvLabel. $_ausbildungCvSubtitle',
+                            ),
                             onTap: () => _select('ausbildung'),
                           ),
                           const SizedBox(height: 16),
@@ -307,8 +351,9 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             loading: _checking,
-                            onSpeak: () =>
-                                _speak('$_coverLetterLabel. $_coverLetterSubtitle'),
+                            onSpeak: () => _speak(
+                              '$_coverLetterLabel. $_coverLetterSubtitle',
+                            ),
                             onTap: () => _select('cover_letter'),
                           ),
                           const SizedBox(height: 16),
@@ -382,7 +427,7 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
 }
 
 class _CvTypeCard extends StatelessWidget {
-  static const Color _navy  = KColors.navy;
+  static const Color _navy = KColors.navy;
   static const Color _green = KColors.green;
   static const Color _muted = KColors.textSecondary;
 
@@ -424,19 +469,25 @@ class _CvTypeCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: KColors.mint,
                 shape: BoxShape.circle,
-                border: Border.all(color: iconColor.withValues(alpha: 0.3), width: 1),
+                border: Border.all(
+                  color: iconColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
               ),
               child: Icon(icon, color: iconColor, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: isRtl
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   Text(
                     label,
-                    textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                    textDirection: isRtl
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
                     style: const TextStyle(
                       color: _navy,
                       fontSize: 17,
@@ -446,7 +497,9 @@ class _CvTypeCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     subtitle,
-                    textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                    textDirection: isRtl
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
                     style: const TextStyle(
                       color: _muted,
                       fontSize: 12,
@@ -467,8 +520,11 @@ class _CvTypeCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: _green.withValues(alpha: 0.4)),
                   ),
-                  child: const Icon(Icons.volume_up_rounded,
-                      color: _green, size: 17),
+                  child: const Icon(
+                    Icons.volume_up_rounded,
+                    color: _green,
+                    size: 17,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),

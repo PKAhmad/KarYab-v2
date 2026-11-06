@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:karyab/data/repositories.dart';
 import 'package:karyab/models/user_profile.dart';
+import 'package:karyab/services/cv_pdf_generator.dart';
 import 'package:karyab/services/ats_checker.dart';
 import 'package:karyab/services/letter_model.dart';
 import 'package:karyab/services/letter_pdf.dart';
@@ -92,6 +93,16 @@ void main() {
       final bytes = await generateLetterPdf(profile, data);
       expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
       expect(countPdfPages(bytes), 1);
+    });
+
+    test('legacy compose is deterministic (old random selection removed)',
+        () async {
+      final a = await composeAnschreibenTexts(profile);
+      final b = await composeAnschreibenTexts(profile);
+      expect(a.subject, b.subject);
+      expect(a.opening, b.opening);
+      expect(a.middle, b.middle);
+      expect(a.closing, b.closing);
     });
 
     test('filename is sanitised', () {

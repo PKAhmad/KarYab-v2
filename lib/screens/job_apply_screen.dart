@@ -15,7 +15,7 @@ import '../models/user_profile.dart';
 import '../services/analytics_service.dart';
 import '../services/tts_service.dart';
 import '../utils/navigation_helpers.dart';
-import 'letter_document_screen.dart';
+import 'letter_editor_screen.dart';
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -63,22 +63,22 @@ class _JobApplyScreenState extends State<JobApplyScreen>
     with SingleTickerProviderStateMixin {
   // ── Design tokens ──────────────────────────────────────────────────────────
 
-  static const Color _navy  = Color(0xFF091733);
+  static const Color _navy = Color(0xFF091733);
   static const Color _green = Color(0xFF39EA2B);
   static const Color _muted = Color(0xFF65738A);
 
   // ── Highlight animation ────────────────────────────────────────────────────
   late AnimationController _highlightController;
-  late Animation<double>   _highlightAnimation;
+  late Animation<double> _highlightAnimation;
   final bool _showHighlight = true;
 
   // ── User data from shared_preferences ─────────────────────────────────────
 
-  String _userName   = '';
-  String _userPhone  = '';
-  String _userEmail  = '';
+  String _userName = '';
+  String _userPhone = '';
+  String _userEmail = '';
   String _userStreet = '';
-  String _userCity   = '';
+  String _userCity = '';
   String _userPostal = '';
 
   // ── Active language ────────────────────────────────────────────────────────
@@ -141,26 +141,27 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
     _companyAddress = args?['companyAddress'] ?? '';
   }
 
   Future<void> _loadUserData() async {
     final store = KaryabData.profile;
-    final qName     = await store.getString('questionnaire_full_name') ?? '';
-    final userName  = await store.getString('user_name')  ?? '';
+    final qName = await store.getString('questionnaire_full_name') ?? '';
+    final userName = await store.getString('user_name') ?? '';
     final userPhone = await store.getString('user_phone') ?? '';
     final userEmail = await store.getString('user_email') ?? '';
     final userStreet = await store.getString('user_street') ?? '';
-    final userCity  = await store.getString('user_city')   ?? '';
+    final userCity = await store.getString('user_city') ?? '';
     final userPostal = await store.getString('user_postal') ?? '';
     if (!mounted) return;
     setState(() {
-      _userName   = qName.isNotEmpty ? qName : userName;
-      _userPhone  = userPhone;
-      _userEmail  = userEmail;
+      _userName = qName.isNotEmpty ? qName : userName;
+      _userPhone = userPhone;
+      _userEmail = userEmail;
       _userStreet = userStreet;
-      _userCity   = userCity;
+      _userCity = userCity;
       _userPostal = userPostal;
     });
   }
@@ -174,16 +175,30 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   // job type was selected on the finder screen (Alle / null).
   String get _jobTypeSuffix {
     switch (widget.jobType) {
-      case 'Vollzeit': return ' in Vollzeit';
-      case 'Teilzeit': return ' in Teilzeit';
-      case 'Minijob':  return ' auf Minijob-Basis';
-      default:         return '';
+      case 'Vollzeit':
+        return ' in Vollzeit';
+      case 'Teilzeit':
+        return ' in Teilzeit';
+      case 'Minijob':
+        return ' auf Minijob-Basis';
+      default:
+        return '';
     }
   }
 
   static const _germanMonths = [
-    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
+    'Januar',
+    'Februar',
+    'März',
+    'April',
+    'Mai',
+    'Juni',
+    'Juli',
+    'August',
+    'September',
+    'Oktober',
+    'November',
+    'Dezember',
   ];
 
   String get _germanDate {
@@ -206,10 +221,13 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   String get _dateLine =>
       _displayCity.isEmpty ? _germanDate : '$_displayCity, $_germanDate';
 
-  String get _displayName   => _userName.isEmpty   ? '[Ihr Name]'            : _userName;
-  String get _displayPhone  => _userPhone.isEmpty  ? '[Telefonnummer]'       : _userPhone;
-  String get _displayEmail  => _userEmail.isEmpty  ? '[E-Mail-Adresse]'      : _userEmail;
-  String get _displayStreet => _userStreet.isEmpty ? '[Straße und Hausnummer]' : _userStreet;
+  String get _displayName => _userName.isEmpty ? '[Ihr Name]' : _userName;
+  String get _displayPhone =>
+      _userPhone.isEmpty ? '[Telefonnummer]' : _userPhone;
+  String get _displayEmail =>
+      _userEmail.isEmpty ? '[E-Mail-Adresse]' : _userEmail;
+  String get _displayStreet =>
+      _userStreet.isEmpty ? '[Straße und Hausnummer]' : _userStreet;
 
   static String _cleanPhone(String phone) {
     String clean = phone.replaceAll(RegExp(r'[\s\-\(\)]'), '');
@@ -221,81 +239,111 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String get _screenTitle {
     switch (_language) {
-      case 'ps': return 'د کار غوښتنه';
-      case 'fa': return 'درخواست کار';
-      default:   return 'Apply for Job';
+      case 'ps':
+        return 'د کار غوښتنه';
+      case 'fa':
+        return 'درخواست کار';
+      default:
+        return 'Apply for Job';
     }
   }
 
   String get _howToApplyTitle {
     switch (_language) {
-      case 'ps': return 'تاسو غواړئ څنګه غوښتنه وکړئ؟';
-      case 'fa': return 'چگونه می‌خواهید درخواست دهید؟';
-      default:   return 'How would you like to apply?';
+      case 'ps':
+        return 'تاسو غواړئ څنګه غوښتنه وکړئ؟';
+      case 'fa':
+        return 'چگونه می‌خواهید درخواست دهید؟';
+      default:
+        return 'How would you like to apply?';
     }
   }
 
   String get _formTitle {
     switch (_language) {
-      case 'ps': return 'د آنلاین فورم له لارې غوښتنه';
-      case 'fa': return 'درخواست از طریق فرم آنلاین';
-      default:   return 'Apply via Online Form';
+      case 'ps':
+        return 'د آنلاین فورم له لارې غوښتنه';
+      case 'fa':
+        return 'درخواست از طریق فرم آنلاین';
+      default:
+        return 'Apply via Online Form';
     }
   }
 
   String get _formDesc {
     switch (_language) {
-      case 'ps': return 'دا بټن تاسو د کار آنلاین فورم ته بیایي';
-      case 'fa': return 'فرم درخواست رسمی را باز کنید';
-      default:   return 'Open the official application form';
+      case 'ps':
+        return 'دا بټن تاسو د کار آنلاین فورم ته بیایي';
+      case 'fa':
+        return 'فرم درخواست رسمی را باز کنید';
+      default:
+        return 'Open the official application form';
     }
   }
 
   String get _emailTitle {
     switch (_language) {
-      case 'ps': return 'د بریښنالیک له لارې غوښتنه';
-      case 'fa': return 'درخواست از طریق ایمیل';
-      default:   return 'Apply via Email';
+      case 'ps':
+        return 'د بریښنالیک له لارې غوښتنه';
+      case 'fa':
+        return 'درخواست از طریق ایمیل';
+      default:
+        return 'Apply via Email';
     }
   }
 
   String get _emailDesc {
     switch (_language) {
-      case 'ps': return 'ستاسو CV بریښنالیک ته واستوئ';
-      case 'fa': return 'CV و نامه پوششی خود را ایمیل کنید';
-      default:   return 'Send your CV and cover letter by email';
+      case 'ps':
+        return 'ستاسو CV بریښنالیک ته واستوئ';
+      case 'fa':
+        return 'CV و نامه پوششی خود را ایمیل کنید';
+      default:
+        return 'Send your CV and cover letter by email';
     }
   }
 
   String get _phoneTitle {
     switch (_language) {
-      case 'ps': return 'شرکت ته زنګ ووهئ';
-      case 'fa': return 'تماس با شرکت';
-      default:   return 'Call the Company';
+      case 'ps':
+        return 'شرکت ته زنګ ووهئ';
+      case 'fa':
+        return 'تماس با شرکت';
+      default:
+        return 'Call the Company';
     }
   }
 
   String get _phoneDesc {
     switch (_language) {
-      case 'ps': return 'زنګ ووهئ او د دندې په اړه پوښتنه وکړئ';
-      case 'fa': return 'زنگ بزنید و درباره موقعیت بپرسید';
-      default:   return 'Call and ask about the position';
+      case 'ps':
+        return 'زنګ ووهئ او د دندې په اړه پوښتنه وکړئ';
+      case 'fa':
+        return 'زنگ بزنید و درباره موقعیت بپرسید';
+      default:
+        return 'Call and ask about the position';
     }
   }
 
   String get _waTitle {
     switch (_language) {
-      case 'ps': return 'د واټساپ له لارې CV واستوئ';
-      case 'fa': return 'ارسال CV از طریق واتساپ';
-      default:   return 'Send CV via WhatsApp';
+      case 'ps':
+        return 'د واټساپ له لارې CV واستوئ';
+      case 'fa':
+        return 'ارسال CV از طریق واتساپ';
+      default:
+        return 'Send CV via WhatsApp';
     }
   }
 
   String get _waDesc {
     switch (_language) {
-      case 'ps': return 'مستقیم يې واټساپ پيغام ورکړئ';
-      case 'fa': return 'مستقیم در واتساپ پیام بدهید';
-      default:   return 'Message them directly on WhatsApp';
+      case 'ps':
+        return 'مستقیم يې واټساپ پيغام ورکړئ';
+      case 'fa':
+        return 'مستقیم در واتساپ پیام بدهید';
+      default:
+        return 'Message them directly on WhatsApp';
     }
   }
 
@@ -313,9 +361,12 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String get _personTitle {
     switch (_language) {
-      case 'ps': return 'د ادرس له لاری غوښتنه وکړی';
-      case 'fa': return 'درخواست حضوری';
-      default:   return 'Go to The Company Address';
+      case 'ps':
+        return 'د ادرس له لاری غوښتنه وکړی';
+      case 'fa':
+        return 'درخواست حضوری';
+      default:
+        return 'Go to The Company Address';
     }
   }
 
@@ -332,9 +383,12 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String get _tipsTitle {
     switch (_language) {
-      case 'ps': return 'لارښوونې:';
-      case 'fa': return 'نکات:';
-      default:   return 'Tips for applying in person:';
+      case 'ps':
+        return 'لارښوونې:';
+      case 'fa':
+        return 'نکات:';
+      default:
+        return 'Tips for applying in person:';
     }
   }
 
@@ -366,41 +420,56 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String get _coverLetterSectionTitle {
     switch (_language) {
-      case 'ps': return 'د کار غوښتنې لیک';
-      case 'fa': return 'نامه پوششی';
-      default:   return 'Cover Letter (Anschreiben)';
+      case 'ps':
+        return 'د کار غوښتنې لیک';
+      case 'fa':
+        return 'نامه پوششی';
+      default:
+        return 'Cover Letter (Anschreiben)';
     }
   }
 
   String get _copyLabel {
     switch (_language) {
-      case 'ps': return 'کاپي';
-      case 'fa': return 'کاپی';
-      default:   return 'Copy';
+      case 'ps':
+        return 'کاپي';
+      case 'fa':
+        return 'کاپی';
+      default:
+        return 'Copy';
     }
   }
 
   String get _copiedMsg {
     switch (_language) {
-      case 'ps': return 'کاپي شو!';
-      case 'fa': return 'کاپی شد!';
-      default:   return 'Copied!';
+      case 'ps':
+        return 'کاپي شو!';
+      case 'fa':
+        return 'کاپی شد!';
+      default:
+        return 'Copied!';
     }
   }
 
   String get _downloadLabel {
     switch (_language) {
-      case 'ps': return 'PDF ډاونلوډ';
-      case 'fa': return 'دانلود PDF';
-      default:   return 'Download PDF';
+      case 'ps':
+        return 'PDF ډاونلوډ';
+      case 'fa':
+        return 'دانلود PDF';
+      default:
+        return 'Download PDF';
     }
   }
 
   String get _savedMsg {
     switch (_language) {
-      case 'ps': return 'د غوښتنې لیک ډاونلوډ فولډر ته خوندي شو';
-      case 'fa': return 'نامه پوششی در دانلودها ذخیره شد';
-      default:   return 'Cover letter saved to Downloads';
+      case 'ps':
+        return 'د غوښتنې لیک ډاونلوډ فولډر ته خوندي شو';
+      case 'fa':
+        return 'نامه پوششی در دانلودها ذخیره شد';
+      default:
+        return 'Cover letter saved to Downloads';
     }
   }
 
@@ -408,26 +477,36 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String get _coverLetterButtonDesc {
     switch (_language) {
-      case 'ps': return 'د دې دندې لپاره خپل شخصي د پوښتنلیک لیک جوړ کړئ';
-      case 'fa': return 'برای این موقعیت، نامه پوششی شخصی خود را بسازید';
-      default:   return 'Create your own cover letter for this position.';
+      case 'ps':
+        return 'د دې دندې لپاره خپل شخصي د پوښتنلیک لیک جوړ کړئ';
+      case 'fa':
+        return 'برای این موقعیت، نامه پوششی شخصی خود را بسازید';
+      default:
+        return 'Create your own cover letter for this position.';
     }
   }
 
   String get _coverLetterButtonLabel {
     switch (_language) {
-      case 'ps': return 'د دې دندې لپاره د پوښتنلیک لیک جوړ کړئ';
-      case 'fa': return 'ایجاد نامه پوششی برای این شغل';
-      case 'de': return 'Anschreiben für diese Stelle erstellen';
-      default:   return 'Create cover letter for this job';
+      case 'ps':
+        return 'د دې دندې لپاره د پوښتنلیک لیک جوړ کړئ';
+      case 'fa':
+        return 'ایجاد نامه پوششی برای این شغل';
+      case 'de':
+        return 'Anschreiben für diese Stelle erstellen';
+      default:
+        return 'Create cover letter for this job';
     }
   }
 
   String get _noProfileForLetterMsg {
     switch (_language) {
-      case 'ps': return 'لومړی خپل شخصي معلومات د CV په جوړولو سره اضافه کړئ';
-      case 'fa': return 'ابتدا با ساختن یک رزومه، اطلاعات شخصی خود را اضافه کنید';
-      default:   return 'Please create a Job CV or Ausbildung CV first to add your details';
+      case 'ps':
+        return 'لومړی خپل شخصي معلومات د CV په جوړولو سره اضافه کړئ';
+      case 'fa':
+        return 'ابتدا با ساختن یک رزومه، اطلاعات شخصی خود را اضافه کنید';
+      default:
+        return 'Please create a Job CV or Ausbildung CV first to add your details';
     }
   }
 
@@ -435,7 +514,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String get _coverLetterPlainText {
     final postalCity = _postalCity;
-    final addrLine   = _companyAddress.isNotEmpty ? '\n$_companyAddress' : '';
+    final addrLine = _companyAddress.isNotEmpty ? '\n$_companyAddress' : '';
     return '${widget.companyName}\n'
         'z.Hd. Personalabteilung$addrLine\n\n'
         '$_displayName\n'
@@ -467,31 +546,46 @@ class _JobApplyScreenState extends State<JobApplyScreen>
     try {
       final street = await KaryabData.profile.getString('user_street') ?? '';
       final postal = await KaryabData.profile.getString('user_postal') ?? '';
-      final city   = await KaryabData.profile.getString('user_city')   ?? '';
+      final city = await KaryabData.profile.getString('user_city') ?? '';
 
-      final font     = pw.Font.helvetica();
+      final font = pw.Font.helvetica();
       final boldFont = pw.Font.helveticaBold();
-      pw.TextStyle normal(double size) => pw.TextStyle(font: font, fontSize: size);
-      pw.TextStyle bold(double size)   => pw.TextStyle(
-          font: boldFont, fontSize: size, fontWeight: pw.FontWeight.bold);
+      pw.TextStyle normal(double size) =>
+          pw.TextStyle(font: font, fontSize: size);
+      pw.TextStyle bold(double size) => pw.TextStyle(
+        font: boldFont,
+        fontSize: size,
+        fontWeight: pw.FontWeight.bold,
+      );
 
-      final postalCity    = [postal, city].where((s) => s.isNotEmpty).join(' ');
-      final displayName   = _userName.isEmpty  ? '[Ihr Name]'             : _userName;
-      final displayStreet = street.isEmpty     ? '[Straße und Hausnummer]': street;
-      final displayPhone  = _userPhone.isEmpty ? '[Telefonnummer]'        : _userPhone;
-      final displayEmail  = _userEmail.isEmpty ? '[E-Mail-Adresse]'       : _userEmail;
+      final postalCity = [postal, city].where((s) => s.isNotEmpty).join(' ');
+      final displayName = _userName.isEmpty ? '[Ihr Name]' : _userName;
+      final displayStreet = street.isEmpty ? '[Straße und Hausnummer]' : street;
+      final displayPhone = _userPhone.isEmpty ? '[Telefonnummer]' : _userPhone;
+      final displayEmail = _userEmail.isEmpty ? '[E-Mail-Adresse]' : _userEmail;
       // FIX 5: fall back to the job's own location rather than a
       // "[Stadt]" placeholder when the profile has no city saved.
       final displayCity = city.isNotEmpty ? city : widget.jobLocation;
 
       final now = DateTime.now();
       const months = [
-        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
+        'Januar',
+        'Februar',
+        'März',
+        'April',
+        'Mai',
+        'Juni',
+        'Juli',
+        'August',
+        'September',
+        'Oktober',
+        'November',
+        'Dezember',
       ];
       final germanDate = '${now.day}. ${months[now.month - 1]} ${now.year}';
-      final dateLine =
-          displayCity.isEmpty ? germanDate : '$displayCity, $germanDate';
+      final dateLine = displayCity.isEmpty
+          ? germanDate
+          : '$displayCity, $germanDate';
 
       final doc = pw.Document();
       doc.addPage(
@@ -517,12 +611,12 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                     child: pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        pw.Text(displayName,   style: bold(11)),
+                        pw.Text(displayName, style: bold(11)),
                         pw.Text(displayStreet, style: normal(10)),
                         if (postalCity.isNotEmpty)
-                          pw.Text(postalCity,  style: normal(10)),
-                        pw.Text(displayPhone,  style: normal(10)),
-                        pw.Text(displayEmail,  style: normal(10)),
+                          pw.Text(postalCity, style: normal(10)),
+                        pw.Text(displayPhone, style: normal(10)),
+                        pw.Text(displayEmail, style: normal(10)),
                       ],
                     ),
                   ),
@@ -562,8 +656,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         ),
       );
 
-      final bytes        = await doc.save();
-      final tempDir      = await getTemporaryDirectory();
+      final bytes = await doc.save();
+      final tempDir = await getTemporaryDirectory();
       final cleanCompany = widget.companyName
           .replaceAll(' ', '_')
           .replaceAll(RegExp(r'[^\w]'), '');
@@ -601,10 +695,12 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   Future<void> _openEmail(BuildContext context) async {
     final subject = Uri.encodeComponent(
-        'Bewerbung: ${widget.jobTitle} - ${widget.companyName}');
+      'Bewerbung: ${widget.jobTitle} - ${widget.companyName}',
+    );
     final body = Uri.encodeComponent(_coverLetterPlainText);
-    final uri  = Uri.parse(
-        'mailto:${widget.companyEmail}?subject=$subject&body=$body');
+    final uri = Uri.parse(
+      'mailto:${widget.companyEmail}?subject=$subject&body=$body',
+    );
     if (!await launchUrl(uri)) {
       if (context.mounted) _snack(context, 'Could not open email app');
     }
@@ -621,8 +717,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   Future<void> _openWhatsApp(BuildContext context) async {
     AnalyticsService().logJobApply('whatsapp');
     final phone = _cleanPhone(widget.companyPhone).replaceAll('+', '');
-    final msg   = Uri.encodeComponent(_waMessage);
-    final uri   = Uri.parse('https://wa.me/$phone?text=$msg');
+    final msg = Uri.encodeComponent(_waMessage);
+    final uri = Uri.parse('https://wa.me/$phone?text=$msg');
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (context.mounted) _snack(context, 'Could not open WhatsApp');
     }
@@ -640,7 +736,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         ? '$_companyAddress ${widget.companyName}'
         : widget.companyName;
     final uri = Uri.parse(
-        'https://www.google.com/maps/search/${Uri.encodeComponent(mapsQuery)}');
+      'https://www.google.com/maps/search/${Uri.encodeComponent(mapsQuery)}',
+    );
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (context.mounted) _snack(context, 'Could not open Maps');
     }
@@ -653,9 +750,12 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String get _pdfErrorMsg {
     switch (_language) {
-      case 'ps': return 'PDF خوندي نشو. بیا هڅه وکړئ.';
-      case 'fa': return 'PDF ذخیره نشد. دوباره تلاش کنید.';
-      default:   return 'Could not save PDF. Please try again.';
+      case 'ps':
+        return 'PDF خوندي نشو. بیا هڅه وکړئ.';
+      case 'fa':
+        return 'PDF ذخیره نشد. دوباره تلاش کنید.';
+      default:
+        return 'Could not save PDF. Please try again.';
     }
   }
 
@@ -676,16 +776,18 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   Future<void> _downloadPdf() async {
     AnalyticsService().logCoverLetterDownloaded();
     try {
-      final font     = pw.Font.helvetica();
+      final font = pw.Font.helvetica();
       final boldFont = pw.Font.helveticaBold();
 
       pw.TextStyle normal(double size) =>
           pw.TextStyle(font: font, fontSize: size);
-      pw.TextStyle bold(double size) =>
-          pw.TextStyle(font: boldFont, fontSize: size,
-              fontWeight: pw.FontWeight.bold);
+      pw.TextStyle bold(double size) => pw.TextStyle(
+        font: boldFont,
+        fontSize: size,
+        fontWeight: pw.FontWeight.bold,
+      );
 
-      final doc        = pw.Document();
+      final doc = pw.Document();
       final postalCity = _postalCity;
 
       doc.addPage(
@@ -732,27 +834,25 @@ class _JobApplyScreenState extends State<JobApplyScreen>
               pw.SizedBox(height: 14),
               pw.Text('Bewerbung als ${widget.jobTitle}', style: bold(12)),
               pw.SizedBox(height: 10),
-              pw.Center(
-                child: pw.Text('Anschreiben', style: bold(16)),
-              ),
+              pw.Center(child: pw.Text('Anschreiben', style: bold(16))),
               pw.SizedBox(height: 16),
               pw.Text(
                 'Sehr geehrte Damen und Herren,\n\n'
-                    'mit großem Interesse habe ich Ihre Stellenanzeige für die '
-                    'Position als ${widget.jobTitle}$_jobTypeSuffix bei ${widget.companyName} '
-                    'gelesen. Hiermit bewerbe ich mich auf diese ausgeschriebene '
-                    'Stelle.\n\n'
-                    'Ich bin ein motivierter und zuverlässiger Mitarbeiter. Ich '
-                    'bringe praktische Erfahrung mit, arbeite gerne im Team und '
-                    'bin bereit, mich schnell in neue Aufgabenbereiche '
-                    'einzuarbeiten. Körperlich anspruchsvolle Tätigkeiten sind '
-                    'mir vertraut.\n\n'
-                    'Über eine Einladung zu einem persönlichen Vorstellungsgespräch '
-                    'würde ich mich sehr freuen. Meine Bewerbungsunterlagen, '
-                    'einschließlich meines Lebenslaufs, füge ich dieser Bewerbung '
-                    'bei.\n\n'
-                    'Mit freundlichen Grüßen,\n\n'
-                    '$_displayName',
+                'mit großem Interesse habe ich Ihre Stellenanzeige für die '
+                'Position als ${widget.jobTitle}$_jobTypeSuffix bei ${widget.companyName} '
+                'gelesen. Hiermit bewerbe ich mich auf diese ausgeschriebene '
+                'Stelle.\n\n'
+                'Ich bin ein motivierter und zuverlässiger Mitarbeiter. Ich '
+                'bringe praktische Erfahrung mit, arbeite gerne im Team und '
+                'bin bereit, mich schnell in neue Aufgabenbereiche '
+                'einzuarbeiten. Körperlich anspruchsvolle Tätigkeiten sind '
+                'mir vertraut.\n\n'
+                'Über eine Einladung zu einem persönlichen Vorstellungsgespräch '
+                'würde ich mich sehr freuen. Meine Bewerbungsunterlagen, '
+                'einschließlich meines Lebenslaufs, füge ich dieser Bewerbung '
+                'bei.\n\n'
+                'Mit freundlichen Grüßen,\n\n'
+                '$_displayName',
                 style: normal(11).copyWith(lineSpacing: 3),
               ),
             ],
@@ -763,15 +863,15 @@ class _JobApplyScreenState extends State<JobApplyScreen>
       final bytes = await doc.save();
 
       const downloadPath = '/storage/emulated/0/Download';
-      final downloadDir  = Directory(downloadPath);
+      final downloadDir = Directory(downloadPath);
       if (!await downloadDir.exists()) {
         await downloadDir.create(recursive: true);
       }
 
       final cleanCompany = _cleanFilename(widget.companyName);
-      final cleanJob     = _cleanFilename(widget.jobTitle);
-      final filename     = 'Anschreiben_${cleanCompany}_$cleanJob.pdf';
-      final filePath     = '$downloadPath/$filename';
+      final cleanJob = _cleanFilename(widget.jobTitle);
+      final filename = 'Anschreiben_${cleanCompany}_$cleanJob.pdf';
+      final filePath = '$downloadPath/$filename';
       final file = File(filePath);
       await file.writeAsBytes(bytes);
 
@@ -785,7 +885,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             duration: const Duration(seconds: 3),
             backgroundColor: _green,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -799,7 +901,10 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   void _snack(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg, style: const TextStyle(color: _navy, fontWeight: FontWeight.w600)),
+        content: Text(
+          msg,
+          style: const TextStyle(color: _navy, fontWeight: FontWeight.w600),
+        ),
         backgroundColor: _green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -825,16 +930,21 @@ class _JobApplyScreenState extends State<JobApplyScreen>
       return;
     }
     if (!context.mounted) return;
+    // Phase 4: the posting opens the v2 block editor in create mode,
+    // prefilled with this posting's company, title, location and
+    // reference number (start-from-the-job).
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => LetterDocumentScreen(
-          profile: profile!,
+        builder: (_) => LetterEditorScreen(
           language: _language,
-          docType: LetterDocType.coverLetter,
-          jobTitle: widget.jobTitle,
-          companyName: widget.companyName,
-          isAusbildungCv: true,
+          prefill: LetterPrefill(
+            jobTitle: widget.jobTitle,
+            companyName: widget.companyName,
+            jobLocation: widget.jobLocation,
+            referenceNumber: widget.refnr,
+            isAusbildung: true,
+          ),
         ),
       ),
     );
@@ -852,39 +962,39 @@ class _JobApplyScreenState extends State<JobApplyScreen>
           TtsService().stop();
         },
         child: Scaffold(
-        backgroundColor: const Color(0xFFF7FAFF),
-        body: Stack(
-          children: [
-            const _BackgroundGlow(),
-            SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(context),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildJobInfoCard(),
-                          const SizedBox(height: 20),
-                          _buildOptionsSection(context),
-                          if (widget.voiceMode) ...[
-                            const SizedBox(height: 16),
-                            _buildTipsCard(),
+          backgroundColor: const Color(0xFFF7FAFF),
+          body: Stack(
+            children: [
+              const _BackgroundGlow(),
+              SafeArea(
+                child: Column(
+                  children: [
+                    _buildHeader(context),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildJobInfoCard(),
+                            const SizedBox(height: 20),
+                            _buildOptionsSection(context),
+                            if (widget.voiceMode) ...[
+                              const SizedBox(height: 16),
+                              _buildTipsCard(),
+                            ],
+                            const SizedBox(height: 24),
+                            _buildCoverLetterSection(context),
                           ],
-                          const SizedBox(height: 24),
-                          _buildCoverLetterSection(context),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -1017,8 +1127,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   Widget _buildOptionsSection(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          _isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: _isRtl
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           _howToApplyTitle,
@@ -1058,10 +1169,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             onTap: () => _openForm(context),
             onSpeak: _isRtl
                 ? () => TtsService().speak(
-                      _language == 'ps'
-                          ? 'دا بټن تاسو د کار آنلاین فورم ته بیایي'
-                          : 'این دکمه شما را به فرم آنلاین درخواست می‌برد',
-                      _language)
+                    _language == 'ps'
+                        ? 'دا بټن تاسو د کار آنلاین فورم ته بیایي'
+                        : 'این دکمه شما را به فرم آنلاین درخواست می‌برد',
+                    _language,
+                  )
                 : null,
           ),
         ),
@@ -1079,10 +1191,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             onTap: () => _openEmail(context),
             onSpeak: _isRtl
                 ? () => TtsService().speak(
-                      _language == 'ps'
-                          ? 'ستاسو CV بریښنالیک ته واستوئ'
-                          : 'CV خود را از طریق ایمیل ارسال کنید',
-                      _language)
+                    _language == 'ps'
+                        ? 'ستاسو CV بریښنالیک ته واستوئ'
+                        : 'CV خود را از طریق ایمیل ارسال کنید',
+                    _language,
+                  )
                 : null,
           ),
           const SizedBox(height: 10),
@@ -1100,10 +1213,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             onTap: () => _callPhone(context),
             onSpeak: _isRtl
                 ? () => TtsService().speak(
-                      _language == 'ps'
-                          ? 'شرکت ته زنګ ووهئ'
-                          : 'با شرکت تماس بگیرید',
-                      _language)
+                    _language == 'ps'
+                        ? 'شرکت ته زنګ ووهئ'
+                        : 'با شرکت تماس بگیرید',
+                    _language,
+                  )
                 : null,
           ),
           const SizedBox(height: 10),
@@ -1121,10 +1235,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             onTap: () => _openWhatsApp(context),
             onSpeak: _isRtl
                 ? () => TtsService().speak(
-                      _language == 'ps'
-                          ? 'د واټساپ له لارې CV واستوئ'
-                          : 'CV خود را از طریق واتساپ ارسال کنید',
-                      _language)
+                    _language == 'ps'
+                        ? 'د واټساپ له لارې CV واستوئ'
+                        : 'CV خود را از طریق واتساپ ارسال کنید',
+                    _language,
+                  )
                 : null,
           ),
           const SizedBox(height: 10),
@@ -1157,10 +1272,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             onTap: () => _openMaps(context),
             onSpeak: _isRtl
                 ? () => TtsService().speak(
-                      _language == 'ps'
-                          ? 'تاسو کولی شئ مستقیم دی کمپنی ادرس ته لاړ شی'
-                          : 'مستقیماً به آدرس شرکت مراجعه کنید',
-                      _language)
+                    _language == 'ps'
+                        ? 'تاسو کولی شئ مستقیم دی کمپنی ادرس ته لاړ شی'
+                        : 'مستقیماً به آدرس شرکت مراجعه کنید',
+                    _language,
+                  )
                 : null,
           ),
         ),
@@ -1187,14 +1303,18 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            _isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: _isRtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Row(
             textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
             children: [
-              const Icon(Icons.lightbulb_rounded,
-                  color: Color(0xFFFBC02D), size: 20),
+              const Icon(
+                Icons.lightbulb_rounded,
+                color: Color(0xFFFBC02D),
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 _tipsTitle,
@@ -1212,8 +1332,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             (tip) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(
-                textDirection:
-                    _isRtl ? TextDirection.rtl : TextDirection.ltr,
+                textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
@@ -1223,8 +1342,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                   Expanded(
                     child: Text(
                       tip,
-                      textDirection:
-                          _isRtl ? TextDirection.rtl : TextDirection.ltr,
+                      textDirection: _isRtl
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
                       style: const TextStyle(
                         color: _navy,
                         fontSize: 13,
@@ -1250,8 +1370,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
     final postalCity = _postalCity;
 
     return Column(
-      crossAxisAlignment:
-          _isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: _isRtl
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         // Section title row
         Row(
@@ -1286,8 +1407,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                     color: Color(0xFFEAFBE9),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.volume_up_rounded,
-                      color: _green, size: 17),
+                  child: const Icon(
+                    Icons.volume_up_rounded,
+                    color: _green,
+                    size: 17,
+                  ),
                 ),
               ),
             ],
@@ -1300,14 +1424,10 @@ class _JobApplyScreenState extends State<JobApplyScreen>
           _language == 'ps'
               ? 'د دې کار لپاره چمتو شوی د کار غوښتنې لیک لاندې ډاونلوډ تڼۍ په کلیک کولو ډاونلوډ کړئ'
               : _language == 'fa'
-                  ? 'با کلیک روی دکمه دانلود در زیر، می‌توانید یک نامه پوششی آماده دانلود کنید'
-                  : 'Download a ready-made cover letter for this job below.',
+              ? 'با کلیک روی دکمه دانلود در زیر، می‌توانید یک نامه پوششی آماده دانلود کنید'
+              : 'Download a ready-made cover letter for this job below.',
           textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
-          style: const TextStyle(
-            color: _muted,
-            fontSize: 12,
-            height: 1.5,
-          ),
+          style: const TextStyle(color: _muted, fontSize: 12, height: 1.5),
         ),
         const SizedBox(height: 12),
 
@@ -1348,14 +1468,18 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                         ),
                         const Text(
                           'z.Hd. Personalabteilung',
-                          style:
-                              TextStyle(color: Color(0xFF555555), fontSize: 11),
+                          style: TextStyle(
+                            color: Color(0xFF555555),
+                            fontSize: 11,
+                          ),
                         ),
                         if (_companyAddress.isNotEmpty)
                           Text(
                             _companyAddress,
                             style: const TextStyle(
-                                color: Color(0xFF555555), fontSize: 11),
+                              color: Color(0xFF555555),
+                              fontSize: 11,
+                            ),
                           ),
                       ],
                     ),
@@ -1379,26 +1503,34 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                           _displayStreet,
                           textAlign: TextAlign.right,
                           style: const TextStyle(
-                              color: Color(0xFF555555), fontSize: 11),
+                            color: Color(0xFF555555),
+                            fontSize: 11,
+                          ),
                         ),
                         if (postalCity.isNotEmpty)
                           Text(
                             postalCity,
                             textAlign: TextAlign.right,
                             style: const TextStyle(
-                                color: Color(0xFF555555), fontSize: 11),
+                              color: Color(0xFF555555),
+                              fontSize: 11,
+                            ),
                           ),
                         Text(
                           _displayPhone,
                           textAlign: TextAlign.right,
                           style: const TextStyle(
-                              color: Color(0xFF555555), fontSize: 11),
+                            color: Color(0xFF555555),
+                            fontSize: 11,
+                          ),
                         ),
                         Text(
                           _displayEmail,
                           textAlign: TextAlign.right,
                           style: const TextStyle(
-                              color: Color(0xFF555555), fontSize: 11),
+                            color: Color(0xFF555555),
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
@@ -1413,7 +1545,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                 child: Text(
                   _dateLine,
                   style: const TextStyle(
-                      color: Color(0xFF555555), fontSize: 11),
+                    color: Color(0xFF555555),
+                    fontSize: 11,
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
@@ -1445,8 +1579,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
               // Salutation
               const Text(
                 'Sehr geehrte Damen und Herren,',
-                style: TextStyle(
-                    color: _navy, fontSize: 12, height: 1.6),
+                style: TextStyle(color: _navy, fontSize: 12, height: 1.6),
               ),
               const SizedBox(height: 8),
 
@@ -1456,8 +1589,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                 'Position als ${widget.jobTitle}$_jobTypeSuffix bei ${widget.companyName} '
                 'gelesen. Hiermit bewerbe ich mich auf diese ausgeschriebene '
                 'Stelle.',
-                style: const TextStyle(
-                    color: _navy, fontSize: 12, height: 1.6),
+                style: const TextStyle(color: _navy, fontSize: 12, height: 1.6),
               ),
               const SizedBox(height: 12),
 
@@ -1468,8 +1600,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                 'bin bereit, mich schnell in neue Aufgabenbereiche '
                 'einzuarbeiten. Körperlich anspruchsvolle Tätigkeiten sind '
                 'mir vertraut.',
-                style: TextStyle(
-                    color: _navy, fontSize: 12, height: 1.6),
+                style: TextStyle(color: _navy, fontSize: 12, height: 1.6),
               ),
               const SizedBox(height: 12),
 
@@ -1479,16 +1610,14 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                 'würde ich mich sehr freuen. Meine Bewerbungsunterlagen, '
                 'einschließlich meines Lebenslaufs, füge ich dieser Bewerbung '
                 'bei.',
-                style: TextStyle(
-                    color: _navy, fontSize: 12, height: 1.6),
+                style: TextStyle(color: _navy, fontSize: 12, height: 1.6),
               ),
               const SizedBox(height: 16),
 
               // Sign-off
               const Text(
                 'Mit freundlichen Grüßen,',
-                style: TextStyle(
-                    color: _navy, fontSize: 12, height: 1.6),
+                style: TextStyle(color: _navy, fontSize: 12, height: 1.6),
               ),
               const SizedBox(height: 12),
               Text(
@@ -1554,8 +1683,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.download_rounded,
-                          color: Colors.white, size: 18),
+                      const Icon(
+                        Icons.download_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         _downloadLabel,
@@ -1582,8 +1714,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
   // fix - see _openCoverLetterCreation() above for the navigation).
   Widget _buildCoverLetterButtonSection(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          _isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: _isRtl
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Row(
           textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
@@ -1607,11 +1740,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         Text(
           _coverLetterButtonDesc,
           textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
-          style: const TextStyle(
-            color: _muted,
-            fontSize: 12,
-            height: 1.5,
-          ),
+          style: const TextStyle(color: _muted, fontSize: 12, height: 1.5),
         ),
         const SizedBox(height: 12),
         GestureDetector(
@@ -1630,8 +1759,11 @@ class _JobApplyScreenState extends State<JobApplyScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.description_rounded,
-                    color: Colors.white, size: 18),
+                const Icon(
+                  Icons.description_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
@@ -1774,8 +1906,9 @@ class _OptionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    textDirection:
-                        isRtl ? TextDirection.rtl : TextDirection.ltr,
+                    textDirection: isRtl
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
                     style: const TextStyle(
                       color: Color(0xFF091733),
                       fontSize: 14,
@@ -1785,8 +1918,9 @@ class _OptionCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     desc,
-                    textDirection:
-                        isRtl ? TextDirection.rtl : TextDirection.ltr,
+                    textDirection: isRtl
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
                     style: const TextStyle(
                       color: Color(0xFF65738A),
                       fontSize: 12,
@@ -1810,14 +1944,20 @@ class _OptionCard extends StatelessWidget {
                         color: Color(0xFFEAFBE9),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.volume_up_rounded,
-                          color: Color(0xFF39EA2B), size: 16),
+                      child: const Icon(
+                        Icons.volume_up_rounded,
+                        color: Color(0xFF39EA2B),
+                        size: 16,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 6),
                 ],
-                const Icon(Icons.chevron_right_rounded,
-                    color: Color(0xFF65738A), size: 20),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Color(0xFF65738A),
+                  size: 20,
+                ),
               ],
             ),
           ],
@@ -1865,20 +2005,36 @@ class _BackgroundGlow extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FBFF),
-                Color(0xFFEFF6FF),
-                Color(0xFFF7FFF2),
-              ],
+              colors: [Color(0xFFF9FBFF), Color(0xFFEFF6FF), Color(0xFFF7FFF2)],
             ),
           ),
           child: SizedBox.expand(),
         ),
-        Positioned(top: 70,    left: -42, child: _Orb(size: 170, color: Color(0x6639EA2B))),
-        Positioned(top: 135,   right: -65, child: _Orb(size: 170, color: Color(0x44FFB86B))),
-        Positioned(bottom: 95, left: -60,  child: _Orb(size: 210, color: Color(0x3339EA2B))),
-        Positioned(bottom: -30, right: 14, child: _Orb(size: 145, color: Color(0x5539EA2B))),
-        Positioned(top: 20,    left: 30,   child: _Orb(size: 170, color: Color(0x30FF8FA3))),
+        Positioned(
+          top: 70,
+          left: -42,
+          child: _Orb(size: 170, color: Color(0x6639EA2B)),
+        ),
+        Positioned(
+          top: 135,
+          right: -65,
+          child: _Orb(size: 170, color: Color(0x44FFB86B)),
+        ),
+        Positioned(
+          bottom: 95,
+          left: -60,
+          child: _Orb(size: 210, color: Color(0x3339EA2B)),
+        ),
+        Positioned(
+          bottom: -30,
+          right: 14,
+          child: _Orb(size: 145, color: Color(0x5539EA2B)),
+        ),
+        Positioned(
+          top: 20,
+          left: 30,
+          child: _Orb(size: 170, color: Color(0x30FF8FA3)),
+        ),
       ],
     );
   }
@@ -1939,7 +2095,7 @@ class _CaptchaGuideSheet extends StatefulWidget {
 }
 
 class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
-  static const Color _navy  = Color(0xFF091733);
+  static const Color _navy = Color(0xFF091733);
   static const Color _green = Color(0xFF39EA2B);
   static const Color _muted = Color(0xFF65738A);
 
@@ -1951,10 +2107,14 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
 
   String get _jobTypeSuffix {
     switch (widget.jobType) {
-      case 'Vollzeit': return ' in Vollzeit';
-      case 'Teilzeit': return ' in Teilzeit';
-      case 'Minijob':  return ' auf Minijob-Basis';
-      default:         return '';
+      case 'Vollzeit':
+        return ' in Vollzeit';
+      case 'Teilzeit':
+        return ' in Teilzeit';
+      case 'Minijob':
+        return ' auf Minijob-Basis';
+      default:
+        return '';
     }
   }
 
@@ -1985,8 +2145,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
     File? cvFile;
     File? coverFile;
 
-    final tempCvPath =
-        await KaryabData.profile.getString('temp_cv_path') ?? '';
+    final tempCvPath = await KaryabData.profile.getString('temp_cv_path') ?? '';
     final tempCoverPath =
         await KaryabData.profile.getString('temp_cover_path') ?? '';
 
@@ -2008,7 +2167,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
       final cleanJob = widget.jobTitle
           .replaceAll(RegExp(r'[^\w\s]'), '')
           .replaceAll(' ', '_');
-      final tempDir   = await getTemporaryDirectory();
+      final tempDir = await getTemporaryDirectory();
       final coverPath =
           '${tempDir.path}/Anschreiben_${cleanCompany}_$cleanJob.pdf';
       try {
@@ -2035,57 +2194,78 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
 
   String get _title {
     switch (widget.language) {
-      case 'ps': return 'آنلاین فورم ډکول';
-      case 'fa': return 'تکمیل فرم آنلاین';
-      default:   return 'Apply via Online Form';
+      case 'ps':
+        return 'آنلاین فورم ډکول';
+      case 'fa':
+        return 'تکمیل فرم آنلاین';
+      default:
+        return 'Apply via Online Form';
     }
   }
 
   String get _step1 {
     switch (widget.language) {
-      case 'ps': return '۱. لاندې تڼۍ فشار کړئ ترڅو فورم پرانستل شي';
-      case 'fa': return '۱. دکمه زیر را بزنید تا فرم باز شود';
-      default:   return '1. Tap the button below to open the form';
+      case 'ps':
+        return '۱. لاندې تڼۍ فشار کړئ ترڅو فورم پرانستل شي';
+      case 'fa':
+        return '۱. دکمه زیر را بزنید تا فرم باز شود';
+      default:
+        return '1. Tap the button below to open the form';
     }
   }
 
   String get _step2 {
     switch (widget.language) {
-      case 'ps': return '۲. که Code وویني،هغه کوډ هلته ولیکئ';
-      case 'fa': return '۲. اگر CAPTCHA دیدید، تصاویر خواسته‌شده را انتخاب کنید';
-      default:   return '2. If you see a CAPTCHA, Fil the Code as Shown';
+      case 'ps':
+        return '۲. که Code وویني،هغه کوډ هلته ولیکئ';
+      case 'fa':
+        return '۲. اگر CAPTCHA دیدید، تصاویر خواسته‌شده را انتخاب کنید';
+      default:
+        return '2. If you see a CAPTCHA, Fil the Code as Shown';
     }
   }
 
   String get _step3 {
     switch (widget.language) {
-      case 'ps': return '۳. د شرکت بریښنالیک کاپي کړئ، بیا دلته راستانه شئ';
-      case 'fa': return '۳. ایمیل شرکت را کپی کنید، سپس برگردید';
-      default:   return '3. Copy the company email, then return here';
+      case 'ps':
+        return '۳. د شرکت بریښنالیک کاپي کړئ، بیا دلته راستانه شئ';
+      case 'fa':
+        return '۳. ایمیل شرکت را کپی کنید، سپس برگردید';
+      default:
+        return '3. Copy the company email, then return here';
     }
   }
 
   String get _openFormLabel {
     switch (widget.language) {
-      case 'ps': return 'فورم پرانستل';
-      case 'fa': return 'باز کردن فرم';
-      default:   return 'Open Application Form';
+      case 'ps':
+        return 'فورم پرانستل';
+      case 'fa':
+        return 'باز کردن فرم';
+      default:
+        return 'Open Application Form';
     }
   }
 
   String get _orSendEmail {
     switch (widget.language) {
-      case 'ps': return 'بیا دلته د شرکت بریښنالیک پیسټ کړئ';
-      case 'fa': return 'سپس ایمیل شرکت را اینجا بچسبانید';
-      default:   return 'Then paste the company email below and send';
+      case 'ps':
+        return 'بیا دلته د شرکت بریښنالیک پیسټ کړئ';
+      case 'fa':
+        return 'سپس ایمیل شرکت را اینجا بچسبانید';
+      default:
+        return 'Then paste the company email below and send';
     }
   }
 
   String get _gmailLabel {
     switch (widget.language) {
-      case 'ps': return 'Gmail له لارې ولیږئ';
-      case 'fa': return 'ارسال از Gmail';
-      default:   return 'Send via Gmail';
+      case 'ps':
+        return 'Gmail له لارې ولیږئ';
+      case 'fa':
+        return 'ارسال از Gmail';
+      default:
+        return 'Send via Gmail';
     }
   }
 
@@ -2127,15 +2307,14 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
     try {
       await Clipboard.setData(ClipboardData(text: email));
 
-      final docs      = await _findCurrentFiles();
+      final docs = await _findCurrentFiles();
       final coverFile = docs['cover'];
-      final cvFile    = docs['cv'];
+      final cvFile = docs['cv'];
 
       final xfiles = <XFile>[
         if (coverFile != null)
           XFile(coverFile.path, mimeType: 'application/pdf'),
-        if (cvFile != null)
-          XFile(cvFile.path, mimeType: 'application/pdf'),
+        if (cvFile != null) XFile(cvFile.path, mimeType: 'application/pdf'),
       ];
 
       if (xfiles.isEmpty) {
@@ -2157,7 +2336,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
       }
 
       final subject = 'Bewerbung: ${widget.jobTitle} - ${widget.companyName}';
-      final body    =
+      final body =
           'Sehr geehrte Damen und Herren,\n\n'
           'ich bewerbe mich als ${widget.jobTitle} '
           'bei ${widget.companyName}.\n'
@@ -2192,34 +2371,53 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
   Future<Uint8List> _generateCoverLetterBytes() async {
     final street = await KaryabData.profile.getString('user_street') ?? '';
     final postal = await KaryabData.profile.getString('user_postal') ?? '';
-    final city   = await KaryabData.profile.getString('user_city')   ?? '';
+    final city = await KaryabData.profile.getString('user_city') ?? '';
 
-    final font     = pw.Font.helvetica();
+    final font = pw.Font.helvetica();
     final boldFont = pw.Font.helveticaBold();
 
     pw.TextStyle normal(double size) =>
         pw.TextStyle(font: font, fontSize: size);
-    pw.TextStyle bold(double size) =>
-        pw.TextStyle(font: boldFont, fontSize: size,
-            fontWeight: pw.FontWeight.bold);
+    pw.TextStyle bold(double size) => pw.TextStyle(
+      font: boldFont,
+      fontSize: size,
+      fontWeight: pw.FontWeight.bold,
+    );
 
-    final postalCity   = [postal, city].where((s) => s.isNotEmpty).join(' ');
-    final displayName  = widget.userName.isEmpty  ? '[Ihr Name]'             : widget.userName;
-    final displayStreet= street.isEmpty           ? '[Straße und Hausnummer]': street;
-    final displayPhone = widget.userPhone.isEmpty ? '[Telefonnummer]'        : widget.userPhone;
-    final displayEmail = widget.userEmail.isEmpty ? '[E-Mail-Adresse]'       : widget.userEmail;
+    final postalCity = [postal, city].where((s) => s.isNotEmpty).join(' ');
+    final displayName = widget.userName.isEmpty
+        ? '[Ihr Name]'
+        : widget.userName;
+    final displayStreet = street.isEmpty ? '[Straße und Hausnummer]' : street;
+    final displayPhone = widget.userPhone.isEmpty
+        ? '[Telefonnummer]'
+        : widget.userPhone;
+    final displayEmail = widget.userEmail.isEmpty
+        ? '[E-Mail-Adresse]'
+        : widget.userEmail;
     // FIX 5: fall back to the job's own location rather than a "[Stadt]"
     // placeholder when the profile has no city saved.
     final displayCity = city.isNotEmpty ? city : widget.jobLocation;
 
     final now = DateTime.now();
     const months = [
-      'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-      'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
+      'Januar',
+      'Februar',
+      'März',
+      'April',
+      'Mai',
+      'Juni',
+      'Juli',
+      'August',
+      'September',
+      'Oktober',
+      'November',
+      'Dezember',
     ];
     final germanDate = '${now.day}. ${months[now.month - 1]} ${now.year}';
-    final dateLine =
-        displayCity.isEmpty ? germanDate : '$displayCity, $germanDate';
+    final dateLine = displayCity.isEmpty
+        ? germanDate
+        : '$displayCity, $germanDate';
 
     final doc = pw.Document();
     doc.addPage(
@@ -2245,12 +2443,12 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
-                      pw.Text(displayName,   style: bold(11)),
+                      pw.Text(displayName, style: bold(11)),
                       pw.Text(displayStreet, style: normal(10)),
                       if (postalCity.isNotEmpty)
-                        pw.Text(postalCity,  style: normal(10)),
-                      pw.Text(displayPhone,  style: normal(10)),
-                      pw.Text(displayEmail,  style: normal(10)),
+                        pw.Text(postalCity, style: normal(10)),
+                      pw.Text(displayPhone, style: normal(10)),
+                      pw.Text(displayEmail, style: normal(10)),
                     ],
                   ),
                 ),
@@ -2305,7 +2503,9 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              20, 16, 20,
+              20,
+              16,
+              20,
               MediaQuery.of(context).viewInsets.bottom + 24,
             ),
             child: Column(
@@ -2327,8 +2527,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
 
                 // Title row + speaker
                 Row(
-                  textDirection:
-                      _isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
                   children: [
                     Expanded(
                       child: Text(
@@ -2343,8 +2542,11 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                     if (_isRtl)
                       IconButton(
                         onPressed: _speakGuidance,
-                        icon: const Icon(Icons.volume_up_rounded,
-                            color: _green, size: 22),
+                        icon: const Icon(
+                          Icons.volume_up_rounded,
+                          color: _green,
+                          size: 22,
+                        ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
@@ -2382,18 +2584,19 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _launchForm,
-                    icon: const Icon(Icons.open_in_browser_rounded,
-                        size: 18),
+                    icon: const Icon(Icons.open_in_browser_rounded, size: 18),
                     label: Text(_openFormLabel),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _navy,
                       foregroundColor: Colors.white,
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       textStyle: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w700),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -2403,9 +2606,10 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                 Text(
                   _orSendEmail,
                   style: const TextStyle(
-                      color: _muted,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500),
+                    color: _muted,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 8),
 
@@ -2416,29 +2620,36 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                       child: TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        style: const TextStyle(
-                            color: _navy, fontSize: 14),
+                        style: const TextStyle(color: _navy, fontSize: 14),
                         decoration: InputDecoration(
                           hintText: 'company@email.com',
                           hintStyle: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 14),
+                            color: Colors.grey.shade400,
+                            fontSize: 14,
+                          ),
                           prefixIcon: const Icon(
-                              Icons.email_outlined,
-                              color: _green),
+                            Icons.email_outlined,
+                            color: _green,
+                          ),
                           filled: true,
                           fillColor: Colors.white,
                           contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                                color: Colors.grey.shade300, width: 1),
+                              color: Colors.grey.shade300,
+                              width: 1,
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                                color: _green, width: 2),
+                              color: _green,
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),
@@ -2446,12 +2657,12 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                     IconButton(
                       icon: const Icon(Icons.copy, color: _green),
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(
-                            text: _emailController.text));
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text('Email copied!'),
-                        ));
+                        Clipboard.setData(
+                          ClipboardData(text: _emailController.text),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Email copied!')),
+                        );
                       },
                     ),
                   ],
@@ -2478,8 +2689,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                           child: SizedBox(
                             width: 14,
                             height: 14,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
                       );
@@ -2491,8 +2701,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                         widget.language == 'ps'
                             ? 'مهرباني وکړئ لومړی خپل CV جوړ کړئ یا ډاونلوډ کړئ'
                             : widget.language == 'fa'
-                                ? 'لطفاً ابتدا CV خود را بسازید یا دانلود کنید'
-                                : 'Please create or download your CV first',
+                            ? 'لطفاً ابتدا CV خود را بسازید یا دانلود کنید'
+                            : 'Please create or download your CV first',
                         style: TextStyle(
                           color: Colors.red.shade400,
                           fontSize: 12,
@@ -2539,10 +2749,10 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                     label: Text(
                       _isGenerating
                           ? (widget.language == 'ps'
-                              ? 'چمتو کول...'
-                              : widget.language == 'fa'
-                                  ? 'در حال آماده‌سازی...'
-                                  : 'Preparing...')
+                                ? 'چمتو کول...'
+                                : widget.language == 'fa'
+                                ? 'در حال آماده‌سازی...'
+                                : 'Preparing...')
                           : _gmailLabel,
                     ),
                     style: ElevatedButton.styleFrom(
@@ -2550,12 +2760,14 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                           ? _green.withValues(alpha: 0.6)
                           : _green,
                       foregroundColor: _navy,
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       textStyle: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w700),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -2586,12 +2798,11 @@ class _GmailInstructionSheet extends StatefulWidget {
   });
 
   @override
-  State<_GmailInstructionSheet> createState() =>
-      _GmailInstructionSheetState();
+  State<_GmailInstructionSheet> createState() => _GmailInstructionSheetState();
 }
 
 class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
-  static const Color _navy  = Color(0xFF091733);
+  static const Color _navy = Color(0xFF091733);
   static const Color _green = Color(0xFF39EA2B);
   static const Color _muted = Color(0xFF65738A);
 
@@ -2610,8 +2821,7 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
     File? cvFile;
     File? coverFile;
 
-    final tempCvPath =
-        await KaryabData.profile.getString('temp_cv_path') ?? '';
+    final tempCvPath = await KaryabData.profile.getString('temp_cv_path') ?? '';
     final tempCoverPath =
         await KaryabData.profile.getString('temp_cover_path') ?? '';
 
@@ -2647,13 +2857,11 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
         'Anbei: Lebenslauf und Anschreiben.\n\n'
         'Mit freundlichen Grüßen,\n${widget.userName}';
 
-    final mailtoUrl = 'mailto:${widget.email}'
+    final mailtoUrl =
+        'mailto:${widget.email}'
         '?subject=${Uri.encodeComponent(subject)}'
         '&body=${Uri.encodeComponent(body)}';
-    await launchUrl(
-      Uri.parse(mailtoUrl),
-      mode: LaunchMode.externalApplication,
-    );
+    await launchUrl(Uri.parse(mailtoUrl), mode: LaunchMode.externalApplication);
 
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
@@ -2693,8 +2901,7 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
               padding: const EdgeInsets.only(top: 5),
               child: Text(
                 text,
-                textDirection:
-                    _isRtl ? TextDirection.rtl : TextDirection.ltr,
+                textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
                 style: const TextStyle(
                   color: _navy,
                   fontSize: 13,
@@ -2720,7 +2927,9 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
         ),
         child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
-            20, 16, 20,
+            20,
+            16,
+            20,
             MediaQuery.of(context).viewInsets.bottom + 24,
           ),
           child: Column(
@@ -2755,19 +2964,23 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                       : CrossAxisAlignment.start,
                   children: [
                     Row(
-                      textDirection:
-                          _isRtl ? TextDirection.rtl : TextDirection.ltr,
+                      textDirection: _isRtl
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
                       children: [
-                        const Icon(Icons.check_circle_rounded,
-                            color: _green, size: 18),
+                        const Icon(
+                          Icons.check_circle_rounded,
+                          color: _green,
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             widget.language == 'ps'
                                 ? 'د شرکت بریښنالیک کاپي شو!'
                                 : widget.language == 'fa'
-                                    ? 'ایمیل شرکت کپی شد!'
-                                    : 'Company email copied to clipboard!',
+                                ? 'ایمیل شرکت کپی شد!'
+                                : 'Company email copied to clipboard!',
                             style: const TextStyle(
                               color: _navy,
                               fontSize: 13,
@@ -2780,7 +2993,9 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: _green.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
@@ -2805,40 +3020,40 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                 widget.language == 'ps'
                     ? 'بریښنالیک اتوماتیک کاپي شو ✓'
                     : widget.language == 'fa'
-                        ? 'ایمیل به‌صورت خودکار کپی شد ✓'
-                        : 'Email copied automatically ✓',
+                    ? 'ایمیل به‌صورت خودکار کپی شد ✓'
+                    : 'Email copied automatically ✓',
               ),
               _buildStep(
                 Icons.open_in_new_rounded,
                 widget.language == 'ps'
                     ? 'لاندې Gmail خلاص کړئ تڼۍ کلیک کړئ'
                     : widget.language == 'fa'
-                        ? 'دکمه «باز کردن Gmail» را بزنید'
-                        : "Tap 'Open Gmail' button below",
+                    ? 'دکمه «باز کردن Gmail» را بزنید'
+                    : "Tap 'Open Gmail' button below",
               ),
               _buildStep(
                 Icons.share_rounded,
                 widget.language == 'ps'
                     ? 'د شریکولو پاڼه کې Gmail غوره کړئ'
                     : widget.language == 'fa'
-                        ? 'Gmail را از صفحه اشتراک‌گذاری انتخاب کنید'
-                        : 'Select Gmail from share sheet',
+                    ? 'Gmail را از صفحه اشتراک‌گذاری انتخاب کنید'
+                    : 'Select Gmail from share sheet',
               ),
               _buildStep(
                 Icons.content_paste_rounded,
                 widget.language == 'ps'
                     ? 'Gmail کې To: ساحه کې بریښنالیک پیسټ کړئ (کاپي شوی دی)'
                     : widget.language == 'fa'
-                        ? 'در Gmail ایمیل را در فیلد To: جای‌گذاری کنید (کپی شده)'
-                        : 'In Gmail paste email in To: field (already copied to your clipboard)',
+                    ? 'در Gmail ایمیل را در فیلد To: جای‌گذاری کنید (کپی شده)'
+                    : 'In Gmail paste email in To: field (already copied to your clipboard)',
               ),
               _buildStep(
                 Icons.attach_file_rounded,
                 widget.language == 'ps'
                     ? 'ستاسو CV او د کار غوښتنې لیک ضمیمه دي'
                     : widget.language == 'fa'
-                        ? 'CV و نامه پوششی شما ضمیمه شده‌اند'
-                        : 'Your CV and cover letter are attached',
+                    ? 'CV و نامه پوششی شما ضمیمه شده‌اند'
+                    : 'Your CV and cover letter are attached',
               ),
 
               // Files available
@@ -2847,8 +3062,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                 widget.language == 'ps'
                     ? 'ضمیمه کیدونکي فایلونه:'
                     : widget.language == 'fa'
-                        ? 'فایل‌های آماده برای ضمیمه:'
-                        : 'Files available to attach:',
+                    ? 'فایل‌های آماده برای ضمیمه:'
+                    : 'Files available to attach:',
                 style: const TextStyle(
                   color: _navy,
                   fontSize: 12,
@@ -2862,7 +3077,7 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
                   }
-                  final cv    = snapshot.data!['cv'];
+                  final cv = snapshot.data!['cv'];
                   final cover = snapshot.data!['cover'];
                   return Column(
                     children: [
@@ -2897,17 +3112,20 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     widget.language == 'ps'
                         ? 'Gmail خلاص کړئ'
                         : widget.language == 'fa'
-                            ? 'باز کردن Gmail'
-                            : 'Open Gmail',
+                        ? 'باز کردن Gmail'
+                        : 'Open Gmail',
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _navy,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     textStyle: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w700),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -2918,8 +3136,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                 widget.language == 'ps'
                     ? 'بریښنالیک د Gmail To: ساحه کې پیسټ کړئ، بیا خپل CV د ډاونلوډ فولډر څخه ضمیمه کړئ'
                     : widget.language == 'fa'
-                        ? 'ایمیل را در فیلد To: Gmail بچسبانید، سپس CV خود را از Downloads ضمیمه کنید'
-                        : "Paste the email in Gmail's To: field, then attach your CV from Downloads",
+                    ? 'ایمیل را در فیلد To: Gmail بچسبانید، سپس CV خود را از Downloads ضمیمه کنید'
+                    : "Paste the email in Gmail's To: field, then attach your CV from Downloads",
                 style: const TextStyle(
                   color: _muted,
                   fontSize: 11,
@@ -2936,14 +3154,15 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: Text(
                     widget.language == 'ps'
                         ? 'سم دی'
                         : widget.language == 'fa'
-                            ? 'باشه'
-                            : 'Done',
+                        ? 'باشه'
+                        : 'Done',
                     style: const TextStyle(
                       color: _muted,
                       fontSize: 15,
@@ -2980,9 +3199,7 @@ class _FileStatusRow extends StatelessWidget {
             label,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: found
-                  ? const Color(0xFF091733)
-                  : Colors.red.shade400,
+              color: found ? const Color(0xFF091733) : Colors.red.shade400,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -3017,10 +3234,7 @@ class _FileRow extends StatelessWidget {
               Text(
                 name,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Color(0xFF091733),
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Color(0xFF091733), fontSize: 12),
               ),
               if (!found)
                 Text(
@@ -3055,10 +3269,11 @@ class _StepRow extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-                color: Color(0xFF091733),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                height: 1.4),
+              color: Color(0xFF091733),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.4,
+            ),
           ),
         ),
       ],
@@ -3099,7 +3314,9 @@ class _GlassSurface extends StatelessWidget {
             color: Colors.white.withValues(alpha: 0.62),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-                color: Colors.white.withValues(alpha: 0.85), width: 1.2),
+              color: Colors.white.withValues(alpha: 0.85),
+              width: 1.2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.18),
