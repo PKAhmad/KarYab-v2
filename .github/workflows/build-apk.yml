@@ -1,11 +1,13 @@
 name: Build debug APK
 
 # Builds the Karyab v2 debug APK on GitHub's runners (the local dev VM
-# cannot run the Gradle daemon). Manual trigger + every push to v2.
+# cannot run the Gradle daemon). Manual trigger + every push to main
+# (the KarYab-v2 repo's home branch) or v2.
 on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - v2
 
 jobs:
