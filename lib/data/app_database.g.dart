@@ -4184,6 +4184,1652 @@ class AppMetaCompanion extends UpdateCompanion<AppMetaData> {
   }
 }
 
+class $SavedJobsTable extends SavedJobs
+    with TableInfo<$SavedJobsTable, SavedJob> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedJobsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _refnrMeta = const VerificationMeta('refnr');
+  @override
+  late final GeneratedColumn<String> refnr = GeneratedColumn<String>(
+    'refnr',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _companyMeta = const VerificationMeta(
+    'company',
+  );
+  @override
+  late final GeneratedColumn<String> company = GeneratedColumn<String>(
+    'company',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _locationMeta = const VerificationMeta(
+    'location',
+  );
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+    'location',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _savedAtMeta = const VerificationMeta(
+    'savedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> savedAt = GeneratedColumn<DateTime>(
+    'saved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    refnr,
+    title,
+    company,
+    location,
+    source,
+    savedAt,
+    payload,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_jobs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedJob> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('refnr')) {
+      context.handle(
+        _refnrMeta,
+        refnr.isAcceptableOrUnknown(data['refnr']!, _refnrMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_refnrMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('company')) {
+      context.handle(
+        _companyMeta,
+        company.isAcceptableOrUnknown(data['company']!, _companyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_companyMeta);
+    }
+    if (data.containsKey('location')) {
+      context.handle(
+        _locationMeta,
+        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_locationMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(
+        _savedAtMeta,
+        savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_savedAtMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {refnr};
+  @override
+  SavedJob map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedJob(
+      refnr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}refnr'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      company: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company'],
+      )!,
+      location: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      savedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}saved_at'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+    );
+  }
+
+  @override
+  $SavedJobsTable createAlias(String alias) {
+    return $SavedJobsTable(attachedDatabase, alias);
+  }
+}
+
+class SavedJob extends DataClass implements Insertable<SavedJob> {
+  final String refnr;
+  final String title;
+  final String company;
+  final String location;
+
+  /// Which surface saved it: 'jobs', 'ausbildung' or 'minijob'.
+  final String source;
+  final DateTime savedAt;
+  final String payload;
+  const SavedJob({
+    required this.refnr,
+    required this.title,
+    required this.company,
+    required this.location,
+    required this.source,
+    required this.savedAt,
+    required this.payload,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['refnr'] = Variable<String>(refnr);
+    map['title'] = Variable<String>(title);
+    map['company'] = Variable<String>(company);
+    map['location'] = Variable<String>(location);
+    map['source'] = Variable<String>(source);
+    map['saved_at'] = Variable<DateTime>(savedAt);
+    map['payload'] = Variable<String>(payload);
+    return map;
+  }
+
+  SavedJobsCompanion toCompanion(bool nullToAbsent) {
+    return SavedJobsCompanion(
+      refnr: Value(refnr),
+      title: Value(title),
+      company: Value(company),
+      location: Value(location),
+      source: Value(source),
+      savedAt: Value(savedAt),
+      payload: Value(payload),
+    );
+  }
+
+  factory SavedJob.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedJob(
+      refnr: serializer.fromJson<String>(json['refnr']),
+      title: serializer.fromJson<String>(json['title']),
+      company: serializer.fromJson<String>(json['company']),
+      location: serializer.fromJson<String>(json['location']),
+      source: serializer.fromJson<String>(json['source']),
+      savedAt: serializer.fromJson<DateTime>(json['savedAt']),
+      payload: serializer.fromJson<String>(json['payload']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'refnr': serializer.toJson<String>(refnr),
+      'title': serializer.toJson<String>(title),
+      'company': serializer.toJson<String>(company),
+      'location': serializer.toJson<String>(location),
+      'source': serializer.toJson<String>(source),
+      'savedAt': serializer.toJson<DateTime>(savedAt),
+      'payload': serializer.toJson<String>(payload),
+    };
+  }
+
+  SavedJob copyWith({
+    String? refnr,
+    String? title,
+    String? company,
+    String? location,
+    String? source,
+    DateTime? savedAt,
+    String? payload,
+  }) => SavedJob(
+    refnr: refnr ?? this.refnr,
+    title: title ?? this.title,
+    company: company ?? this.company,
+    location: location ?? this.location,
+    source: source ?? this.source,
+    savedAt: savedAt ?? this.savedAt,
+    payload: payload ?? this.payload,
+  );
+  SavedJob copyWithCompanion(SavedJobsCompanion data) {
+    return SavedJob(
+      refnr: data.refnr.present ? data.refnr.value : this.refnr,
+      title: data.title.present ? data.title.value : this.title,
+      company: data.company.present ? data.company.value : this.company,
+      location: data.location.present ? data.location.value : this.location,
+      source: data.source.present ? data.source.value : this.source,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+      payload: data.payload.present ? data.payload.value : this.payload,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedJob(')
+          ..write('refnr: $refnr, ')
+          ..write('title: $title, ')
+          ..write('company: $company, ')
+          ..write('location: $location, ')
+          ..write('source: $source, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('payload: $payload')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(refnr, title, company, location, source, savedAt, payload);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedJob &&
+          other.refnr == this.refnr &&
+          other.title == this.title &&
+          other.company == this.company &&
+          other.location == this.location &&
+          other.source == this.source &&
+          other.savedAt == this.savedAt &&
+          other.payload == this.payload);
+}
+
+class SavedJobsCompanion extends UpdateCompanion<SavedJob> {
+  final Value<String> refnr;
+  final Value<String> title;
+  final Value<String> company;
+  final Value<String> location;
+  final Value<String> source;
+  final Value<DateTime> savedAt;
+  final Value<String> payload;
+  final Value<int> rowid;
+  const SavedJobsCompanion({
+    this.refnr = const Value.absent(),
+    this.title = const Value.absent(),
+    this.company = const Value.absent(),
+    this.location = const Value.absent(),
+    this.source = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavedJobsCompanion.insert({
+    required String refnr,
+    required String title,
+    required String company,
+    required String location,
+    required String source,
+    required DateTime savedAt,
+    required String payload,
+    this.rowid = const Value.absent(),
+  }) : refnr = Value(refnr),
+       title = Value(title),
+       company = Value(company),
+       location = Value(location),
+       source = Value(source),
+       savedAt = Value(savedAt),
+       payload = Value(payload);
+  static Insertable<SavedJob> custom({
+    Expression<String>? refnr,
+    Expression<String>? title,
+    Expression<String>? company,
+    Expression<String>? location,
+    Expression<String>? source,
+    Expression<DateTime>? savedAt,
+    Expression<String>? payload,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (refnr != null) 'refnr': refnr,
+      if (title != null) 'title': title,
+      if (company != null) 'company': company,
+      if (location != null) 'location': location,
+      if (source != null) 'source': source,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (payload != null) 'payload': payload,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavedJobsCompanion copyWith({
+    Value<String>? refnr,
+    Value<String>? title,
+    Value<String>? company,
+    Value<String>? location,
+    Value<String>? source,
+    Value<DateTime>? savedAt,
+    Value<String>? payload,
+    Value<int>? rowid,
+  }) {
+    return SavedJobsCompanion(
+      refnr: refnr ?? this.refnr,
+      title: title ?? this.title,
+      company: company ?? this.company,
+      location: location ?? this.location,
+      source: source ?? this.source,
+      savedAt: savedAt ?? this.savedAt,
+      payload: payload ?? this.payload,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (refnr.present) {
+      map['refnr'] = Variable<String>(refnr.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (company.present) {
+      map['company'] = Variable<String>(company.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<DateTime>(savedAt.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedJobsCompanion(')
+          ..write('refnr: $refnr, ')
+          ..write('title: $title, ')
+          ..write('company: $company, ')
+          ..write('location: $location, ')
+          ..write('source: $source, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('payload: $payload, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SavedSearchesTable extends SavedSearches
+    with TableInfo<$SavedSearchesTable, SavedSearch> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedSearchesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _paramsMeta = const VerificationMeta('params');
+  @override
+  late final GeneratedColumn<String> params = GeneratedColumn<String>(
+    'params',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastRunAtMeta = const VerificationMeta(
+    'lastRunAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastRunAt = GeneratedColumn<DateTime>(
+    'last_run_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastTopRefnrMeta = const VerificationMeta(
+    'lastTopRefnr',
+  );
+  @override
+  late final GeneratedColumn<String> lastTopRefnr = GeneratedColumn<String>(
+    'last_top_refnr',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    label,
+    params,
+    lastRunAt,
+    lastTopRefnr,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_searches';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedSearch> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('params')) {
+      context.handle(
+        _paramsMeta,
+        params.isAcceptableOrUnknown(data['params']!, _paramsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_paramsMeta);
+    }
+    if (data.containsKey('last_run_at')) {
+      context.handle(
+        _lastRunAtMeta,
+        lastRunAt.isAcceptableOrUnknown(data['last_run_at']!, _lastRunAtMeta),
+      );
+    }
+    if (data.containsKey('last_top_refnr')) {
+      context.handle(
+        _lastTopRefnrMeta,
+        lastTopRefnr.isAcceptableOrUnknown(
+          data['last_top_refnr']!,
+          _lastTopRefnrMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavedSearch map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedSearch(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      params: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}params'],
+      )!,
+      lastRunAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_run_at'],
+      ),
+      lastTopRefnr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_top_refnr'],
+      ),
+    );
+  }
+
+  @override
+  $SavedSearchesTable createAlias(String alias) {
+    return $SavedSearchesTable(attachedDatabase, alias);
+  }
+}
+
+class SavedSearch extends DataClass implements Insertable<SavedSearch> {
+  final int id;
+  final String label;
+  final String params;
+  final DateTime? lastRunAt;
+  final String? lastTopRefnr;
+  const SavedSearch({
+    required this.id,
+    required this.label,
+    required this.params,
+    this.lastRunAt,
+    this.lastTopRefnr,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['label'] = Variable<String>(label);
+    map['params'] = Variable<String>(params);
+    if (!nullToAbsent || lastRunAt != null) {
+      map['last_run_at'] = Variable<DateTime>(lastRunAt);
+    }
+    if (!nullToAbsent || lastTopRefnr != null) {
+      map['last_top_refnr'] = Variable<String>(lastTopRefnr);
+    }
+    return map;
+  }
+
+  SavedSearchesCompanion toCompanion(bool nullToAbsent) {
+    return SavedSearchesCompanion(
+      id: Value(id),
+      label: Value(label),
+      params: Value(params),
+      lastRunAt: lastRunAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastRunAt),
+      lastTopRefnr: lastTopRefnr == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastTopRefnr),
+    );
+  }
+
+  factory SavedSearch.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedSearch(
+      id: serializer.fromJson<int>(json['id']),
+      label: serializer.fromJson<String>(json['label']),
+      params: serializer.fromJson<String>(json['params']),
+      lastRunAt: serializer.fromJson<DateTime?>(json['lastRunAt']),
+      lastTopRefnr: serializer.fromJson<String?>(json['lastTopRefnr']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'label': serializer.toJson<String>(label),
+      'params': serializer.toJson<String>(params),
+      'lastRunAt': serializer.toJson<DateTime?>(lastRunAt),
+      'lastTopRefnr': serializer.toJson<String?>(lastTopRefnr),
+    };
+  }
+
+  SavedSearch copyWith({
+    int? id,
+    String? label,
+    String? params,
+    Value<DateTime?> lastRunAt = const Value.absent(),
+    Value<String?> lastTopRefnr = const Value.absent(),
+  }) => SavedSearch(
+    id: id ?? this.id,
+    label: label ?? this.label,
+    params: params ?? this.params,
+    lastRunAt: lastRunAt.present ? lastRunAt.value : this.lastRunAt,
+    lastTopRefnr: lastTopRefnr.present ? lastTopRefnr.value : this.lastTopRefnr,
+  );
+  SavedSearch copyWithCompanion(SavedSearchesCompanion data) {
+    return SavedSearch(
+      id: data.id.present ? data.id.value : this.id,
+      label: data.label.present ? data.label.value : this.label,
+      params: data.params.present ? data.params.value : this.params,
+      lastRunAt: data.lastRunAt.present ? data.lastRunAt.value : this.lastRunAt,
+      lastTopRefnr: data.lastTopRefnr.present
+          ? data.lastTopRefnr.value
+          : this.lastTopRefnr,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSearch(')
+          ..write('id: $id, ')
+          ..write('label: $label, ')
+          ..write('params: $params, ')
+          ..write('lastRunAt: $lastRunAt, ')
+          ..write('lastTopRefnr: $lastTopRefnr')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, label, params, lastRunAt, lastTopRefnr);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedSearch &&
+          other.id == this.id &&
+          other.label == this.label &&
+          other.params == this.params &&
+          other.lastRunAt == this.lastRunAt &&
+          other.lastTopRefnr == this.lastTopRefnr);
+}
+
+class SavedSearchesCompanion extends UpdateCompanion<SavedSearch> {
+  final Value<int> id;
+  final Value<String> label;
+  final Value<String> params;
+  final Value<DateTime?> lastRunAt;
+  final Value<String?> lastTopRefnr;
+  const SavedSearchesCompanion({
+    this.id = const Value.absent(),
+    this.label = const Value.absent(),
+    this.params = const Value.absent(),
+    this.lastRunAt = const Value.absent(),
+    this.lastTopRefnr = const Value.absent(),
+  });
+  SavedSearchesCompanion.insert({
+    this.id = const Value.absent(),
+    required String label,
+    required String params,
+    this.lastRunAt = const Value.absent(),
+    this.lastTopRefnr = const Value.absent(),
+  }) : label = Value(label),
+       params = Value(params);
+  static Insertable<SavedSearch> custom({
+    Expression<int>? id,
+    Expression<String>? label,
+    Expression<String>? params,
+    Expression<DateTime>? lastRunAt,
+    Expression<String>? lastTopRefnr,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (label != null) 'label': label,
+      if (params != null) 'params': params,
+      if (lastRunAt != null) 'last_run_at': lastRunAt,
+      if (lastTopRefnr != null) 'last_top_refnr': lastTopRefnr,
+    });
+  }
+
+  SavedSearchesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? label,
+    Value<String>? params,
+    Value<DateTime?>? lastRunAt,
+    Value<String?>? lastTopRefnr,
+  }) {
+    return SavedSearchesCompanion(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      params: params ?? this.params,
+      lastRunAt: lastRunAt ?? this.lastRunAt,
+      lastTopRefnr: lastTopRefnr ?? this.lastTopRefnr,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (params.present) {
+      map['params'] = Variable<String>(params.value);
+    }
+    if (lastRunAt.present) {
+      map['last_run_at'] = Variable<DateTime>(lastRunAt.value);
+    }
+    if (lastTopRefnr.present) {
+      map['last_top_refnr'] = Variable<String>(lastTopRefnr.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSearchesCompanion(')
+          ..write('id: $id, ')
+          ..write('label: $label, ')
+          ..write('params: $params, ')
+          ..write('lastRunAt: $lastRunAt, ')
+          ..write('lastTopRefnr: $lastTopRefnr')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ApplicationsTable extends Applications
+    with TableInfo<$ApplicationsTable, Application> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ApplicationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _refnrMeta = const VerificationMeta('refnr');
+  @override
+  late final GeneratedColumn<String> refnr = GeneratedColumn<String>(
+    'refnr',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _companyMeta = const VerificationMeta(
+    'company',
+  );
+  @override
+  late final GeneratedColumn<String> company = GeneratedColumn<String>(
+    'company',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _jobTitleMeta = const VerificationMeta(
+    'jobTitle',
+  );
+  @override
+  late final GeneratedColumn<String> jobTitle = GeneratedColumn<String>(
+    'job_title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cvDocumentIdMeta = const VerificationMeta(
+    'cvDocumentId',
+  );
+  @override
+  late final GeneratedColumn<int> cvDocumentId = GeneratedColumn<int>(
+    'cv_document_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _letterDocumentIdMeta = const VerificationMeta(
+    'letterDocumentId',
+  );
+  @override
+  late final GeneratedColumn<int> letterDocumentId = GeneratedColumn<int>(
+    'letter_document_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    refnr,
+    company,
+    jobTitle,
+    status,
+    cvDocumentId,
+    letterDocumentId,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'applications';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Application> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('refnr')) {
+      context.handle(
+        _refnrMeta,
+        refnr.isAcceptableOrUnknown(data['refnr']!, _refnrMeta),
+      );
+    }
+    if (data.containsKey('company')) {
+      context.handle(
+        _companyMeta,
+        company.isAcceptableOrUnknown(data['company']!, _companyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_companyMeta);
+    }
+    if (data.containsKey('job_title')) {
+      context.handle(
+        _jobTitleMeta,
+        jobTitle.isAcceptableOrUnknown(data['job_title']!, _jobTitleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jobTitleMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('cv_document_id')) {
+      context.handle(
+        _cvDocumentIdMeta,
+        cvDocumentId.isAcceptableOrUnknown(
+          data['cv_document_id']!,
+          _cvDocumentIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('letter_document_id')) {
+      context.handle(
+        _letterDocumentIdMeta,
+        letterDocumentId.isAcceptableOrUnknown(
+          data['letter_document_id']!,
+          _letterDocumentIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Application map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Application(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      refnr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}refnr'],
+      ),
+      company: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company'],
+      )!,
+      jobTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}job_title'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      cvDocumentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cv_document_id'],
+      ),
+      letterDocumentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}letter_document_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ApplicationsTable createAlias(String alias) {
+    return $ApplicationsTable(attachedDatabase, alias);
+  }
+}
+
+class Application extends DataClass implements Insertable<Application> {
+  final int id;
+
+  /// Bundesagentur reference number of the posting, when the application
+  /// came from a posting inside the app. Null for manual entries.
+  final String? refnr;
+  final String company;
+  final String jobTitle;
+  final String status;
+  final int? cvDocumentId;
+  final int? letterDocumentId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const Application({
+    required this.id,
+    this.refnr,
+    required this.company,
+    required this.jobTitle,
+    required this.status,
+    this.cvDocumentId,
+    this.letterDocumentId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || refnr != null) {
+      map['refnr'] = Variable<String>(refnr);
+    }
+    map['company'] = Variable<String>(company);
+    map['job_title'] = Variable<String>(jobTitle);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || cvDocumentId != null) {
+      map['cv_document_id'] = Variable<int>(cvDocumentId);
+    }
+    if (!nullToAbsent || letterDocumentId != null) {
+      map['letter_document_id'] = Variable<int>(letterDocumentId);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  ApplicationsCompanion toCompanion(bool nullToAbsent) {
+    return ApplicationsCompanion(
+      id: Value(id),
+      refnr: refnr == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refnr),
+      company: Value(company),
+      jobTitle: Value(jobTitle),
+      status: Value(status),
+      cvDocumentId: cvDocumentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cvDocumentId),
+      letterDocumentId: letterDocumentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(letterDocumentId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Application.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Application(
+      id: serializer.fromJson<int>(json['id']),
+      refnr: serializer.fromJson<String?>(json['refnr']),
+      company: serializer.fromJson<String>(json['company']),
+      jobTitle: serializer.fromJson<String>(json['jobTitle']),
+      status: serializer.fromJson<String>(json['status']),
+      cvDocumentId: serializer.fromJson<int?>(json['cvDocumentId']),
+      letterDocumentId: serializer.fromJson<int?>(json['letterDocumentId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'refnr': serializer.toJson<String?>(refnr),
+      'company': serializer.toJson<String>(company),
+      'jobTitle': serializer.toJson<String>(jobTitle),
+      'status': serializer.toJson<String>(status),
+      'cvDocumentId': serializer.toJson<int?>(cvDocumentId),
+      'letterDocumentId': serializer.toJson<int?>(letterDocumentId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Application copyWith({
+    int? id,
+    Value<String?> refnr = const Value.absent(),
+    String? company,
+    String? jobTitle,
+    String? status,
+    Value<int?> cvDocumentId = const Value.absent(),
+    Value<int?> letterDocumentId = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => Application(
+    id: id ?? this.id,
+    refnr: refnr.present ? refnr.value : this.refnr,
+    company: company ?? this.company,
+    jobTitle: jobTitle ?? this.jobTitle,
+    status: status ?? this.status,
+    cvDocumentId: cvDocumentId.present ? cvDocumentId.value : this.cvDocumentId,
+    letterDocumentId: letterDocumentId.present
+        ? letterDocumentId.value
+        : this.letterDocumentId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Application copyWithCompanion(ApplicationsCompanion data) {
+    return Application(
+      id: data.id.present ? data.id.value : this.id,
+      refnr: data.refnr.present ? data.refnr.value : this.refnr,
+      company: data.company.present ? data.company.value : this.company,
+      jobTitle: data.jobTitle.present ? data.jobTitle.value : this.jobTitle,
+      status: data.status.present ? data.status.value : this.status,
+      cvDocumentId: data.cvDocumentId.present
+          ? data.cvDocumentId.value
+          : this.cvDocumentId,
+      letterDocumentId: data.letterDocumentId.present
+          ? data.letterDocumentId.value
+          : this.letterDocumentId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Application(')
+          ..write('id: $id, ')
+          ..write('refnr: $refnr, ')
+          ..write('company: $company, ')
+          ..write('jobTitle: $jobTitle, ')
+          ..write('status: $status, ')
+          ..write('cvDocumentId: $cvDocumentId, ')
+          ..write('letterDocumentId: $letterDocumentId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    refnr,
+    company,
+    jobTitle,
+    status,
+    cvDocumentId,
+    letterDocumentId,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Application &&
+          other.id == this.id &&
+          other.refnr == this.refnr &&
+          other.company == this.company &&
+          other.jobTitle == this.jobTitle &&
+          other.status == this.status &&
+          other.cvDocumentId == this.cvDocumentId &&
+          other.letterDocumentId == this.letterDocumentId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ApplicationsCompanion extends UpdateCompanion<Application> {
+  final Value<int> id;
+  final Value<String?> refnr;
+  final Value<String> company;
+  final Value<String> jobTitle;
+  final Value<String> status;
+  final Value<int?> cvDocumentId;
+  final Value<int?> letterDocumentId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const ApplicationsCompanion({
+    this.id = const Value.absent(),
+    this.refnr = const Value.absent(),
+    this.company = const Value.absent(),
+    this.jobTitle = const Value.absent(),
+    this.status = const Value.absent(),
+    this.cvDocumentId = const Value.absent(),
+    this.letterDocumentId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  ApplicationsCompanion.insert({
+    this.id = const Value.absent(),
+    this.refnr = const Value.absent(),
+    required String company,
+    required String jobTitle,
+    required String status,
+    this.cvDocumentId = const Value.absent(),
+    this.letterDocumentId = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) : company = Value(company),
+       jobTitle = Value(jobTitle),
+       status = Value(status),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Application> custom({
+    Expression<int>? id,
+    Expression<String>? refnr,
+    Expression<String>? company,
+    Expression<String>? jobTitle,
+    Expression<String>? status,
+    Expression<int>? cvDocumentId,
+    Expression<int>? letterDocumentId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (refnr != null) 'refnr': refnr,
+      if (company != null) 'company': company,
+      if (jobTitle != null) 'job_title': jobTitle,
+      if (status != null) 'status': status,
+      if (cvDocumentId != null) 'cv_document_id': cvDocumentId,
+      if (letterDocumentId != null) 'letter_document_id': letterDocumentId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  ApplicationsCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? refnr,
+    Value<String>? company,
+    Value<String>? jobTitle,
+    Value<String>? status,
+    Value<int?>? cvDocumentId,
+    Value<int?>? letterDocumentId,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+  }) {
+    return ApplicationsCompanion(
+      id: id ?? this.id,
+      refnr: refnr ?? this.refnr,
+      company: company ?? this.company,
+      jobTitle: jobTitle ?? this.jobTitle,
+      status: status ?? this.status,
+      cvDocumentId: cvDocumentId ?? this.cvDocumentId,
+      letterDocumentId: letterDocumentId ?? this.letterDocumentId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (refnr.present) {
+      map['refnr'] = Variable<String>(refnr.value);
+    }
+    if (company.present) {
+      map['company'] = Variable<String>(company.value);
+    }
+    if (jobTitle.present) {
+      map['job_title'] = Variable<String>(jobTitle.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (cvDocumentId.present) {
+      map['cv_document_id'] = Variable<int>(cvDocumentId.value);
+    }
+    if (letterDocumentId.present) {
+      map['letter_document_id'] = Variable<int>(letterDocumentId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ApplicationsCompanion(')
+          ..write('id: $id, ')
+          ..write('refnr: $refnr, ')
+          ..write('company: $company, ')
+          ..write('jobTitle: $jobTitle, ')
+          ..write('status: $status, ')
+          ..write('cvDocumentId: $cvDocumentId, ')
+          ..write('letterDocumentId: $letterDocumentId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobCacheTable extends JobCache
+    with TableInfo<$JobCacheTable, JobCacheData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _cacheKeyMeta = const VerificationMeta(
+    'cacheKey',
+  );
+  @override
+  late final GeneratedColumn<String> cacheKey = GeneratedColumn<String>(
+    'cache_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [cacheKey, payload, fetchedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<JobCacheData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('cache_key')) {
+      context.handle(
+        _cacheKeyMeta,
+        cacheKey.isAcceptableOrUnknown(data['cache_key']!, _cacheKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cacheKeyMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {cacheKey};
+  @override
+  JobCacheData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return JobCacheData(
+      cacheKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cache_key'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $JobCacheTable createAlias(String alias) {
+    return $JobCacheTable(attachedDatabase, alias);
+  }
+}
+
+class JobCacheData extends DataClass implements Insertable<JobCacheData> {
+  final String cacheKey;
+  final String payload;
+  final DateTime fetchedAt;
+  const JobCacheData({
+    required this.cacheKey,
+    required this.payload,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['cache_key'] = Variable<String>(cacheKey);
+    map['payload'] = Variable<String>(payload);
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  JobCacheCompanion toCompanion(bool nullToAbsent) {
+    return JobCacheCompanion(
+      cacheKey: Value(cacheKey),
+      payload: Value(payload),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory JobCacheData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return JobCacheData(
+      cacheKey: serializer.fromJson<String>(json['cacheKey']),
+      payload: serializer.fromJson<String>(json['payload']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'cacheKey': serializer.toJson<String>(cacheKey),
+      'payload': serializer.toJson<String>(payload),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  JobCacheData copyWith({
+    String? cacheKey,
+    String? payload,
+    DateTime? fetchedAt,
+  }) => JobCacheData(
+    cacheKey: cacheKey ?? this.cacheKey,
+    payload: payload ?? this.payload,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  JobCacheData copyWithCompanion(JobCacheCompanion data) {
+    return JobCacheData(
+      cacheKey: data.cacheKey.present ? data.cacheKey.value : this.cacheKey,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobCacheData(')
+          ..write('cacheKey: $cacheKey, ')
+          ..write('payload: $payload, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(cacheKey, payload, fetchedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is JobCacheData &&
+          other.cacheKey == this.cacheKey &&
+          other.payload == this.payload &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class JobCacheCompanion extends UpdateCompanion<JobCacheData> {
+  final Value<String> cacheKey;
+  final Value<String> payload;
+  final Value<DateTime> fetchedAt;
+  final Value<int> rowid;
+  const JobCacheCompanion({
+    this.cacheKey = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  JobCacheCompanion.insert({
+    required String cacheKey,
+    required String payload,
+    required DateTime fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : cacheKey = Value(cacheKey),
+       payload = Value(payload),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<JobCacheData> custom({
+    Expression<String>? cacheKey,
+    Expression<String>? payload,
+    Expression<DateTime>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (cacheKey != null) 'cache_key': cacheKey,
+      if (payload != null) 'payload': payload,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  JobCacheCompanion copyWith({
+    Value<String>? cacheKey,
+    Value<String>? payload,
+    Value<DateTime>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return JobCacheCompanion(
+      cacheKey: cacheKey ?? this.cacheKey,
+      payload: payload ?? this.payload,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (cacheKey.present) {
+      map['cache_key'] = Variable<String>(cacheKey.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobCacheCompanion(')
+          ..write('cacheKey: $cacheKey, ')
+          ..write('payload: $payload, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4194,6 +5840,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $CertificatesTable certificates = $CertificatesTable(this);
   late final $AppMetaTable appMeta = $AppMetaTable(this);
+  late final $SavedJobsTable savedJobs = $SavedJobsTable(this);
+  late final $SavedSearchesTable savedSearches = $SavedSearchesTable(this);
+  late final $ApplicationsTable applications = $ApplicationsTable(this);
+  late final $JobCacheTable jobCache = $JobCacheTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4204,6 +5854,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     letterDocuments,
     certificates,
     appMeta,
+    savedJobs,
+    savedSearches,
+    applications,
+    jobCache,
   ];
 }
 
@@ -6120,6 +7774,906 @@ typedef $$AppMetaTableProcessedTableManager =
       AppMetaData,
       PrefetchHooks Function()
     >;
+typedef $$SavedJobsTableCreateCompanionBuilder =
+    SavedJobsCompanion Function({
+      required String refnr,
+      required String title,
+      required String company,
+      required String location,
+      required String source,
+      required DateTime savedAt,
+      required String payload,
+      Value<int> rowid,
+    });
+typedef $$SavedJobsTableUpdateCompanionBuilder =
+    SavedJobsCompanion Function({
+      Value<String> refnr,
+      Value<String> title,
+      Value<String> company,
+      Value<String> location,
+      Value<String> source,
+      Value<DateTime> savedAt,
+      Value<String> payload,
+      Value<int> rowid,
+    });
+
+class $$SavedJobsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedJobsTable> {
+  $$SavedJobsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get refnr => $composableBuilder(
+    column: $table.refnr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get company => $composableBuilder(
+    column: $table.company,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SavedJobsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedJobsTable> {
+  $$SavedJobsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get refnr => $composableBuilder(
+    column: $table.refnr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get company => $composableBuilder(
+    column: $table.company,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SavedJobsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedJobsTable> {
+  $$SavedJobsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get refnr =>
+      $composableBuilder(column: $table.refnr, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get company =>
+      $composableBuilder(column: $table.company, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+}
+
+class $$SavedJobsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedJobsTable,
+          SavedJob,
+          $$SavedJobsTableFilterComposer,
+          $$SavedJobsTableOrderingComposer,
+          $$SavedJobsTableAnnotationComposer,
+          $$SavedJobsTableCreateCompanionBuilder,
+          $$SavedJobsTableUpdateCompanionBuilder,
+          (SavedJob, BaseReferences<_$AppDatabase, $SavedJobsTable, SavedJob>),
+          SavedJob,
+          PrefetchHooks Function()
+        > {
+  $$SavedJobsTableTableManager(_$AppDatabase db, $SavedJobsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedJobsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedJobsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedJobsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> refnr = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> company = const Value.absent(),
+                Value<String> location = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<DateTime> savedAt = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavedJobsCompanion(
+                refnr: refnr,
+                title: title,
+                company: company,
+                location: location,
+                source: source,
+                savedAt: savedAt,
+                payload: payload,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String refnr,
+                required String title,
+                required String company,
+                required String location,
+                required String source,
+                required DateTime savedAt,
+                required String payload,
+                Value<int> rowid = const Value.absent(),
+              }) => SavedJobsCompanion.insert(
+                refnr: refnr,
+                title: title,
+                company: company,
+                location: location,
+                source: source,
+                savedAt: savedAt,
+                payload: payload,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SavedJobsTable, SavedJob>(table),
+                  BaseReferences<_$AppDatabase, $SavedJobsTable, SavedJob>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SavedJobsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedJobsTable,
+      SavedJob,
+      $$SavedJobsTableFilterComposer,
+      $$SavedJobsTableOrderingComposer,
+      $$SavedJobsTableAnnotationComposer,
+      $$SavedJobsTableCreateCompanionBuilder,
+      $$SavedJobsTableUpdateCompanionBuilder,
+      (SavedJob, BaseReferences<_$AppDatabase, $SavedJobsTable, SavedJob>),
+      SavedJob,
+      PrefetchHooks Function()
+    >;
+typedef $$SavedSearchesTableCreateCompanionBuilder =
+    SavedSearchesCompanion Function({
+      Value<int> id,
+      required String label,
+      required String params,
+      Value<DateTime?> lastRunAt,
+      Value<String?> lastTopRefnr,
+    });
+typedef $$SavedSearchesTableUpdateCompanionBuilder =
+    SavedSearchesCompanion Function({
+      Value<int> id,
+      Value<String> label,
+      Value<String> params,
+      Value<DateTime?> lastRunAt,
+      Value<String?> lastTopRefnr,
+    });
+
+class $$SavedSearchesTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedSearchesTable> {
+  $$SavedSearchesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get params => $composableBuilder(
+    column: $table.params,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastRunAt => $composableBuilder(
+    column: $table.lastRunAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastTopRefnr => $composableBuilder(
+    column: $table.lastTopRefnr,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SavedSearchesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedSearchesTable> {
+  $$SavedSearchesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get params => $composableBuilder(
+    column: $table.params,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastRunAt => $composableBuilder(
+    column: $table.lastRunAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastTopRefnr => $composableBuilder(
+    column: $table.lastTopRefnr,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SavedSearchesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedSearchesTable> {
+  $$SavedSearchesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get params =>
+      $composableBuilder(column: $table.params, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastRunAt =>
+      $composableBuilder(column: $table.lastRunAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastTopRefnr => $composableBuilder(
+    column: $table.lastTopRefnr,
+    builder: (column) => column,
+  );
+}
+
+class $$SavedSearchesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedSearchesTable,
+          SavedSearch,
+          $$SavedSearchesTableFilterComposer,
+          $$SavedSearchesTableOrderingComposer,
+          $$SavedSearchesTableAnnotationComposer,
+          $$SavedSearchesTableCreateCompanionBuilder,
+          $$SavedSearchesTableUpdateCompanionBuilder,
+          (
+            SavedSearch,
+            BaseReferences<_$AppDatabase, $SavedSearchesTable, SavedSearch>,
+          ),
+          SavedSearch,
+          PrefetchHooks Function()
+        > {
+  $$SavedSearchesTableTableManager(_$AppDatabase db, $SavedSearchesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedSearchesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedSearchesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedSearchesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> params = const Value.absent(),
+                Value<DateTime?> lastRunAt = const Value.absent(),
+                Value<String?> lastTopRefnr = const Value.absent(),
+              }) => SavedSearchesCompanion(
+                id: id,
+                label: label,
+                params: params,
+                lastRunAt: lastRunAt,
+                lastTopRefnr: lastTopRefnr,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String label,
+                required String params,
+                Value<DateTime?> lastRunAt = const Value.absent(),
+                Value<String?> lastTopRefnr = const Value.absent(),
+              }) => SavedSearchesCompanion.insert(
+                id: id,
+                label: label,
+                params: params,
+                lastRunAt: lastRunAt,
+                lastTopRefnr: lastTopRefnr,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SavedSearchesTable, SavedSearch>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SavedSearchesTable,
+                    SavedSearch
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SavedSearchesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedSearchesTable,
+      SavedSearch,
+      $$SavedSearchesTableFilterComposer,
+      $$SavedSearchesTableOrderingComposer,
+      $$SavedSearchesTableAnnotationComposer,
+      $$SavedSearchesTableCreateCompanionBuilder,
+      $$SavedSearchesTableUpdateCompanionBuilder,
+      (
+        SavedSearch,
+        BaseReferences<_$AppDatabase, $SavedSearchesTable, SavedSearch>,
+      ),
+      SavedSearch,
+      PrefetchHooks Function()
+    >;
+typedef $$ApplicationsTableCreateCompanionBuilder =
+    ApplicationsCompanion Function({
+      Value<int> id,
+      Value<String?> refnr,
+      required String company,
+      required String jobTitle,
+      required String status,
+      Value<int?> cvDocumentId,
+      Value<int?> letterDocumentId,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+    });
+typedef $$ApplicationsTableUpdateCompanionBuilder =
+    ApplicationsCompanion Function({
+      Value<int> id,
+      Value<String?> refnr,
+      Value<String> company,
+      Value<String> jobTitle,
+      Value<String> status,
+      Value<int?> cvDocumentId,
+      Value<int?> letterDocumentId,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+
+class $$ApplicationsTableFilterComposer
+    extends Composer<_$AppDatabase, $ApplicationsTable> {
+  $$ApplicationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get refnr => $composableBuilder(
+    column: $table.refnr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get company => $composableBuilder(
+    column: $table.company,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobTitle => $composableBuilder(
+    column: $table.jobTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cvDocumentId => $composableBuilder(
+    column: $table.cvDocumentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get letterDocumentId => $composableBuilder(
+    column: $table.letterDocumentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ApplicationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ApplicationsTable> {
+  $$ApplicationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get refnr => $composableBuilder(
+    column: $table.refnr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get company => $composableBuilder(
+    column: $table.company,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobTitle => $composableBuilder(
+    column: $table.jobTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cvDocumentId => $composableBuilder(
+    column: $table.cvDocumentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get letterDocumentId => $composableBuilder(
+    column: $table.letterDocumentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ApplicationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ApplicationsTable> {
+  $$ApplicationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get refnr =>
+      $composableBuilder(column: $table.refnr, builder: (column) => column);
+
+  GeneratedColumn<String> get company =>
+      $composableBuilder(column: $table.company, builder: (column) => column);
+
+  GeneratedColumn<String> get jobTitle =>
+      $composableBuilder(column: $table.jobTitle, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get cvDocumentId => $composableBuilder(
+    column: $table.cvDocumentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get letterDocumentId => $composableBuilder(
+    column: $table.letterDocumentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ApplicationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ApplicationsTable,
+          Application,
+          $$ApplicationsTableFilterComposer,
+          $$ApplicationsTableOrderingComposer,
+          $$ApplicationsTableAnnotationComposer,
+          $$ApplicationsTableCreateCompanionBuilder,
+          $$ApplicationsTableUpdateCompanionBuilder,
+          (
+            Application,
+            BaseReferences<_$AppDatabase, $ApplicationsTable, Application>,
+          ),
+          Application,
+          PrefetchHooks Function()
+        > {
+  $$ApplicationsTableTableManager(_$AppDatabase db, $ApplicationsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ApplicationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ApplicationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ApplicationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> refnr = const Value.absent(),
+                Value<String> company = const Value.absent(),
+                Value<String> jobTitle = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int?> cvDocumentId = const Value.absent(),
+                Value<int?> letterDocumentId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => ApplicationsCompanion(
+                id: id,
+                refnr: refnr,
+                company: company,
+                jobTitle: jobTitle,
+                status: status,
+                cvDocumentId: cvDocumentId,
+                letterDocumentId: letterDocumentId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> refnr = const Value.absent(),
+                required String company,
+                required String jobTitle,
+                required String status,
+                Value<int?> cvDocumentId = const Value.absent(),
+                Value<int?> letterDocumentId = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+              }) => ApplicationsCompanion.insert(
+                id: id,
+                refnr: refnr,
+                company: company,
+                jobTitle: jobTitle,
+                status: status,
+                cvDocumentId: cvDocumentId,
+                letterDocumentId: letterDocumentId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ApplicationsTable, Application>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ApplicationsTable,
+                    Application
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ApplicationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ApplicationsTable,
+      Application,
+      $$ApplicationsTableFilterComposer,
+      $$ApplicationsTableOrderingComposer,
+      $$ApplicationsTableAnnotationComposer,
+      $$ApplicationsTableCreateCompanionBuilder,
+      $$ApplicationsTableUpdateCompanionBuilder,
+      (
+        Application,
+        BaseReferences<_$AppDatabase, $ApplicationsTable, Application>,
+      ),
+      Application,
+      PrefetchHooks Function()
+    >;
+typedef $$JobCacheTableCreateCompanionBuilder =
+    JobCacheCompanion Function({
+      required String cacheKey,
+      required String payload,
+      required DateTime fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$JobCacheTableUpdateCompanionBuilder =
+    JobCacheCompanion Function({
+      Value<String> cacheKey,
+      Value<String> payload,
+      Value<DateTime> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$JobCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $JobCacheTable> {
+  $$JobCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get cacheKey => $composableBuilder(
+    column: $table.cacheKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobCacheTable> {
+  $$JobCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get cacheKey => $composableBuilder(
+    column: $table.cacheKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobCacheTable> {
+  $$JobCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get cacheKey =>
+      $composableBuilder(column: $table.cacheKey, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$JobCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobCacheTable,
+          JobCacheData,
+          $$JobCacheTableFilterComposer,
+          $$JobCacheTableOrderingComposer,
+          $$JobCacheTableAnnotationComposer,
+          $$JobCacheTableCreateCompanionBuilder,
+          $$JobCacheTableUpdateCompanionBuilder,
+          (
+            JobCacheData,
+            BaseReferences<_$AppDatabase, $JobCacheTable, JobCacheData>,
+          ),
+          JobCacheData,
+          PrefetchHooks Function()
+        > {
+  $$JobCacheTableTableManager(_$AppDatabase db, $JobCacheTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JobCacheTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> cacheKey = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => JobCacheCompanion(
+                cacheKey: cacheKey,
+                payload: payload,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String cacheKey,
+                required String payload,
+                required DateTime fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => JobCacheCompanion.insert(
+                cacheKey: cacheKey,
+                payload: payload,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$JobCacheTable, JobCacheData>(table),
+                  BaseReferences<_$AppDatabase, $JobCacheTable, JobCacheData>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobCacheTable,
+      JobCacheData,
+      $$JobCacheTableFilterComposer,
+      $$JobCacheTableOrderingComposer,
+      $$JobCacheTableAnnotationComposer,
+      $$JobCacheTableCreateCompanionBuilder,
+      $$JobCacheTableUpdateCompanionBuilder,
+      (
+        JobCacheData,
+        BaseReferences<_$AppDatabase, $JobCacheTable, JobCacheData>,
+      ),
+      JobCacheData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6134,4 +8688,12 @@ class $AppDatabaseManager {
       $$CertificatesTableTableManager(_db, _db.certificates);
   $$AppMetaTableTableManager get appMeta =>
       $$AppMetaTableTableManager(_db, _db.appMeta);
+  $$SavedJobsTableTableManager get savedJobs =>
+      $$SavedJobsTableTableManager(_db, _db.savedJobs);
+  $$SavedSearchesTableTableManager get savedSearches =>
+      $$SavedSearchesTableTableManager(_db, _db.savedSearches);
+  $$ApplicationsTableTableManager get applications =>
+      $$ApplicationsTableTableManager(_db, _db.applications);
+  $$JobCacheTableTableManager get jobCache =>
+      $$JobCacheTableTableManager(_db, _db.jobCache);
 }

@@ -337,3 +337,370 @@ class DocumentRepository {
     }
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 7 job-side repository: saved jobs, saved searches, the
+// application tracker and the offline job cache. Drift-only, like
+// [DocumentRepository] - none of this existed in v1.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Tracker status values, in flow order (see [ApplicationStatus.advance]).
+abstract final class ApplicationStatus {
+  static const String saved = 'saved';
+  static const String applied = 'applied';
+  static const String invited = 'invited';
+  static const String answered = 'answered';
+
+  static const List<String> flow = [saved, applied, invited, answered];
+
+  /// The next status in the flow, or null when [status] is the last one
+  /// (or unknown).
+  static String? next(String status) {
+    final i = flow.indexOf(status);
+    if (i < 0 || i >= flow.length - 1) return null;
+    return flow[i + 1];
+  }
+}
+
+/// One bookmarked posting (see [SavedJobs]).
+class SavedJobRecord {
+  final String refnr;
+  final String title;
+  final String company;
+  final String location;
+
+  /// 'jobs', 'ausbildung' or 'minijob'.
+  final String source;
+  final DateTime savedAt;
+
+  /// The full posting JSON, so the job can be reopened offline.
+  final Map<String, dynamic> payload;
+
+  const SavedJobRecord({
+    required this.refnr,
+    required this.title,
+    required this.company,
+    required this.location,
+    required this.source,
+    required this.savedAt,
+    required this.payload,
+  });
+}
+
+/// One saved search (see [SavedSearches]).
+class SavedSearchRecord {
+  final int id;
+  final String label;
+
+  /// JobQuery JSON (services/job_search_service.dart).
+  final Map<String, dynamic> params;
+  final DateTime? lastRunAt;
+  final String? lastTopRefnr;
+
+  const SavedSearchRecord({
+    required this.id,
+    required this.label,
+    required this.params,
+    this.lastRunAt,
+    this.lastTopRefnr,
+  });
+}
+
+/// One tracked application (see [Applications]).
+class ApplicationRecord {
+  final int id;
+  final String? refnr;
+  final String company;
+  final String jobTitle;
+  final String status;
+  final int? cvDocumentId;
+  final int? letterDocumentId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  const ApplicationRecord({
+    required this.id,
+    required this.company,
+    required this.jobTitle,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+    this.refnr,
+    this.cvDocumentId,
+    this.letterDocumentId,
+  });
+}
+
+/// One offline-cache entry (see [JobCache]).
+class JobCacheRecord {
+  final String cacheKey;
+  final String payload;
+  final DateTime fetchedAt;
+
+  const JobCacheRecord({
+    required this.cacheKey,
+    required this.payload,
+    required this.fetchedAt,
+  });
+}
+
+class JobsRepository {
+  JobsRepository(this._db);
+
+  final AppDatabase _db;
+
+  /// Cache caps (Phase 7): keep the newest search result lists and the
+  /// newest opened job details; older entries are evicted on write.
+  static const int maxSearchCacheEntries = 20;
+  static const int maxDetailCacheEntries = 50;
+
+  static String searchCacheKey(String queryKey) => 'search:$queryKey';
+  static String detailCacheKey(String refnr) => 'detail:$refnr';
+
+  // ── Saved jobs ───────────────────────────────────────────────────────────
+
+  Future<void> saveJob({
+    required String refnr,
+    required String title,
+    required String company,
+    required String location,
+    required String source,
+    required Map<String, dynamic> payload,
+  }) {
+    return _db.into(_db.savedJobs).insertOnConflictUpdate(
+          SavedJobsCompanion.insert(
+            refnr: refnr,
+            title: title,
+            company: company,
+            location: location,
+            source: source,
+            savedAt: DateTime.now(),
+            payload: jsonEncode(payload),
+          ),
+        );
+  }
+
+  Future<void> unsaveJob(String refnr) async {
+    await (_db.delete(_db.savedJobs)..where((t) => t.refnr.equals(refnr)))
+        .go();
+  }
+
+  Future<bool> isJobSaved(String refnr) async {
+    final row = await (_db.select(_db.savedJobs)
+          ..where((t) => t.refnr.equals(refnr)))
+        .getSingleOrNull();
+    return row != null;
+  }
+
+  Future<Set<String>> savedRefnrs() async {
+    final rows = await _db.select(_db.savedJobs).get();
+    return rows.map((r) => r.refnr).toSet();
+  }
+
+  Future<List<SavedJobRecord>> listSavedJobs() async {
+    final rows = await (_db.select(_db.savedJobs)
+          ..orderBy([(t) => OrderingTerm.desc(t.savedAt)]))
+        .get();
+    return rows
+        .map((row) => SavedJobRecord(
+              refnr: row.refnr,
+              title: row.title,
+              company: row.company,
+              location: row.location,
+              source: row.source,
+              savedAt: row.savedAt,
+              payload: DocumentRepository._decodePayload(row.payload),
+            ))
+        .toList();
+  }
+
+  // ── Saved searches ───────────────────────────────────────────────────────
+
+  Future<int> saveSearch({
+    required String label,
+    required Map<String, dynamic> params,
+    String? topRefnr,
+  }) {
+    return _db.into(_db.savedSearches).insert(
+          SavedSearchesCompanion.insert(
+            label: label,
+            params: jsonEncode(params),
+            lastRunAt: Value(DateTime.now()),
+            lastTopRefnr: Value(topRefnr),
+          ),
+        );
+  }
+
+  Future<List<SavedSearchRecord>> listSavedSearches() async {
+    final rows = await (_db.select(_db.savedSearches)
+          ..orderBy([(t) => OrderingTerm.desc(t.id)]))
+        .get();
+    return rows.map(_searchFromRow).toList();
+  }
+
+  Future<void> markSearchViewed(int id, {required String? topRefnr}) async {
+    await (_db.update(_db.savedSearches)..where((t) => t.id.equals(id)))
+        .write(
+      SavedSearchesCompanion(
+        lastRunAt: Value(DateTime.now()),
+        lastTopRefnr: Value(topRefnr),
+      ),
+    );
+  }
+
+  Future<void> deleteSavedSearch(int id) async {
+    await (_db.delete(_db.savedSearches)..where((t) => t.id.equals(id)))
+        .go();
+  }
+
+  SavedSearchRecord _searchFromRow(SavedSearch row) => SavedSearchRecord(
+        id: row.id,
+        label: row.label,
+        params: DocumentRepository._decodePayload(row.params),
+        lastRunAt: row.lastRunAt,
+        lastTopRefnr: row.lastTopRefnr,
+      );
+
+  // ── Application tracker ──────────────────────────────────────────────────
+
+  Future<int> createApplication({
+    String? refnr,
+    required String company,
+    required String jobTitle,
+    String status = ApplicationStatus.saved,
+    int? cvDocumentId,
+    int? letterDocumentId,
+  }) {
+    final now = DateTime.now();
+    return _db.into(_db.applications).insert(
+          ApplicationsCompanion.insert(
+            refnr: Value(refnr),
+            company: company,
+            jobTitle: jobTitle,
+            status: status,
+            cvDocumentId: Value(cvDocumentId),
+            letterDocumentId: Value(letterDocumentId),
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+  }
+
+  Future<List<ApplicationRecord>> listApplications() async {
+    final rows = await (_db.select(_db.applications)
+          ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
+        .get();
+    return rows.map(_applicationFromRow).toList();
+  }
+
+  Future<ApplicationRecord?> applicationByRefnr(String refnr) async {
+    if (refnr.isEmpty) return null;
+    final row = await (_db.select(_db.applications)
+          ..where((t) => t.refnr.equals(refnr))
+          ..limit(1))
+        .getSingleOrNull();
+    return row == null ? null : _applicationFromRow(row);
+  }
+
+  Future<void> updateApplicationStatus(int id, String status) async {
+    await (_db.update(_db.applications)..where((t) => t.id.equals(id)))
+        .write(
+      ApplicationsCompanion(
+        status: Value(status),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Advances the application one step in the status flow. Returns the
+  /// new status, or null when it was already at the last step.
+  Future<String?> advanceApplicationStatus(int id) async {
+    final row = await (_db.select(_db.applications)
+          ..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (row == null) return null;
+    final next = ApplicationStatus.next(row.status);
+    if (next == null) return null;
+    await updateApplicationStatus(id, next);
+    return next;
+  }
+
+  Future<void> linkApplicationDocuments(
+    int id, {
+    int? cvDocumentId,
+    int? letterDocumentId,
+    bool setCv = false,
+    bool setLetter = false,
+  }) async {
+    await (_db.update(_db.applications)..where((t) => t.id.equals(id)))
+        .write(
+      ApplicationsCompanion(
+        cvDocumentId:
+            setCv ? Value(cvDocumentId) : const Value.absent(),
+        letterDocumentId:
+            setLetter ? Value(letterDocumentId) : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> deleteApplication(int id) async {
+    await (_db.delete(_db.applications)..where((t) => t.id.equals(id))).go();
+  }
+
+  ApplicationRecord _applicationFromRow(Application row) => ApplicationRecord(
+        id: row.id,
+        refnr: row.refnr,
+        company: row.company,
+        jobTitle: row.jobTitle,
+        status: row.status,
+        cvDocumentId: row.cvDocumentId,
+        letterDocumentId: row.letterDocumentId,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+      );
+
+  // ── Offline job cache ────────────────────────────────────────────────────
+
+  Future<void> putCache(String cacheKey, String payload) async {
+    await _db.into(_db.jobCache).insertOnConflictUpdate(
+          JobCacheCompanion.insert(
+            cacheKey: cacheKey,
+            payload: payload,
+            fetchedAt: DateTime.now(),
+          ),
+        );
+    await _evictCache();
+  }
+
+  Future<JobCacheRecord?> getCache(String cacheKey) async {
+    final row = await (_db.select(_db.jobCache)
+          ..where((t) => t.cacheKey.equals(cacheKey)))
+        .getSingleOrNull();
+    if (row == null) return null;
+    return JobCacheRecord(
+      cacheKey: row.cacheKey,
+      payload: row.payload,
+      fetchedAt: row.fetchedAt,
+    );
+  }
+
+  Future<void> _evictCache() async {
+    // fetched_at has second resolution, so several entries can share a
+    // timestamp; rowid (insertion order) is the deterministic tiebreak
+    // for "newest". insertOnConflictUpdate assigns a fresh rowid on
+    // replace, which correctly makes a refreshed entry the newest.
+    await _db.customStatement(
+      'DELETE FROM job_cache WHERE cache_key LIKE ? AND rowid NOT IN '
+      '(SELECT rowid FROM job_cache WHERE cache_key LIKE ? '
+      'ORDER BY fetched_at DESC, rowid DESC LIMIT ?)',
+      ['search:%', 'search:%', maxSearchCacheEntries],
+    );
+    await _db.customStatement(
+      'DELETE FROM job_cache WHERE cache_key LIKE ? AND rowid NOT IN '
+      '(SELECT rowid FROM job_cache WHERE cache_key LIKE ? '
+      'ORDER BY fetched_at DESC, rowid DESC LIMIT ?)',
+      ['detail:%', 'detail:%', maxDetailCacheEntries],
+    );
+  }
+}

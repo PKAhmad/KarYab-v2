@@ -268,8 +268,103 @@ class AppMeta extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+// ── Phase 7 job-side tables (schema v2) ────────────────────────────────────
+
+/// One bookmarked job posting. The posting's reference number is the
+/// identity (the Bundesagentur API is the only source, and its refnr is
+/// stable), so it is the primary key and saving the same job twice is a
+/// no-op replace. [payload] keeps the full posting JSON so a saved job
+/// can be reopened (detail / apply flow) even after it leaves the live
+/// search results.
+class SavedJobs extends Table {
+  @override
+  String get tableName => 'saved_jobs';
+
+  TextColumn get refnr => text()();
+  TextColumn get title => text()();
+  TextColumn get company => text()();
+  TextColumn get location => text()();
+
+  /// Which surface saved it: 'jobs', 'ausbildung' or 'minijob'.
+  TextColumn get source => text()();
+  DateTimeColumn get savedAt => dateTime().named('saved_at')();
+  TextColumn get payload => text()();
+
+  @override
+  Set<Column> get primaryKey => {refnr};
+}
+
+/// One saved search. [params] is the JSON of a JobQuery (see
+/// services/job_search_service.dart). [lastTopRefnr] is the refnr of the
+/// newest result when the search was last viewed (or saved), which is
+/// what the "new since last visit" count is computed against.
+@DataClassName('SavedSearch')
+class SavedSearches extends Table {
+  @override
+  String get tableName => 'saved_searches';
+
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get label => text()();
+  TextColumn get params => text()();
+  DateTimeColumn get lastRunAt => dateTime().named('last_run_at').nullable()();
+  TextColumn get lastTopRefnr =>
+      text().named('last_top_refnr').nullable()();
+}
+
+/// One tracked application (see services/tracker logic in
+/// data/repositories.dart). Status flow:
+/// saved -> applied -> invited -> answered.
+/// The CV / letter links are plain ids (no FK) so deleting a document
+/// never cascades into the tracker; the UI treats a missing document as
+/// "no longer available".
+class Applications extends Table {
+  @override
+  String get tableName => 'applications';
+
+  IntColumn get id => integer().autoIncrement()();
+
+  /// Bundesagentur reference number of the posting, when the application
+  /// came from a posting inside the app. Null for manual entries.
+  TextColumn get refnr => text().nullable()();
+  TextColumn get company => text()();
+  TextColumn get jobTitle => text().named('job_title')();
+  TextColumn get status => text()();
+  IntColumn get cvDocumentId =>
+      integer().named('cv_document_id').nullable()();
+  IntColumn get letterDocumentId =>
+      integer().named('letter_document_id').nullable()();
+  DateTimeColumn get createdAt => dateTime().named('created_at')();
+  DateTimeColumn get updatedAt => dateTime().named('updated_at')();
+}
+
+/// Offline cache for job search results and opened job details.
+/// Keys are namespaced: 'search:<query json>' for result lists and
+/// 'detail:<refnr>' for single postings. Eviction is handled by the
+/// repository (newest ~20 search entries, newest ~50 details).
+class JobCache extends Table {
+  @override
+  String get tableName => 'job_cache';
+
+  TextColumn get cacheKey => text().named('cache_key')();
+  TextColumn get payload => text()();
+  DateTimeColumn get fetchedAt => dateTime().named('fetched_at')();
+
+  @override
+  Set<Column> get primaryKey => {cacheKey};
+}
+
 @DriftDatabase(
-  tables: [ProfileEntries, CvDocuments, LetterDocuments, Certificates, AppMeta],
+  tables: [
+    ProfileEntries,
+    CvDocuments,
+    LetterDocuments,
+    Certificates,
+    AppMeta,
+    SavedJobs,
+    SavedSearches,
+    Applications,
+    JobCache,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
@@ -286,5 +381,23 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) async {
+          await m.createAll();
+        },
+        onUpgrade: (m, from, to) async {
+          // v1 -> v2 (Phase 7): four purely additive job-side tables.
+          // No existing table changes shape, so nothing else is needed
+          // and no v1 data can be lost by this migration.
+          if (from < 2) {
+            await m.createTable(savedJobs);
+            await m.createTable(savedSearches);
+            await m.createTable(applications);
+            await m.createTable(jobCache);
+          }
+        },
+      );
 }
