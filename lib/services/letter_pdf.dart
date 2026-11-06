@@ -258,15 +258,16 @@ Future<BewerbungsmappeResult?> buildBewerbungsmappe({
 
   DocumentTemplate cvTemplate = DocumentTemplate.atsBlue;
   CvCustomisation? cvStyle;
-  if (cvDocument != null) {
+  final cvDoc = cvDocument;
+  if (cvDoc != null) {
     for (final t in DocumentTemplate.values) {
-      if (t.name == cvDocument!.templateId) cvTemplate = t;
+      if (t.name == cvDoc.templateId) cvTemplate = t;
     }
     cvStyle = CvCustomisation(
-      accentColorHex: cvDocument!.accentColor,
-      fontSize: cvDocument!.fontSize ?? 'normal',
-      spacing: cvDocument!.spacing ?? 'normal',
-      showPhoto: cvDocument!.showPhoto ?? true,
+      accentColorHex: cvDoc.accentColor,
+      fontSize: cvDoc.fontSize ?? 'normal',
+      spacing: cvDoc.spacing ?? 'normal',
+      showPhoto: cvDoc.showPhoto ?? true,
     );
   }
   final lebenslauf = await generateCv(
