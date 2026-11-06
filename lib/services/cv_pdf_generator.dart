@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../data/karyab_data.dart';
+import '../models/cv_style.dart';
 import '../models/document_template.dart';
 import '../models/user_profile.dart';
 
@@ -33,11 +34,43 @@ import '../models/user_profile.dart';
 // today's edit scope.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Per-document template customisation, resolved to generator-internal
+// values (Phase 3). A null/default customisation yields _CvStyle.none,
+// which every builder treats as "exactly the pre-Phase-3 look": font and
+// spacing scales of 1.0, the template's own accent, photo as stored.
+class _CvStyle {
+  final PdfColor? accent;
+  final double fs;
+  final double ss;
+  const _CvStyle({this.accent, this.fs = 1.0, this.ss = 1.0});
+
+  static const _CvStyle none = _CvStyle();
+
+  factory _CvStyle.from(CvCustomisation? c) {
+    if (c == null) return none;
+    return _CvStyle(
+      accent:
+          c.accentColorHex == null ? null : PdfColor.fromHex(c.accentColorHex!),
+      fs: c.fontScale,
+      ss: c.spacingScale,
+    );
+  }
+}
+
 Future<Uint8List> generateCv(
   UserProfile profile,
   DocumentTemplate template, {
   bool isAusbildungCv = false,
+  CvCustomisation? style,
 }) async {
+  // showPhoto = false drops the user's photo from every template: the
+  // builders receive a profile without a photo path, so _loadPhoto()
+  // returns null and each template renders its no-photo form (placeholder
+  // circle / no image block) exactly as for a user who never added one.
+  final effective = (style != null && !style.showPhoto)
+      ? UserProfile.fromMap(profile.toMap()..['photoPath'] = '')
+      : profile;
+  final cvStyle = _CvStyle.from(style);
   // UserProfile has no fields for the Ausbildung CV questionnaire's data
   // (education Ort/type/Abschluss/grades, IT-Kenntnisse, ESCO skills) -
   // ausbildung_cv_questionnaire_screen.dart writes it into 'saved_profile'
@@ -49,17 +82,18 @@ Future<Uint8List> generateCv(
   final ausbildung = await _loadAusbildungData();
   switch (template) {
     case DocumentTemplate.atsBlue:
-      return _buildAtsBlue(profile, ausbildung, isAusbildungCv);
+      return _buildAtsBlue(effective, ausbildung, isAusbildungCv, cvStyle);
     case DocumentTemplate.darkSidebar:
-      return _buildDarkSidebar(profile, ausbildung, isAusbildungCv);
+      return _buildDarkSidebar(effective, ausbildung, isAusbildungCv, cvStyle);
     case DocumentTemplate.navyHeader:
-      return _buildNavyHeader(profile, ausbildung, isAusbildungCv);
+      return _buildNavyHeader(effective, ausbildung, isAusbildungCv, cvStyle);
     case DocumentTemplate.blueTriangle:
-      return _buildBlueTriangle(profile, ausbildung, isAusbildungCv);
+      return _buildBlueTriangle(effective, ausbildung, isAusbildungCv, cvStyle);
     case DocumentTemplate.braunIconSet:
-      return _buildBraunIconSet(profile, ausbildung, isAusbildungCv);
+      return _buildBraunIconSet(effective, ausbildung, isAusbildungCv, cvStyle);
     case DocumentTemplate.weissBraunSchlicht:
-      return _buildWeissBraunSchlicht(profile, ausbildung, isAusbildungCv);
+      return _buildWeissBraunSchlicht(
+          effective, ausbildung, isAusbildungCv, cvStyle);
   }
 }
 
@@ -240,6 +274,10 @@ class _AusbildungData {
   // the Anschreiben/Deckblatt generators as the "target role/Beruf" for
   // Ausbildung applicants. Empty when no occupation was selected.
   final String targetOccupation;
+  // User-composed Profil text from the Phase 3 Profil wizard step
+  // ('profileSummary' in the profile map). When non-empty it replaces the
+  // synthesized _profileSummary() paragraph in the PROFIL sections.
+  final String profileSummaryText;
 
   const _AusbildungData({
     this.jobs = const [],
@@ -247,6 +285,7 @@ class _AusbildungData {
     this.itSkills = const [],
     this.escoSkills = const [],
     this.targetOccupation = '',
+    this.profileSummaryText = '',
   });
 }
 
@@ -323,6 +362,7 @@ Future<_AusbildungData> _loadAusbildungData() async {
     final itSkills   = _splitCsv(s('sharedItSkills'));
     final escoSkills = _splitCsv(s('ausbildungEscoSkills'));
     final targetOccupation = s('ausbildungTargetOccupation').trim();
+    final profileSummaryText = s('profileSummary').trim();
 
     return _AusbildungData(
       jobs: const [],
@@ -330,6 +370,7 @@ Future<_AusbildungData> _loadAusbildungData() async {
       itSkills: itSkills,
       escoSkills: escoSkills,
       targetOccupation: targetOccupation,
+      profileSummaryText: profileSummaryText,
     );
   } catch (_) {
     return const _AusbildungData();
@@ -527,7 +568,12 @@ List<_CvJob> _jobs(UserProfile p) {
 // structured fields that do exist rather than inventing content. All three
 // source fields (workExperience, skill, tools) are Job-CV-only, so the
 // Ausbildung CV gets no Profil section at all.
-String _profileSummary(UserProfile p, bool isAusbildungCv) {
+String _profileSummary(UserProfile p, bool isAusbildungCv,
+    {String userText = ''}) {
+  // A Profil text the user composed and edited in the wizard always wins,
+  // for both CV kinds; the synthesized paragraph below stays the fallback
+  // for Job CVs that never used the Profil step.
+  if (userText.trim().isNotEmpty) return userText.trim();
   if (isAusbildungCv) return '';
   final parts = <String>[];
   if (p.workExperience != null && !_isNegative(p.workExperience)) {
@@ -783,9 +829,10 @@ pw.Widget _brownIconContactLine(
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<Uint8List> _buildAtsBlue(
-    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv) async {
+    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv,
+    _CvStyle style) async {
   final fonts = await _loadFonts();
-  final blue = PdfColor.fromHex('#1B4CA1');
+  final blue = style.accent ?? PdfColor.fromHex('#1B4CA1');
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
 
   pw.Widget sectionHeader(String label) {
@@ -799,15 +846,15 @@ Future<Uint8List> _buildAtsBlue(
             label,
             style: pw.TextStyle(
               font: fonts.bold,
-              fontSize: 9.5,
+              fontSize: 9.5 * style.fs,
               color: PdfColors.white,
               letterSpacing: 0.6,
             ),
           ),
         ),
-        pw.SizedBox(height: 4),
+        pw.SizedBox(height: 4 * style.ss),
         pw.Container(height: 1.1, color: blue),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 8 * style.ss),
       ],
     );
   }
@@ -823,7 +870,7 @@ Future<Uint8List> _buildAtsBlue(
             child: pw.Text(
               date,
               style: pw.TextStyle(
-                  font: fonts.regular, fontSize: 8.5, color: PdfColors.grey600),
+                  font: fonts.regular, fontSize: 8.5 * style.fs, color: PdfColors.grey600),
             ),
           ),
           pw.Expanded(child: content),
@@ -844,19 +891,20 @@ Future<Uint8List> _buildAtsBlue(
           pw.Text(label,
               style: pw.TextStyle(
                   font: fonts.bold,
-                  fontSize: 7.5,
+                  fontSize: 7.5 * style.fs,
                   color: blue,
                   letterSpacing: 0.4)),
-          pw.SizedBox(height: 2),
+          pw.SizedBox(height: 2 * style.ss),
           pw.Text(value,
               style: pw.TextStyle(
-                  font: fonts.regular, fontSize: 9.5, color: PdfColors.grey800)),
+                  font: fonts.regular, fontSize: 9.5 * style.fs, color: PdfColors.grey800)),
         ],
       ),
     );
   }
 
-  final profile = _profileSummary(p, isAusbildungCv);
+  final profile = _profileSummary(p, isAusbildungCv,
+      userText: ausbildung.profileSummaryText);
   final education = _educationText(p, isAusbildungCv);
   final schulabschluss = _schulabschlussText(p);
   final jobs = [..._jobs(p), ...ausbildung.jobs];
@@ -872,9 +920,9 @@ Future<Uint8List> _buildAtsBlue(
       build: (context) => [
         pw.Text(
           p.fullName,
-          style: pw.TextStyle(font: fonts.bold, fontSize: 24, color: darkText),
+          style: pw.TextStyle(font: fonts.bold, fontSize: 24 * style.fs, color: darkText),
         ),
-        pw.SizedBox(height: 12),
+        pw.SizedBox(height: 12 * style.ss),
         pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
@@ -883,16 +931,16 @@ Future<Uint8List> _buildAtsBlue(
             contactField('ADRESSE', p.fullAddress == '—' ? '' : p.fullAddress),
           ],
         ),
-        pw.SizedBox(height: 4),
+        pw.SizedBox(height: 4 * style.ss),
         pw.Container(height: 1.6, color: blue),
-        pw.SizedBox(height: 18),
+        pw.SizedBox(height: 18 * style.ss),
 
         if (profile.isNotEmpty) ...[
           sectionHeader('PROFIL'),
           pw.Text(profile,
               style:
-                  pw.TextStyle(font: fonts.regular, fontSize: 9.5, color: darkText)),
-          pw.SizedBox(height: 16),
+                  pw.TextStyle(font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
+          pw.SizedBox(height: 16 * style.ss),
         ],
 
         if (education.isNotEmpty ||
@@ -902,24 +950,24 @@ Future<Uint8List> _buildAtsBlue(
           if (education.isNotEmpty)
             row('', pw.Text(education,
                 style: pw.TextStyle(
-                    font: fonts.bold, fontSize: 10, color: darkText))),
+                    font: fonts.bold, fontSize: 10 * style.fs, color: darkText))),
           if (schulabschluss.isNotEmpty)
             row('', pw.Text(schulabschluss,
                 style: pw.TextStyle(
-                    font: fonts.bold, fontSize: 10, color: darkText))),
+                    font: fonts.bold, fontSize: 10 * style.fs, color: darkText))),
           for (final line in ausbildung.eduLines)
             row(
               '',
               _eduEntryContent(
                 line,
                 fonts,
-                headingSize: 10,
+                headingSize: 10 * style.fs,
                 headingColor: darkText,
-                addressSize: 8.5,
+                addressSize: 8.5 * style.fs,
                 addressColor: PdfColors.grey600,
               ),
             ),
-          pw.SizedBox(height: 8),
+          pw.SizedBox(height: 8 * style.ss),
         ],
 
         if (jobs.isNotEmpty ||
@@ -930,7 +978,7 @@ Future<Uint8List> _buildAtsBlue(
               '',
               pw.Text(_resolve(p.workType, _workTypeDe),
                   style: pw.TextStyle(
-                      font: fonts.regular, fontSize: 9.5, color: PdfColors.grey700)),
+                      font: fonts.regular, fontSize: 9.5 * style.fs, color: PdfColors.grey700)),
             ),
           for (final job in jobs)
             row(
@@ -940,15 +988,15 @@ Future<Uint8List> _buildAtsBlue(
                 children: [
                   pw.Text(job.title.isNotEmpty ? job.title : job.company,
                       style: pw.TextStyle(
-                          font: fonts.bold, fontSize: 10.5, color: darkText)),
+                          font: fonts.bold, fontSize: 10.5 * style.fs, color: darkText)),
                   if (job.title.isNotEmpty && job.company.isNotEmpty)
                     pw.Text(job.company,
                         style: pw.TextStyle(
-                            font: fonts.regular, fontSize: 9.5, color: blue)),
+                            font: fonts.regular, fontSize: 9.5 * style.fs, color: blue)),
                 ],
               ),
             ),
-          pw.SizedBox(height: 8),
+          pw.SizedBox(height: 8 * style.ss),
         ],
 
         if (skillsList.isNotEmpty) ...[
@@ -962,11 +1010,11 @@ Future<Uint8List> _buildAtsBlue(
                   width: (PdfPageFormat.a4.width - 84 - 18) / 4,
                   child: pw.Text(s,
                       style: pw.TextStyle(
-                          font: fonts.regular, fontSize: 9, color: darkText)),
+                          font: fonts.regular, fontSize: 9 * style.fs, color: darkText)),
                 ),
             ],
           ),
-          pw.SizedBox(height: 16),
+          pw.SizedBox(height: 16 * style.ss),
         ],
 
         // Item 2 — dedicated IT-Kenntnisse section (shared, both CV types).
@@ -981,11 +1029,11 @@ Future<Uint8List> _buildAtsBlue(
                   width: (PdfPageFormat.a4.width - 84 - 18) / 4,
                   child: pw.Text(s,
                       style: pw.TextStyle(
-                          font: fonts.regular, fontSize: 9, color: darkText)),
+                          font: fonts.regular, fontSize: 9 * style.fs, color: darkText)),
                 ),
             ],
           ),
-          pw.SizedBox(height: 16),
+          pw.SizedBox(height: 16 * style.ss),
         ],
 
         // Item 3 — one language per line, vertical, "Language > Level".
@@ -996,7 +1044,7 @@ Future<Uint8List> _buildAtsBlue(
               padding: const pw.EdgeInsets.only(bottom: 6),
               child: pw.Text(_langLine(e),
                   style: pw.TextStyle(
-                      font: fonts.regular, fontSize: 9.5, color: darkText)),
+                      font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
             ),
         ],
       ],
@@ -1013,10 +1061,11 @@ Future<Uint8List> _buildAtsBlue(
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<Uint8List> _buildDarkSidebar(
-    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv) async {
+    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv,
+    _CvStyle style) async {
   final fonts = await _loadFonts();
   final photo = await _loadPhoto(p);
-  final navy = PdfColor.fromHex('#3C4858');
+  final navy = style.accent ?? PdfColor.fromHex('#3C4858');
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
 
   final pageW = PdfPageFormat.a4.width;
@@ -1028,10 +1077,10 @@ Future<Uint8List> _buildDarkSidebar(
         children: [
           pw.Text(label,
               style: pw.TextStyle(
-                  font: fonts.bold, fontSize: 11, color: PdfColors.white)),
-          pw.SizedBox(height: 3),
+                  font: fonts.bold, fontSize: 11 * style.fs, color: PdfColors.white)),
+          pw.SizedBox(height: 3 * style.ss),
           pw.Container(height: 0.8, color: const PdfColor(1, 1, 1, 0.5)),
-          pw.SizedBox(height: 6),
+          pw.SizedBox(height: 6 * style.ss),
         ],
       );
 
@@ -1041,7 +1090,7 @@ Future<Uint8List> _buildDarkSidebar(
       padding: const pw.EdgeInsets.only(bottom: 4),
       child: pw.Text(text,
           style: pw.TextStyle(
-              font: fonts.regular, fontSize: 8.7, color: PdfColors.grey200)),
+              font: fonts.regular, fontSize: 8.7 * style.fs, color: PdfColors.grey200)),
     );
   }
 
@@ -1056,13 +1105,13 @@ Future<Uint8List> _buildDarkSidebar(
           pw.Text(label,
               style: pw.TextStyle(
                   font: fonts.bold,
-                  fontSize: 7.5,
+                  fontSize: 7.5 * style.fs,
                   color: PdfColors.grey400,
                   letterSpacing: 0.4)),
-          pw.SizedBox(height: 1.5),
+          pw.SizedBox(height: 1.5 * style.ss),
           pw.Text(value,
               style: pw.TextStyle(
-                  font: fonts.regular, fontSize: 8.7, color: PdfColors.grey200)),
+                  font: fonts.regular, fontSize: 8.7 * style.fs, color: PdfColors.grey200)),
         ],
       ),
     );
@@ -1072,7 +1121,7 @@ Future<Uint8List> _buildDarkSidebar(
         padding: const pw.EdgeInsets.only(bottom: 10),
         child: pw.Text(label,
             style:
-                pw.TextStyle(font: fonts.bold, fontSize: 13, color: darkText)),
+                pw.TextStyle(font: fonts.bold, fontSize: 13 * style.fs, color: darkText)),
       );
 
   final education = _educationText(p, isAusbildungCv);
@@ -1080,7 +1129,8 @@ Future<Uint8List> _buildDarkSidebar(
   final skillsList = _genericSkillsList(p, ausbildung, isAusbildungCv);
   final langEntries = _langEntries(p);
   final jobs = [..._jobs(p), ...ausbildung.jobs];
-  final profile = _profileSummary(p, isAusbildungCv);
+  final profile = _profileSummary(p, isAusbildungCv,
+      userText: ausbildung.profileSummaryText);
   final role = _roleText(p, isAusbildungCv);
 
   final doc = pw.Document(title: 'Lebenslauf – ${p.fullName}', author: 'KarYab');
@@ -1114,7 +1164,7 @@ Future<Uint8List> _buildDarkSidebar(
                     pw.Center(
                       child: _photoCircle(photo: photo, size: 76),
                     ),
-                    pw.SizedBox(height: 20),
+                    pw.SizedBox(height: 20 * style.ss),
                     // Item 5 — sidebar restricted to Kontakt + Sprachen only.
                     sidebarHeader('Kontakt'),
                     sidebarLabeledLine('TELEFON', p.phone),
@@ -1122,7 +1172,7 @@ Future<Uint8List> _buildDarkSidebar(
                     sidebarLabeledLine(
                         'ADRESSE', p.fullAddress == '—' ? '' : p.fullAddress),
                     if (langEntries.isNotEmpty) ...[
-                      pw.SizedBox(height: 8),
+                      pw.SizedBox(height: 8 * style.ss),
                       sidebarHeader('Sprachen'),
                       for (final e in langEntries) sidebarLine(_langLine(e)),
                     ],
@@ -1143,23 +1193,23 @@ Future<Uint8List> _buildDarkSidebar(
                   children: [
                     pw.Text(p.fullName,
                         style: pw.TextStyle(
-                            font: fonts.bold, fontSize: 26, color: darkText)),
+                            font: fonts.bold, fontSize: 26 * style.fs, color: darkText)),
                     if (role.isNotEmpty) ...[
-                      pw.SizedBox(height: 4),
+                      pw.SizedBox(height: 4 * style.ss),
                       pw.Text(role.toUpperCase(),
                           style: pw.TextStyle(
                               font: fonts.regular,
-                              fontSize: 10.5,
+                              fontSize: 10.5 * style.fs,
                               color: PdfColors.grey600,
                               letterSpacing: 1.4)),
                     ],
                     if (profile.isNotEmpty) ...[
-                      pw.SizedBox(height: 14),
+                      pw.SizedBox(height: 14 * style.ss),
                       pw.Text(profile,
                           style: pw.TextStyle(
-                              font: fonts.regular, fontSize: 9.5, color: darkText)),
+                              font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                     ],
-                    pw.SizedBox(height: 20),
+                    pw.SizedBox(height: 20 * style.ss),
 
                     // Item 5 — Ausbildung moved out of the sidebar.
                     if (education.isNotEmpty ||
@@ -1171,14 +1221,14 @@ Future<Uint8List> _buildDarkSidebar(
                           padding: const pw.EdgeInsets.only(bottom: 4),
                           child: pw.Text(education,
                               style: pw.TextStyle(
-                                  font: fonts.bold, fontSize: 9.5, color: darkText)),
+                                  font: fonts.bold, fontSize: 9.5 * style.fs, color: darkText)),
                         ),
                       if (schulabschluss.isNotEmpty)
                         pw.Padding(
                           padding: const pw.EdgeInsets.only(bottom: 4),
                           child: pw.Text(schulabschluss,
                               style: pw.TextStyle(
-                                  font: fonts.bold, fontSize: 9.5, color: darkText)),
+                                  font: fonts.bold, fontSize: 9.5 * style.fs, color: darkText)),
                         ),
                       for (final line in ausbildung.eduLines)
                         pw.Padding(
@@ -1186,13 +1236,13 @@ Future<Uint8List> _buildDarkSidebar(
                           child: _eduEntryContent(
                             line,
                             fonts,
-                            headingSize: 9.5,
+                            headingSize: 9.5 * style.fs,
                             headingColor: darkText,
-                            addressSize: 8.3,
+                            addressSize: 8.3 * style.fs,
                             addressColor: PdfColors.grey600,
                           ),
                         ),
-                      pw.SizedBox(height: 16),
+                      pw.SizedBox(height: 16 * style.ss),
                     ],
 
                     if (jobs.isNotEmpty) ...[
@@ -1224,19 +1274,19 @@ Future<Uint8List> _buildDarkSidebar(
                                       pw.Text(job.duration,
                                           style: pw.TextStyle(
                                               font: fonts.bold,
-                                              fontSize: 9.5,
+                                              fontSize: 9.5 * style.fs,
                                               color: darkText)),
                                     if (job.company.isNotEmpty)
                                       pw.Text(job.company,
                                           style: pw.TextStyle(
                                               font: fonts.regular,
-                                              fontSize: 9,
+                                              fontSize: 9 * style.fs,
                                               color: PdfColors.grey600)),
                                     if (job.title.isNotEmpty)
                                       pw.Text(job.title,
                                           style: pw.TextStyle(
                                               font: fonts.bold,
-                                              fontSize: 10,
+                                              fontSize: 10 * style.fs,
                                               color: darkText)),
                                   ],
                                 ),
@@ -1244,7 +1294,7 @@ Future<Uint8List> _buildDarkSidebar(
                             ],
                           ),
                         ),
-                      pw.SizedBox(height: 6),
+                      pw.SizedBox(height: 6 * style.ss),
                     ],
 
                     // Item 5 — Kenntnisse moved out of the sidebar.
@@ -1255,9 +1305,9 @@ Future<Uint8List> _buildDarkSidebar(
                           padding: const pw.EdgeInsets.only(bottom: 4),
                           child: pw.Text(s,
                               style: pw.TextStyle(
-                                  font: fonts.regular, fontSize: 9.5, color: darkText)),
+                                  font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                         ),
-                      pw.SizedBox(height: 16),
+                      pw.SizedBox(height: 16 * style.ss),
                     ],
 
                     // Item 2 — dedicated IT-Kenntnisse section.
@@ -1268,9 +1318,9 @@ Future<Uint8List> _buildDarkSidebar(
                           padding: const pw.EdgeInsets.only(bottom: 4),
                           child: pw.Text(s,
                               style: pw.TextStyle(
-                                  font: fonts.regular, fontSize: 9.5, color: darkText)),
+                                  font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                         ),
-                      pw.SizedBox(height: 16),
+                      pw.SizedBox(height: 16 * style.ss),
                     ],
 
                     if (p.refName != null && p.refName!.isNotEmpty) ...[
@@ -1278,13 +1328,13 @@ Future<Uint8List> _buildDarkSidebar(
                       pw.Text(p.refName!,
                           style: pw.TextStyle(
                               font: fonts.bold,
-                              fontSize: 9.5,
+                              fontSize: 9.5 * style.fs,
                               color: darkText)),
                       if (p.refPhone != null && p.refPhone!.isNotEmpty)
                         pw.Text(p.refPhone!,
                             style: pw.TextStyle(
                                 font: fonts.regular,
-                                fontSize: 9,
+                                fontSize: 9 * style.fs,
                                 color: PdfColors.grey600)),
                     ],
                   ],
@@ -1307,10 +1357,11 @@ Future<Uint8List> _buildDarkSidebar(
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<Uint8List> _buildNavyHeader(
-    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv) async {
+    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv,
+    _CvStyle style) async {
   final fonts = await _loadFonts();
   final photo = await _loadPhoto(p);
-  final navy = PdfColor.fromHex('#2E3E50');
+  final navy = style.accent ?? PdfColor.fromHex('#2E3E50');
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
   final lightGrey = PdfColor.fromHex('#EDEFF2');
 
@@ -1324,10 +1375,10 @@ Future<Uint8List> _buildNavyHeader(
         children: [
           pw.Text(label,
               style: pw.TextStyle(
-                  font: fonts.bold, fontSize: 10.5, color: darkText)),
-          pw.SizedBox(height: 3),
+                  font: fonts.bold, fontSize: 10.5 * style.fs, color: darkText)),
+          pw.SizedBox(height: 3 * style.ss),
           pw.Container(height: 0.8, color: PdfColors.grey500),
-          pw.SizedBox(height: 6),
+          pw.SizedBox(height: 6 * style.ss),
         ],
       );
 
@@ -1348,7 +1399,7 @@ Future<Uint8List> _buildNavyHeader(
           pw.Expanded(
             child: pw.Text(text,
                 style: pw.TextStyle(
-                    font: fonts.regular, fontSize: 8.7, color: PdfColors.grey800)),
+                    font: fonts.regular, fontSize: 8.7 * style.fs, color: PdfColors.grey800)),
           ),
         ],
       ),
@@ -1366,13 +1417,13 @@ Future<Uint8List> _buildNavyHeader(
           pw.Text(label,
               style: pw.TextStyle(
                   font: fonts.bold,
-                  fontSize: 7,
+                  fontSize: 7 * style.fs,
                   color: PdfColors.grey600,
                   letterSpacing: 0.4)),
-          pw.SizedBox(height: 1.5),
+          pw.SizedBox(height: 1.5 * style.ss),
           pw.Text(value,
               style: pw.TextStyle(
-                  font: fonts.regular, fontSize: 8.7, color: darkText)),
+                  font: fonts.regular, fontSize: 8.7 * style.fs, color: darkText)),
         ],
       ),
     );
@@ -1389,7 +1440,7 @@ Future<Uint8List> _buildNavyHeader(
         ),
         pw.SizedBox(width: 8),
         pw.Text(label,
-            style: pw.TextStyle(font: fonts.bold, fontSize: 12, color: darkText)),
+            style: pw.TextStyle(font: fonts.bold, fontSize: 12 * style.fs, color: darkText)),
         pw.SizedBox(width: 8),
         pw.Expanded(child: pw.Container(height: 0.8, color: PdfColors.grey400)),
       ],
@@ -1401,7 +1452,8 @@ Future<Uint8List> _buildNavyHeader(
   final skillsList = _genericSkillsList(p, ausbildung, isAusbildungCv);
   final langEntries = _langEntries(p);
   final jobs = [..._jobs(p), ...ausbildung.jobs];
-  final profile = _profileSummary(p, isAusbildungCv);
+  final profile = _profileSummary(p, isAusbildungCv,
+      userText: ausbildung.profileSummaryText);
   final role = _roleText(p, isAusbildungCv);
 
   final doc = pw.Document(title: 'Lebenslauf – ${p.fullName}', author: 'KarYab');
@@ -1430,13 +1482,13 @@ Future<Uint8List> _buildNavyHeader(
                 children: [
                   pw.Text(p.fullName.toUpperCase(),
                       style: pw.TextStyle(
-                          font: fonts.bold, fontSize: 22, color: PdfColors.white)),
+                          font: fonts.bold, fontSize: 22 * style.fs, color: PdfColors.white)),
                   if (role.isNotEmpty) ...[
-                    pw.SizedBox(height: 5),
+                    pw.SizedBox(height: 5 * style.ss),
                     pw.Text(role,
                         style: pw.TextStyle(
                             font: fonts.regular,
-                            fontSize: 10.5,
+                            fontSize: 10.5 * style.fs,
                             color: PdfColors.grey200)),
                   ],
                 ],
@@ -1465,7 +1517,7 @@ Future<Uint8List> _buildNavyHeader(
                     sidebarLabeledLine(
                         'ADRESSE', p.fullAddress == '—' ? '' : p.fullAddress),
                     if (langEntries.isNotEmpty) ...[
-                      pw.SizedBox(height: 8),
+                      pw.SizedBox(height: 8 * style.ss),
                       sidebarHeader('SPRACHEN'),
                       for (final e in langEntries) sidebarLine(_langLine(e)),
                     ],
@@ -1483,15 +1535,15 @@ Future<Uint8List> _buildNavyHeader(
                 children: [
                   if (profile.isNotEmpty) ...[
                     iconSectionHeader('PROFIL'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     pw.Text(profile,
                         style: pw.TextStyle(
-                            font: fonts.regular, fontSize: 9.5, color: darkText)),
-                    pw.SizedBox(height: 16),
+                            font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
                   if (jobs.isNotEmpty) ...[
                     iconSectionHeader('BERUFSERFAHRUNG'),
-                    pw.SizedBox(height: 10),
+                    pw.SizedBox(height: 10 * style.ss),
                     for (final job in jobs)
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(bottom: 12),
@@ -1525,13 +1577,13 @@ Future<Uint8List> _buildNavyHeader(
                                               : job.title,
                                           style: pw.TextStyle(
                                               font: fonts.bold,
-                                              fontSize: 10.5,
+                                              fontSize: 10.5 * style.fs,
                                               color: darkText)),
                                       if (job.duration.isNotEmpty)
                                         pw.Text(job.duration,
                                             style: pw.TextStyle(
                                                 font: fonts.regular,
-                                                fontSize: 8.5,
+                                                fontSize: 8.5 * style.fs,
                                                 color: PdfColors.grey600)),
                                     ],
                                   ),
@@ -1539,7 +1591,7 @@ Future<Uint8List> _buildNavyHeader(
                                     pw.Text(job.title,
                                         style: pw.TextStyle(
                                             font: fonts.regular,
-                                            fontSize: 9,
+                                            fontSize: 9 * style.fs,
                                             color: PdfColors.grey700)),
                                 ],
                               ),
@@ -1547,78 +1599,78 @@ Future<Uint8List> _buildNavyHeader(
                           ],
                         ),
                       ),
-                    pw.SizedBox(height: 6),
+                    pw.SizedBox(height: 6 * style.ss),
                   ],
                   if (education.isNotEmpty ||
                       schulabschluss.isNotEmpty ||
                       ausbildung.eduLines.isNotEmpty) ...[
                     iconSectionHeader('AUSBILDUNG'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     if (education.isNotEmpty)
                       pw.Text(education,
                           style: pw.TextStyle(
-                              font: fonts.bold, fontSize: 10, color: darkText)),
+                              font: fonts.bold, fontSize: 10 * style.fs, color: darkText)),
                     if (education.isNotEmpty && schulabschluss.isNotEmpty)
-                      pw.SizedBox(height: 4),
+                      pw.SizedBox(height: 4 * style.ss),
                     if (schulabschluss.isNotEmpty)
                       pw.Text(schulabschluss,
                           style: pw.TextStyle(
-                              font: fonts.bold, fontSize: 10, color: darkText)),
+                              font: fonts.bold, fontSize: 10 * style.fs, color: darkText)),
                     for (final line in ausbildung.eduLines)
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(top: 6),
                         child: _eduEntryContent(
                           line,
                           fonts,
-                          headingSize: 9.5,
+                          headingSize: 9.5 * style.fs,
                           headingColor: darkText,
-                          addressSize: 8.3,
+                          addressSize: 8.3 * style.fs,
                           addressColor: PdfColors.grey600,
                         ),
                       ),
-                    pw.SizedBox(height: 16),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
 
                   // Item 5 — FÄHIGKEITEN moved out of the sidebar.
                   if (skillsList.isNotEmpty) ...[
                     iconSectionHeader('FÄHIGKEITEN'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     for (final s in skillsList)
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(bottom: 4),
                         child: pw.Text(s,
                             style: pw.TextStyle(
-                                font: fonts.regular, fontSize: 9.5, color: darkText)),
+                                font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                       ),
-                    pw.SizedBox(height: 16),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
 
                   // Item 2 — dedicated IT-Kenntnisse section.
                   if (ausbildung.itSkills.isNotEmpty) ...[
                     iconSectionHeader('IT-KENNTNISSE'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     for (final s in ausbildung.itSkills)
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(bottom: 4),
                         child: pw.Text(s,
                             style: pw.TextStyle(
-                                font: fonts.regular, fontSize: 9.5, color: darkText)),
+                                font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                       ),
-                    pw.SizedBox(height: 16),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
 
                   // Item 5 — REFERENZ moved out of the sidebar.
                   if (p.refName != null && p.refName!.isNotEmpty) ...[
                     iconSectionHeader('REFERENZ'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     pw.Text(p.refName!,
                         style: pw.TextStyle(
-                            font: fonts.bold, fontSize: 9.5, color: darkText)),
+                            font: fonts.bold, fontSize: 9.5 * style.fs, color: darkText)),
                     if (p.refPhone != null && p.refPhone!.isNotEmpty)
                       pw.Text(p.refPhone!,
                           style: pw.TextStyle(
                               font: fonts.regular,
-                              fontSize: 9,
+                              fontSize: 9 * style.fs,
                               color: PdfColors.grey600)),
                   ],
                 ],
@@ -1640,10 +1692,11 @@ Future<Uint8List> _buildNavyHeader(
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<Uint8List> _buildBlueTriangle(
-    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv) async {
+    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv,
+    _CvStyle style) async {
   final fonts = await _loadFonts();
   final photo = await _loadPhoto(p);
-  final blue = PdfColor.fromHex('#6B8DD6');
+  final blue = style.accent ?? PdfColor.fromHex('#6B8DD6');
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
 
   final pageW = PdfPageFormat.a4.width;
@@ -1662,7 +1715,7 @@ Future<Uint8List> _buildBlueTriangle(
           pw.Expanded(
             child: pw.Text(label,
                 style: pw.TextStyle(
-                    font: fonts.bold, fontSize: 10.5, color: darkText)),
+                    font: fonts.bold, fontSize: 10.5 * style.fs, color: darkText)),
           ),
         ],
       );
@@ -1673,7 +1726,7 @@ Future<Uint8List> _buildBlueTriangle(
       padding: const pw.EdgeInsets.only(bottom: 4, top: 3),
       child: pw.Text(text,
           style: pw.TextStyle(
-              font: fonts.regular, fontSize: 8.7, color: PdfColors.grey800)),
+              font: fonts.regular, fontSize: 8.7 * style.fs, color: PdfColors.grey800)),
     );
   }
 
@@ -1688,13 +1741,13 @@ Future<Uint8List> _buildBlueTriangle(
           pw.Text(label,
               style: pw.TextStyle(
                   font: fonts.bold,
-                  fontSize: 7,
+                  fontSize: 7 * style.fs,
                   color: blue,
                   letterSpacing: 0.4)),
-          pw.SizedBox(height: 1.5),
+          pw.SizedBox(height: 1.5 * style.ss),
           pw.Text(value,
               style: pw.TextStyle(
-                  font: fonts.regular, fontSize: 8.7, color: PdfColors.grey800)),
+                  font: fonts.regular, fontSize: 8.7 * style.fs, color: PdfColors.grey800)),
         ],
       ),
     );
@@ -1710,7 +1763,7 @@ Future<Uint8List> _buildBlueTriangle(
           ),
           pw.SizedBox(width: 8),
           pw.Text(label,
-              style: pw.TextStyle(font: fonts.bold, fontSize: 12, color: darkText)),
+              style: pw.TextStyle(font: fonts.bold, fontSize: 12 * style.fs, color: darkText)),
           pw.SizedBox(width: 8),
           pw.Expanded(child: pw.Container(height: 0.8, color: blue)),
         ],
@@ -1721,7 +1774,8 @@ Future<Uint8List> _buildBlueTriangle(
   final skillsList = _genericSkillsList(p, ausbildung, isAusbildungCv);
   final langEntries = _langEntries(p);
   final jobs = [..._jobs(p), ...ausbildung.jobs];
-  final profile = _profileSummary(p, isAusbildungCv);
+  final profile = _profileSummary(p, isAusbildungCv,
+      userText: ausbildung.profileSummaryText);
   final role = _roleText(p, isAusbildungCv);
 
   final doc = pw.Document(title: 'Lebenslauf – ${p.fullName}', author: 'KarYab');
@@ -1765,13 +1819,13 @@ Future<Uint8List> _buildBlueTriangle(
                 children: [
                   pw.Text(p.fullName,
                       style:
-                          pw.TextStyle(font: fonts.bold, fontSize: 22, color: blue)),
+                          pw.TextStyle(font: fonts.bold, fontSize: 22 * style.fs, color: blue)),
                   if (role.isNotEmpty) ...[
-                    pw.SizedBox(height: 4),
+                    pw.SizedBox(height: 4 * style.ss),
                     pw.Text(role,
                         style: pw.TextStyle(
                             font: fonts.regular,
-                            fontSize: 10.5,
+                            fontSize: 10.5 * style.fs,
                             color: PdfColors.grey600)),
                   ],
                 ],
@@ -1794,7 +1848,7 @@ Future<Uint8List> _buildBlueTriangle(
                     sidebarLabeledLine(
                         'ADRESSE', p.fullAddress == '—' ? '' : p.fullAddress),
                     if (langEntries.isNotEmpty) ...[
-                      pw.SizedBox(height: 10),
+                      pw.SizedBox(height: 10 * style.ss),
                       sidebarHeader('Sprachen'),
                       for (final e in langEntries) sidebarLine(_langLine(e)),
                     ],
@@ -1813,18 +1867,18 @@ Future<Uint8List> _buildBlueTriangle(
                   // Item 5 — "Über mich" (profile) moved from the sidebar.
                   if (profile.isNotEmpty) ...[
                     rightHeader('Über mich'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     pw.Text(profile,
                         textAlign: pw.TextAlign.justify,
                         style: pw.TextStyle(
-                            font: fonts.regular, fontSize: 9.5, color: darkText)),
-                    pw.SizedBox(height: 16),
+                            font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
                   if (education.isNotEmpty ||
                       schulabschluss.isNotEmpty ||
                       ausbildung.eduLines.isNotEmpty) ...[
                     rightHeader('Ausbildung'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     if (education.isNotEmpty)
                       pw.Row(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -1843,13 +1897,13 @@ Future<Uint8List> _buildBlueTriangle(
                                 textAlign: pw.TextAlign.justify,
                                 style: pw.TextStyle(
                                     font: fonts.regular,
-                                    fontSize: 9.5,
+                                    fontSize: 9.5 * style.fs,
                                     color: darkText)),
                           ),
                         ],
                       ),
                     if (education.isNotEmpty && schulabschluss.isNotEmpty)
-                      pw.SizedBox(height: 6),
+                      pw.SizedBox(height: 6 * style.ss),
                     if (schulabschluss.isNotEmpty)
                       pw.Row(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -1868,7 +1922,7 @@ Future<Uint8List> _buildBlueTriangle(
                                 textAlign: pw.TextAlign.justify,
                                 style: pw.TextStyle(
                                     font: fonts.regular,
-                                    fontSize: 9.5,
+                                    fontSize: 9.5 * style.fs,
                                     color: darkText)),
                           ),
                         ],
@@ -1892,20 +1946,20 @@ Future<Uint8List> _buildBlueTriangle(
                               child: _eduEntryContent(
                                 line,
                                 fonts,
-                                headingSize: 9.5,
+                                headingSize: 9.5 * style.fs,
                                 headingColor: darkText,
-                                addressSize: 8.3,
+                                addressSize: 8.3 * style.fs,
                                 addressColor: PdfColors.grey600,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    pw.SizedBox(height: 16),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
                   if (jobs.isNotEmpty) ...[
                     rightHeader('Erfahrung'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     for (final job in jobs)
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(bottom: 12),
@@ -1935,7 +1989,7 @@ Future<Uint8List> _buildBlueTriangle(
                                           : job.company,
                                       style: pw.TextStyle(
                                           font: fonts.bold,
-                                          fontSize: 10,
+                                          fontSize: 10 * style.fs,
                                           color: darkText)),
                                   if (job.company.isNotEmpty)
                                     pw.Text(
@@ -1944,7 +1998,7 @@ Future<Uint8List> _buildBlueTriangle(
                                             : job.company,
                                         style: pw.TextStyle(
                                             font: fonts.regular,
-                                            fontSize: 8.7,
+                                            fontSize: 8.7 * style.fs,
                                             color: PdfColors.grey600)),
                                 ],
                               ),
@@ -1952,36 +2006,36 @@ Future<Uint8List> _buildBlueTriangle(
                           ],
                         ),
                       ),
-                    pw.SizedBox(height: 6),
+                    pw.SizedBox(height: 6 * style.ss),
                   ],
 
                   // Item 5 — Fähigkeiten moved from the sidebar.
                   if (skillsList.isNotEmpty) ...[
                     rightHeader('Fähigkeiten'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     for (final s in skillsList) sidebarLine(s),
-                    pw.SizedBox(height: 16),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
 
                   // Item 2 — dedicated IT-Kenntnisse section.
                   if (ausbildung.itSkills.isNotEmpty) ...[
                     rightHeader('IT-Kenntnisse'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     for (final s in ausbildung.itSkills) sidebarLine(s),
-                    pw.SizedBox(height: 16),
+                    pw.SizedBox(height: 16 * style.ss),
                   ],
 
                   if (p.refName != null && p.refName!.isNotEmpty) ...[
                     rightHeader('Referenzen'),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                     pw.Text(p.refName!,
                         style: pw.TextStyle(
-                            font: fonts.bold, fontSize: 9.5, color: darkText)),
+                            font: fonts.bold, fontSize: 9.5 * style.fs, color: darkText)),
                     if (p.refPhone != null && p.refPhone!.isNotEmpty)
                       pw.Text(p.refPhone!,
                           style: pw.TextStyle(
                               font: fonts.regular,
-                              fontSize: 9,
+                              fontSize: 9 * style.fs,
                               color: PdfColors.grey600)),
                   ],
                 ],
@@ -2007,9 +2061,11 @@ Future<Uint8List> _buildBlueTriangle(
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<Uint8List> _buildBraunIconSet(
-    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv) async {
+    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv,
+    _CvStyle style) async {
   final fonts = await _loadFonts();
   final photo = await _loadPhoto(p);
+  final accent = style.accent ?? _brownAccent;
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
 
   final pageW = PdfPageFormat.a4.width;
@@ -2020,11 +2076,11 @@ Future<Uint8List> _buildBraunIconSet(
         padding: const pw.EdgeInsets.only(bottom: 8, top: 4),
         child: pw.Row(
           children: [
-            pw.Container(width: 4, height: 14, color: _brownAccent),
+            pw.Container(width: 4, height: 14, color: accent),
             pw.SizedBox(width: 8),
             pw.Text(label,
                 style: pw.TextStyle(
-                    font: fonts.bold, fontSize: 12, color: darkText)),
+                    font: fonts.bold, fontSize: 12 * style.fs, color: darkText)),
           ],
         ),
       );
@@ -2039,10 +2095,10 @@ Future<Uint8List> _buildBraunIconSet(
           pw.Text(label,
               style: pw.TextStyle(
                   font: fonts.bold,
-                  fontSize: 9,
-                  color: _brownAccent,
+                  fontSize: 9 * style.fs,
+                  color: accent,
                   letterSpacing: 0.4)),
-          pw.SizedBox(height: 4),
+          pw.SizedBox(height: 4 * style.ss),
           pw.Wrap(
             spacing: 6,
             runSpacing: 6,
@@ -2050,7 +2106,7 @@ Future<Uint8List> _buildBraunIconSet(
               for (final s in items)
                 pw.Text(s,
                     style: pw.TextStyle(
-                        font: fonts.regular, fontSize: 9, color: darkText)),
+                        font: fonts.regular, fontSize: 9 * style.fs, color: darkText)),
             ],
           ),
         ],
@@ -2097,22 +2153,22 @@ Future<Uint8List> _buildBraunIconSet(
                 children: [
                   if (photo != null) ...[
                     _photoCircle(photo: photo, size: 78, ringColor: PdfColors.white),
-                    pw.SizedBox(height: 14),
+                    pw.SizedBox(height: 14 * style.ss),
                   ],
                   pw.Text(p.fullName,
                       style: pw.TextStyle(
-                          font: fonts.bold, fontSize: 19, color: _brownAccent, height: 1.15)),
+                          font: fonts.bold, fontSize: 19 * style.fs, color: accent, height: 1.15)),
                   if (role.isNotEmpty) ...[
-                    pw.SizedBox(height: 4),
+                    pw.SizedBox(height: 4 * style.ss),
                     pw.Text(role,
                         style: pw.TextStyle(
-                            font: fonts.regular, fontSize: 9.5, color: PdfColors.grey700)),
+                            font: fonts.regular, fontSize: 9.5 * style.fs, color: PdfColors.grey700)),
                   ],
-                  pw.SizedBox(height: 18),
+                  pw.SizedBox(height: 18 * style.ss),
                   pw.Text('KONTAKT',
                       style: pw.TextStyle(
-                          font: fonts.bold, fontSize: 9, color: _brownAccent, letterSpacing: 0.6)),
-                  pw.SizedBox(height: 8),
+                          font: fonts.bold, fontSize: 9 * style.fs, color: accent, letterSpacing: 0.6)),
+                  pw.SizedBox(height: 8 * style.ss),
                   _brownIconContactLine(_brownIconPin(),
                       p.fullAddress == '—' ? '' : p.fullAddress, fonts, darkText),
                   _brownIconContactLine(_brownIconPhone(), p.phone, fonts, darkText),
@@ -2127,11 +2183,11 @@ Future<Uint8List> _buildBraunIconSet(
                 children: [
                   bodyHeader('PERSÖNLICHE DATEN'),
                   pw.Text('Geburtsdatum: ${p.dobFormatted}',
-                      style: pw.TextStyle(font: fonts.regular, fontSize: 9.5, color: darkText)),
+                      style: pw.TextStyle(font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                   if (p.country != null && p.country!.isNotEmpty)
                     pw.Text('Nationalität: ${p.country}',
-                        style: pw.TextStyle(font: fonts.regular, fontSize: 9.5, color: darkText)),
-                  pw.SizedBox(height: 16),
+                        style: pw.TextStyle(font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
+                  pw.SizedBox(height: 16 * style.ss),
 
                   if (education.isNotEmpty || schulabschluss.isNotEmpty || ausbildung.eduLines.isNotEmpty) ...[
                     bodyHeader('SCHULBILDUNG'),
@@ -2139,22 +2195,22 @@ Future<Uint8List> _buildBraunIconSet(
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(bottom: 6),
                         child: pw.Text(education,
-                            style: pw.TextStyle(font: fonts.bold, fontSize: 10, color: darkText)),
+                            style: pw.TextStyle(font: fonts.bold, fontSize: 10 * style.fs, color: darkText)),
                       ),
                     if (schulabschluss.isNotEmpty)
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(bottom: 6),
                         child: pw.Text(schulabschluss,
-                            style: pw.TextStyle(font: fonts.bold, fontSize: 10, color: darkText)),
+                            style: pw.TextStyle(font: fonts.bold, fontSize: 10 * style.fs, color: darkText)),
                       ),
                     for (final line in ausbildung.eduLines)
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(bottom: 8),
                         child: _eduEntryContent(line, fonts,
-                            headingSize: 10, headingColor: darkText,
-                            addressSize: 8.5, addressColor: PdfColors.grey600),
+                            headingSize: 10 * style.fs, headingColor: darkText,
+                            addressSize: 8.5 * style.fs, addressColor: PdfColors.grey600),
                       ),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                   ],
 
                   if (jobs.isNotEmpty) ...[
@@ -2166,18 +2222,18 @@ Future<Uint8List> _buildBraunIconSet(
                           crossAxisAlignment: pw.CrossAxisAlignment.start,
                           children: [
                             pw.Text(job.title.isNotEmpty ? job.title : job.company,
-                                style: pw.TextStyle(font: fonts.bold, fontSize: 10, color: darkText)),
+                                style: pw.TextStyle(font: fonts.bold, fontSize: 10 * style.fs, color: darkText)),
                             if (job.title.isNotEmpty && job.company.isNotEmpty)
                               pw.Text(
                                   job.duration.isNotEmpty
                                       ? '${job.company} · ${job.duration}'
                                       : job.company,
                                   style: pw.TextStyle(
-                                      font: fonts.regular, fontSize: 8.7, color: _brownAccent)),
+                                      font: fonts.regular, fontSize: 8.7 * style.fs, color: accent)),
                           ],
                         ),
                       ),
-                    pw.SizedBox(height: 8),
+                    pw.SizedBox(height: 8 * style.ss),
                   ],
 
                   if (fachkenntnisse.isNotEmpty ||
@@ -2195,7 +2251,7 @@ Future<Uint8List> _buildBraunIconSet(
                             for (final s in fachkenntnisse)
                               pw.Text(s,
                                   style: pw.TextStyle(
-                                      font: fonts.regular, fontSize: 9, color: darkText)),
+                                      font: fonts.regular, fontSize: 9 * style.fs, color: darkText)),
                           ],
                         ),
                       ),
@@ -2231,8 +2287,10 @@ Future<Uint8List> _buildBraunIconSet(
 // ─────────────────────────────────────────────────────────────────────────────
 
 Future<Uint8List> _buildWeissBraunSchlicht(
-    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv) async {
+    UserProfile p, _AusbildungData ausbildung, bool isAusbildungCv,
+    _CvStyle style) async {
   final fonts = await _loadFonts();
+  final accent = style.accent ?? _brownAccent;
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
   final bandGrey = PdfColor.fromHex('#EFEFEF');
 
@@ -2242,7 +2300,7 @@ Future<Uint8List> _buildWeissBraunSchlicht(
         padding: const pw.EdgeInsets.only(bottom: 10, top: 6),
         child: pw.Text(label,
             style: pw.TextStyle(
-                font: fonts.bold, fontSize: 14, color: _brownAccent, letterSpacing: 0.3)),
+                font: fonts.bold, fontSize: 14 * style.fs, color: accent, letterSpacing: 0.3)),
       );
 
   pw.Widget row(String left, pw.Widget content) {
@@ -2254,7 +2312,7 @@ Future<Uint8List> _buildWeissBraunSchlicht(
           pw.SizedBox(
             width: 96,
             child: pw.Text(left,
-                style: pw.TextStyle(font: fonts.bold, fontSize: 9.5, color: darkText)),
+                style: pw.TextStyle(font: fonts.bold, fontSize: 9.5 * style.fs, color: darkText)),
           ),
           pw.SizedBox(width: 12),
           pw.Expanded(child: content),
@@ -2294,7 +2352,7 @@ Future<Uint8List> _buildWeissBraunSchlicht(
           alignment: pw.Alignment.center,
           child: pw.Text('LEBENSLAUF',
               style: pw.TextStyle(
-                  font: fonts.bold, fontSize: 34, color: _brownAccent, letterSpacing: 6)),
+                  font: fonts.bold, fontSize: 34 * style.fs, color: accent, letterSpacing: 6)),
         ),
         pw.Padding(
           padding: const pw.EdgeInsets.fromLTRB(42, 28, 42, 36),
@@ -2310,8 +2368,8 @@ Future<Uint8List> _buildWeissBraunSchlicht(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(p.fullName,
-                            style: pw.TextStyle(font: fonts.bold, fontSize: 11, color: darkText)),
-                        pw.SizedBox(height: 4),
+                            style: pw.TextStyle(font: fonts.bold, fontSize: 11 * style.fs, color: darkText)),
+                        pw.SizedBox(height: 4 * style.ss),
                         _brownIconContactLine(_brownIconPin(),
                             p.fullAddress == '—' ? '' : p.fullAddress, fonts, darkText),
                         _brownIconContactLine(_brownIconPhone(), p.phone, fonts, darkText),
@@ -2324,35 +2382,35 @@ Future<Uint8List> _buildWeissBraunSchlicht(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text('Geboren: ${p.dobFormatted}',
-                            style: pw.TextStyle(font: fonts.regular, fontSize: 9.5, color: darkText)),
+                            style: pw.TextStyle(font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                         if (p.country != null && p.country!.isNotEmpty) ...[
-                          pw.SizedBox(height: 4),
+                          pw.SizedBox(height: 4 * style.ss),
                           pw.Text('Staatsangehörigkeit: ${p.country}',
-                              style: pw.TextStyle(font: fonts.regular, fontSize: 9.5, color: darkText)),
+                              style: pw.TextStyle(font: fonts.regular, fontSize: 9.5 * style.fs, color: darkText)),
                         ],
                       ],
                     ),
                   ),
                 ],
               ),
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 20 * style.ss),
 
               if (education.isNotEmpty || schulabschluss.isNotEmpty || ausbildung.eduLines.isNotEmpty) ...[
                 sectionHeader('SCHULBILDUNG'),
                 if (education.isNotEmpty)
                   row('', pw.Text(education,
-                      style: pw.TextStyle(font: fonts.bold, fontSize: 10, color: darkText))),
+                      style: pw.TextStyle(font: fonts.bold, fontSize: 10 * style.fs, color: darkText))),
                 if (schulabschluss.isNotEmpty)
                   row('', pw.Text(schulabschluss,
-                      style: pw.TextStyle(font: fonts.bold, fontSize: 10, color: darkText))),
+                      style: pw.TextStyle(font: fonts.bold, fontSize: 10 * style.fs, color: darkText))),
                 for (final line in ausbildung.eduLines)
                   row(
                     line.dateRange,
                     _eduEntryContent(line, fonts,
-                        headingSize: 10, headingColor: darkText,
-                        addressSize: 8.7, addressColor: PdfColors.grey600),
+                        headingSize: 10 * style.fs, headingColor: darkText,
+                        addressSize: 8.7 * style.fs, addressColor: PdfColors.grey600),
                   ),
-                pw.SizedBox(height: 8),
+                pw.SizedBox(height: 8 * style.ss),
               ],
 
               if (jobs.isNotEmpty) ...[
@@ -2364,14 +2422,14 @@ Future<Uint8List> _buildWeissBraunSchlicht(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(job.title.isNotEmpty ? job.title : job.company,
-                            style: pw.TextStyle(font: fonts.bold, fontSize: 10, color: darkText)),
+                            style: pw.TextStyle(font: fonts.bold, fontSize: 10 * style.fs, color: darkText)),
                         if (job.title.isNotEmpty && job.company.isNotEmpty)
                           pw.Text(job.company,
-                              style: pw.TextStyle(font: fonts.regular, fontSize: 9, color: _brownAccent)),
+                              style: pw.TextStyle(font: fonts.regular, fontSize: 9 * style.fs, color: accent)),
                       ],
                     ),
                   ),
-                pw.SizedBox(height: 8),
+                pw.SizedBox(height: 8 * style.ss),
               ],
 
               if (fachkenntnisse.isNotEmpty ||
@@ -2388,7 +2446,7 @@ Future<Uint8List> _buildWeissBraunSchlicht(
                           for (final s in fachkenntnisse)
                             pw.Text(s,
                                 style: pw.TextStyle(
-                                    font: fonts.regular, fontSize: 9, color: darkText)),
+                                    font: fonts.regular, fontSize: 9 * style.fs, color: darkText)),
                         ],
                       )),
                 if (langLines.isNotEmpty)
@@ -2400,7 +2458,7 @@ Future<Uint8List> _buildWeissBraunSchlicht(
                           for (final s in langLines)
                             pw.Text(s,
                                 style: pw.TextStyle(
-                                    font: fonts.regular, fontSize: 9, color: darkText)),
+                                    font: fonts.regular, fontSize: 9 * style.fs, color: darkText)),
                         ],
                       )),
                 if (itTechnik.isNotEmpty)
@@ -2412,13 +2470,13 @@ Future<Uint8List> _buildWeissBraunSchlicht(
                           for (final s in itTechnik)
                             pw.Text(s,
                                 style: pw.TextStyle(
-                                    font: fonts.regular, fontSize: 9, color: darkText)),
+                                    font: fonts.regular, fontSize: 9 * style.fs, color: darkText)),
                         ],
                       )),
                 if (fuehrerschein.isNotEmpty)
                   row('Führerschein',
                       pw.Text(fuehrerschein.first,
-                          style: pw.TextStyle(font: fonts.regular, fontSize: 9, color: darkText))),
+                          style: pw.TextStyle(font: fonts.regular, fontSize: 9 * style.fs, color: darkText))),
               ],
             ],
           ),
