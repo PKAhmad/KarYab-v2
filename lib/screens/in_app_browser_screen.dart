@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../ui/karyab_ui.dart';
+
 class InAppBrowserScreen extends StatefulWidget {
   final String url;
   final String title;
@@ -48,11 +50,18 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
     final lang = widget.language;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFF),
+      backgroundColor: KColors.pageBase,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF091733),
+        backgroundColor: KLiquid.navyTop,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          // In Pashto/Dari the way back points right (Phase 5 RTL pass).
+          icon: Icon(
+            (lang == 'ps' || lang == 'fa')
+                ? Icons.arrow_forward_ios_rounded
+                : Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -61,7 +70,8 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
               : lang == 'fa'
                   ? 'صفحه کار'
                   : widget.title,
-          style: const TextStyle(
+          style: TextStyle(
+            fontFamily: karyabFontFamily(lang),
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -71,7 +81,7 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
           preferredSize: const Size.fromHeight(50),
           child: Container(
             width: double.infinity,
-            color: const Color(0xFF39EA2B),
+            color: KColors.green,
             padding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Text(
@@ -80,8 +90,9 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
                   : lang == 'fa'
                       ? 'کد را وارد کنید → Absenden → ایمیل را کپی کنید → برگردید'
                       : 'Enter code → Click Absenden → Copy email → Go back',
-              style: const TextStyle(
-                color: Color(0xFF091733),
+              style: TextStyle(
+                fontFamily: karyabFontFamily(lang),
+                color: KLiquid.navyTop,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
@@ -102,20 +113,20 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
           if (_isLoading)
             const Center(
               child: CircularProgressIndicator(
-                color: Color(0xFF39EA2B),
+                color: KColors.green,
               ),
             ),
         ],
       ),
       bottomNavigationBar: Container(
-        color: const Color(0xFF091733),
+        color: KLiquid.navyTop,
         padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
             const Icon(
               Icons.info_outline,
-              color: Color(0xFF39EA2B),
+              color: KColors.green,
               size: 16,
             ),
             const SizedBox(width: 8),
@@ -126,7 +137,8 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
                     : lang == 'fa'
                         ? 'ایمیل پیدا شد؟ کپی کنید سپس دکمه برگشت را بزنید'
                         : 'Found the email? Copy it then tap the back button',
-                style: const TextStyle(
+                style: TextStyle(
+                  fontFamily: karyabFontFamily(lang),
                   color: Colors.white70,
                   fontSize: 11,
                 ),

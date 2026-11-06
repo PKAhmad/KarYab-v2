@@ -69,15 +69,28 @@ class KarYabApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: (settings) {
+        // Phase 5 liquid glide: the app's fade route gains a short
+        // upward drift, so card-to-detail navigation feels like one
+        // continuous surface. Reduced motion is honoured by the
+        // framework's animation system on the device.
         PageRouteBuilder<dynamic> fade(Widget screen) => PageRouteBuilder(
               pageBuilder: (_, __, ___) => screen,
-              transitionsBuilder: (_, animation, __, child) => FadeTransition(
-                opacity: CurvedAnimation(
+              transitionsBuilder: (_, animation, __, child) {
+                final curved = CurvedAnimation(
                   parent: animation,
                   curve: Curves.easeInOut,
-                ),
-                child: child,
-              ),
+                );
+                return FadeTransition(
+                  opacity: curved,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 0.03),
+                      end: Offset.zero,
+                    ).animate(curved),
+                    child: child,
+                  ),
+                );
+              },
               transitionDuration: const Duration(milliseconds: 400),
             );
 

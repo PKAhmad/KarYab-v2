@@ -304,7 +304,8 @@ class KPrimaryCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedOpacity(
+    return KPressScale(
+      child: AnimatedOpacity(
       opacity: isSelected ? 0.75 : 1.0,
       duration: const Duration(milliseconds: 200),
       child: Container(
@@ -384,6 +385,7 @@ class KPrimaryCta extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }
