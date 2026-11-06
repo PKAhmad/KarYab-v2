@@ -18,6 +18,7 @@ import '../utils/navigation_helpers.dart';
 import '../widgets/cv_upload_info_sheet.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
+import 'my_cvs_screen.dart';
 
 class IntroductionScreen extends StatefulWidget {
   final String language;
@@ -1178,6 +1179,18 @@ class _MyCvScreenState extends State<_MyCvScreen> {
                             ),
                           ),
                         ),
+                        // Phase 3: My CVs library (all saved documents).
+                        KNavButton(
+                          icon: Icons.folder_copy_rounded,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  MyCvsScreen(language: widget.language),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         KNavButton(icon: Icons.home_rounded, onTap: _goHome),
                       ],
                     ),
