@@ -157,6 +157,43 @@ class UserProfile {
     );
   }
 
+  /// Inverse of [UserProfile.fromMap]: the flat string map in exactly the
+  /// shape the v1 'saved_profile' JSON used, so the data layer
+  /// (lib/data/) can persist a profile without any translation loss.
+  Map<String, String> toMap() {
+    String opt(String? v) => v ?? '';
+    String intOpt(int? v) => v?.toString() ?? '';
+    return {
+      'fullName': fullName,
+      'phone': phone,
+      'email': email,
+      'street': street,
+      'city': city,
+      'languages': languages.join(','),
+      'dobDay': intOpt(dobDay),
+      'dobMonth': intOpt(dobMonth),
+      'dobYear': intOpt(dobYear),
+      'country': opt(country),
+      'skill': opt(skill),
+      'workExperience': opt(workExperience),
+      'workType': opt(workType),
+      'tools': opt(tools),
+      'drivingLicense': opt(drivingLicense),
+      'availability': opt(availability),
+      'startDate': opt(startDate),
+      'photoPath': opt(photoPath),
+      'educationLevel': opt(educationLevel),
+      'previousEmployers': previousEmployers.join(','),
+      'previousJobTitles': previousJobTitles.join(','),
+      'previousJobDurations': previousJobDurations.join(','),
+      'languageProficiency': encodeProficiency(languageProficiency),
+      'refName': opt(refName),
+      'refPhone': opt(refPhone),
+      'schulabschluss': opt(schulabschluss),
+      'schulabschlussNote': opt(schulabschlussNote),
+    };
+  }
+
   static Map<String, String> _decodeProficiency(String raw) {
     if (raw.isEmpty) return const {};
     final result = <String, String>{};
