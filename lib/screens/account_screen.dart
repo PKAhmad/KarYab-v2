@@ -82,9 +82,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   void _snack(String text) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   String _dateText(DateTime at) {
@@ -226,10 +224,9 @@ class _AccountScreenState extends State<AccountScreen> {
       await file.writeAsString(
         const JsonEncoder.withIndent('  ').convert(snapshot),
       );
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        subject: 'KarYab data export',
-      );
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], subject: 'KarYab data export');
     } catch (_) {
       _snack(AccountStrings.backupFailed(_lang));
     } finally {
@@ -393,8 +390,11 @@ class _AccountScreenState extends State<AccountScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Icon(Icons.account_circle_rounded,
-              color: Colors.white, size: 52),
+          const Icon(
+            Icons.account_circle_rounded,
+            color: Colors.white,
+            size: 52,
+          ),
           const SizedBox(height: 12),
           Text(
             AccountStrings.loginBenefit(lang),
@@ -496,8 +496,8 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _signedIn(String lang, KaryabUser user) {
-    final name = (user.displayName != null &&
-            user.displayName!.trim().isNotEmpty)
+    final name =
+        (user.displayName != null && user.displayName!.trim().isNotEmpty)
         ? user.displayName!
         : (user.email ?? '');
     return Column(
@@ -546,21 +546,23 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  AccountStrings.cloudBackup(lang),
-                  style: TextStyle(
-                    fontFamily: karyabFontFamily(lang),
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
+              Material(
+                type: MaterialType.transparency,
+                child: SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    AccountStrings.cloudBackup(lang),
+                    style: TextStyle(
+                      fontFamily: karyabFontFamily(lang),
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
+                  value: _backupEnabled,
+                  activeThumbColor: KColors.green,
+                  onChanged: _busy ? null : (v) => _toggleBackup(v, user),
                 ),
-                value: _backupEnabled,
-                activeThumbColor: KColors.green,
-                onChanged:
-                    _busy ? null : (v) => _toggleBackup(v, user),
               ),
               Text(
                 AccountStrings.backupConsent(lang),
@@ -658,9 +660,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         if (_busy) ...[
           const SizedBox(height: 16),
-          const Center(
-            child: CircularProgressIndicator(color: KColors.green),
-          ),
+          const Center(child: CircularProgressIndicator(color: KColors.green)),
         ],
       ],
     );
@@ -678,19 +678,22 @@ class _AccountScreenState extends State<AccountScreen> {
       level: KGlassLevel.l1,
       inList: true,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: Icon(icon, color: color),
-        title: Text(
-          label,
-          style: TextStyle(
-            fontFamily: karyabFontFamily(lang),
-            color: color,
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
+      child: Material(
+        type: MaterialType.transparency,
+        child: ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Icon(icon, color: color),
+          title: Text(
+            label,
+            style: TextStyle(
+              fontFamily: karyabFontFamily(lang),
+              color: color,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
           ),
+          onTap: onTap,
         ),
-        onTap: onTap,
       ),
     );
   }
