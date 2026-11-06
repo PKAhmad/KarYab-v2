@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -8,7 +10,12 @@ import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
+import '../services/cv_completion.dart';
+import '../services/profile_summary_bank.dart';
 import '../services/tts_service.dart';
+import '../widgets/cv_wizard.dart';
+import '../widgets/profile_summary_step.dart';
+import 'cv_preview_screen.dart';
 import 'review_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -140,6 +147,22 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   // ── Validation errors ───────────────────────────────────────────────────────
   String? _pageError;
 
+  // ── Phase 3 wizard state ──────────────────────────────────────────────
+  // One existing question group per step; drafts autosave into the
+  // cv_documents row (document flows only). The Profil step state mirrors
+  // the Ausbildung questionnaire.
+  int _stepIndex = 0;
+  final Set<String> _profilThemes = {};
+  final Set<String> _profilSectors = {};
+  final _profilTextCtrl = TextEditingController();
+  Timer? _autosaveTimer;
+  String _lastSavedJson = '';
+
+  List<String> get _steps =>
+      wizardStepSections('job', educated: _isEducated);
+  String get _currentSection =>
+      _steps[_stepIndex.clamp(0, _steps.length - 1)];
+
   // ── Derived ─────────────────────────────────────────────────────────────────
   bool get _isEducated  => !_voiceMode;
   bool get _isRtl       => _lang == 'ps' || _lang == 'fa';
@@ -159,10 +182,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     _initVoiceMode();
     // Only reload previous answers in edit mode - a fresh "Create CV" pass
     // (isEditMode: false, the default) starts blank except for the shared
-    // personal-data fields PersonalDataScreen already collected.
-    if (widget.isEditMode) {
-      _loadSharedData();
-    }
+    // personal-data fields PersonalDataScreen already collected. Document
+    // flows always prefill, from the document's own payload (Phase 3).
+    _initWizard();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<LanguageProvider>().syncFromNav(
@@ -187,6 +209,20 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   static List<String> _splitCsv(String raw) =>
       raw.isEmpty ? const [] : raw.split(',');
 
+  // Same 'Lang:Level,...' decoding as the Ausbildung questionnaire.
+  static Map<String, String> _decodeProficiency(String raw) {
+    if (raw.isEmpty) return {};
+    final result = <String, String>{};
+    for (final pair in raw.split(',')) {
+      final idx = pair.indexOf(':');
+      if (idx == -1) continue;
+      final lang = pair.substring(0, idx);
+      final level = pair.substring(idx + 1);
+      if (lang.isNotEmpty && level.isNotEmpty) result[lang] = level;
+    }
+    return result;
+  }
+
   // Duration strings are stored as '$from - $until' (or a single side), with
   // 'heute' meaning "present" - same convention as
   // ausbildung_cv_questionnaire_screen.dart's _WorkExpEntry.duration getter.
@@ -207,15 +243,133 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     }
   }
 
-  // Pre-fills Berufserfahrung und Praktika and IT-Kenntnisse from
-  // 'saved_profile' if the user already filled them via the Ausbildung CV
-  // questionnaire (or a previous Job CV) - shared keys, so nothing is asked
-  // twice. Sprachkenntnisse is left exactly as it was (not pre-filled here),
-  // per spec.
-  Future<void> _loadSharedData() async {
+  // Phase 3: wizard setup - prefill (document payload wins over the
+  // shared profile), resume position, draft autosave timer.
+  Future<void> _initWizard() async {
+    Map<String, dynamic>? docPayload;
+    if (widget.documentId != null) {
+      try {
+        final rec =
+            await KaryabData.documents?.getCvDocument(widget.documentId!);
+        docPayload = rec?.payload;
+      } catch (_) {}
+    }
+    if (widget.isEditMode || docPayload != null) {
+      await _loadSharedData(source: docPayload);
+    }
+    var idx = 0;
+    if (docPayload != null) {
+      final saved = cvResumeStep(docPayload);
+      if (saved >= 0 && saved < _steps.length) idx = saved;
+    }
+    if (widget.initialSection != null) {
+      final i = wizardStepForSection('job',
+          educated: _isEducated, section: widget.initialSection!);
+      if (i >= 0) idx = i;
+    }
+    if (mounted && idx != 0) setState(() => _stepIndex = idx);
+    if (widget.documentId != null) {
+      _autosaveTimer = Timer.periodic(
+          const Duration(seconds: 10), (_) => _saveDocumentDraft());
+    }
+  }
+
+  // Pre-fills the questionnaire from a profile-shaped map.
+  //
+  // Phase 3 change: this now restores EVERY answer field, not only work
+  // entries + IT skills as before. The wizard's resume (and editing a
+  // saved CV from the library) is broken without a full prefill - the old
+  // partial prefill silently dropped skills, languages, education and
+  // availability whenever a CV was reopened. [source] lets document flows
+  // prefill from the document's own payload; the key handling is the same.
+  Future<void> _loadSharedData({Map<String, dynamic>? source}) async {
     try {
-      final map = await KaryabData.profile.loadProfileMap();
+      final map = source ?? await KaryabData.profile.loadProfileMap();
       if (map == null || map.isEmpty) return;
+
+      String str(String key) => (map[key] as String? ?? '').trim();
+      String? strOrNull(String key) {
+        final v = str(key);
+        return v.isEmpty ? null : v;
+      }
+
+      // Scalar answers + education + reference.
+      final education = strOrNull('educationLevel');
+      const presetEducation = {
+        'primary', 'secondary', 'highschool', 'vocational', 'university',
+        'masters',
+      };
+      final skills = _splitCsv(str('skill'));
+      final languages = _splitCsv(str('languages'));
+      final proficiency = _decodeProficiency(str('languageProficiency'));
+      final eduDuration = str('educationDuration');
+      int? schoolFrom;
+      String? schoolUntil;
+      if (eduDuration.isNotEmpty) {
+        final parts = eduDuration.split(' - ');
+        if (parts.length == 2) {
+          schoolFrom = int.tryParse(parts[0].trim());
+          final until = parts[1].trim();
+          schoolUntil = until == 'heute' ? 'present' : until;
+        } else if (parts.first.trim() == 'heute') {
+          schoolUntil = 'present';
+        } else {
+          schoolFrom = int.tryParse(parts.first.trim());
+        }
+      }
+      final profilThemes = _splitCsv(str(kProfileThemesKey));
+      final profilSectors = _splitCsv(str(kProfileSectorsKey));
+      if (mounted) {
+        setState(() {
+          _educationLevel = education;
+          if (education != null && !presetEducation.contains(education)) {
+            _educationOtherCtrl.text = education;
+          }
+          _schoolOrtCtrl.text = str('educationOrt');
+          _schoolFromYear = schoolFrom;
+          _schoolUntilYear = schoolUntil;
+          _skills
+            ..clear()
+            ..addAll(skills);
+          _workExperience = strOrNull('workExperience');
+          _workType = strOrNull('workType');
+          _tools = strOrNull('tools');
+          // Free-text ("Other") answers land in the other-row fields so
+          // they render exactly as the user typed them.
+          if (_workExperience != null &&
+              !const {'more2', 'less2', 'small', 'never'}
+                  .contains(_workExperience)) {
+            _workExpOtherCtrl.text = _workExperience!;
+          }
+          if (_workType != null &&
+              !const {'construction', 'cleaning', 'kitchen', 'driving'}
+                  .contains(_workType)) {
+            _workTypeOtherCtrl.text = _workType!;
+          }
+          if (_tools != null &&
+              !const {'power_tools', 'kitchen_equip', 'tractor', 'no_tools'}
+                  .contains(_tools)) {
+            _toolsOtherCtrl.text = _tools!;
+          }
+          _drivingLicense = strOrNull('drivingLicense');
+          _languages
+            ..clear()
+            ..addAll(languages);
+          _languageProficiency
+            ..clear()
+            ..addAll(proficiency);
+          _availability = strOrNull('availability');
+          _startDate = strOrNull('startDate');
+          _reference = strOrNull('reference');
+          _refNameCtrl.text = str('refName');
+          _refPhoneCtrl.text = str('refPhone');
+          _profilThemes.addAll(profilThemes);
+          _profilSectors.addAll(profilSectors);
+          if (str(kProfileSummaryKey).isNotEmpty) {
+            _profilTextCtrl.text = str(kProfileSummaryKey);
+          }
+        });
+      }
 
       final companies  = _splitCsv(map['previousEmployers'] as String? ?? '');
       final roles      = _splitCsv(map['previousJobTitles'] as String? ?? '');
@@ -263,8 +417,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   @override
   void dispose() {
+    _autosaveTimer?.cancel();
+    // Best-effort final draft save (step navigation already saved along
+    // the way; this catches edits made on the final step).
+    _saveDocumentDraft();
     TtsService().removeListener(_onTtsChange);
     TtsService().stop();
+    _profilTextCtrl.dispose();
     _schoolOrtCtrl.dispose();
     _skillSearchCtrl.dispose();
     _refNameCtrl.dispose();
@@ -327,13 +486,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     Navigator.pop(context);
   }
 
-  Future<void> _createCv() async {
-    if (_skills.isEmpty || _workExperience == null || _languages.isEmpty) {
-      setState(() => _pageError = _requiredMsg);
-      return;
-    }
-    setState(() => _pageError = null);
-
+  // Phase 3: the answer collection, split out of _createCv so the
+  // wizard can snapshot the same answers for the completion %, the live
+  // preview and the draft autosave without navigating.
+  void _collectAnswersInto(Map<String, dynamic> map) {
     // Both educated and uneducated users fill the same repeatable job
     // entries (Q9), now shared with the Ausbildung CV questionnaire. Empty
     // employer rows are dropped; order is preserved (most-recent-first).
@@ -357,14 +513,6 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         .where((s) => s.isNotEmpty);
     final itSkills = <String>[..._itSkillsSelected, ...customIt];
 
-    // Personal data (name/DOB/nationality/address/phone/email/photo) was
-    // already collected by PersonalDataScreen before this screen was ever
-    // reached - read it back from 'saved_profile' rather than asking again.
-    var map = <String, dynamic>{};
-    try {
-      map = await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
-    } catch (_) {}
-
     map['skill']                 = _skills.join(',');
     map['workExperience']        = _workExperience ?? '';
     map['workType']              = _workType ?? '';
@@ -387,10 +535,124 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     map['sharedWorkOrts']         = effectiveOrts.join(',');
     map['sharedWorkTypes']        = effectiveTypes.join(',');
     map['sharedItSkills']         = itSkills.join(',');
+    // Profil step (Phase 3) - the generators read these from the map.
+    map[kProfileSummaryKey]       = _profilTextCtrl.text.trim();
+    map[kProfileThemesKey]        = _profilThemes.join(',');
+    map[kProfileSectorsKey]       = _profilSectors.join(',');
+  }
+
+  Future<Map<String, dynamic>> _buildMergedMap() async {
+    // Personal data (name/DOB/nationality/address/phone/email/photo) was
+    // already collected by PersonalDataScreen before this screen was ever
+    // reached - read it back from 'saved_profile' rather than asking again.
+    var map = <String, dynamic>{};
+    try {
+      map = await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
+    } catch (_) {}
+    _collectAnswersInto(map);
+    return map;
+  }
+
+  int _completionPercent() {
+    final snapshot = <String, dynamic>{};
+    _collectAnswersInto(snapshot);
+    return cvCompletionPercent(snapshot, 'job');
+  }
+
+  // Phase 3: persists the current answers + wizard position into the
+  // cv_documents row. No-op for the classic profile-only flow.
+  Future<void> _saveDocumentDraft({
+    Map<String, dynamic>? merged,
+    bool finished = false,
+  }) async {
+    final id = widget.documentId;
+    if (id == null) return;
+    try {
+      final map = merged ?? await _buildMergedMap();
+      map[kWizardStepKey] = '$_stepIndex';
+      // Only ever set the done flag here; re-editing a finished document
+      // must not flip it back to a draft by closing the wizard early.
+      if (finished) map[kWizardDoneKey] = 'true';
+      final encoded = jsonEncode(map);
+      if (!finished && encoded == _lastSavedJson) return;
+      _lastSavedJson = encoded;
+      await KaryabData.documents?.updateCvDocument(id, payload: map);
+    } catch (_) {}
+  }
+
+  void _goToStep(int index) {
+    if (index < 0 || index >= _steps.length) return;
+    setState(() {
+      _stepIndex = index;
+      _pageError = null;
+    });
+    _saveDocumentDraft();
+  }
+
+  // Required steps (skills / work experience / languages, the pre-Phase-3
+  // Create validation) cannot be skipped or continued past while empty;
+  // the user gets the same required-fields message as before.
+  bool _currentStepValid() {
+    switch (_currentSection) {
+      case 'skills':
+        return _skills.isNotEmpty;
+      case 'experience':
+        return _workExperience != null;
+      case 'languages':
+        return _languages.isNotEmpty;
+      default:
+        return true;
+    }
+  }
+
+  void _onContinue() {
+    if (!_currentStepValid()) {
+      setState(() => _pageError = _requiredMsg);
+      return;
+    }
+    setState(() => _pageError = null);
+    if (_stepIndex >= _steps.length - 1) {
+      _createCv();
+    } else {
+      _goToStep(_stepIndex + 1);
+    }
+  }
+
+  // Phase 3, item 3: live preview of the current draft from any step.
+  // The draft merge is saved into the shared profile (and the document)
+  // first, exactly like _createCv does before navigating.
+  Future<void> _openPreview() async {
+    final map = await _buildMergedMap();
+    try {
+      await KaryabData.profile.saveProfileMap(map);
+    } catch (_) {}
+    await _saveDocumentDraft(merged: map);
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CvPreviewScreen(
+          profile: UserProfile.fromMap(map),
+          documentId: widget.documentId,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _createCv() async {
+    if (_skills.isEmpty || _workExperience == null || _languages.isEmpty) {
+      setState(() => _pageError = _requiredMsg);
+      return;
+    }
+    setState(() => _pageError = null);
+
+    final map = await _buildMergedMap();
 
     try {
       await KaryabData.profile.saveProfileMap(map);
     } catch (_) {}
+
+    await _saveDocumentDraft(merged: map, finished: true);
 
     final profile = UserProfile.fromMap(map);
 
@@ -633,36 +895,82 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         : _lang == 'fa' ? 'جزئیات خود را در زیر پر کنید'
         : 'Fill in your details below';
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-      child: Column(
-        children: [
-          _buildTitleCard(title, subtitle),
-          const SizedBox(height: 16),
-
-          _isEducated ? _buildPage2Educated() : _buildPage2Uneducated(),
-
-          if (_pageError != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              _pageError!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red, fontSize: 13),
-            ),
-          ],
-
-          const SizedBox(height: 16),
-          _BigButton(
-            label: _lang == 'ps' ? ' جوړ کړئ CV →'
-                : _lang == 'fa' ? 'ایجاد CV →'
-                : 'Create CV →',
-            onTap: _createCv,
-            isGreen: true,
+    // Phase 3 wizard: progress header + Preview on every step, one
+    // question group per step, Back/Skip/Continue bar at the bottom. The
+    // final step's Continue runs the unchanged _createCv validation.
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          child: WizardStepHeader(
+            language: _lang,
+            section: _currentSection,
+            stepIndex: _stepIndex.clamp(0, _steps.length - 1),
+            stepCount: _steps.length,
+            percent: _completionPercent(),
+            onPreview: _openPreview,
           ),
-          const SizedBox(height: 8),
-        ],
-      ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: Column(
+              children: [
+                _buildTitleCard(title, subtitle),
+                const SizedBox(height: 16),
+                _buildCurrentStepContent(),
+                if (_pageError != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    _pageError!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red, fontSize: 13),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        WizardBottomBar(
+          language: _lang,
+          showBack: _stepIndex > 0,
+          showSkip: !wizardSectionRequired('job', _currentSection),
+          onBack: () => _goToStep(_stepIndex - 1),
+          onSkip: () => _goToStep(_stepIndex + 1),
+          onContinue: _onContinue,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrentStepContent() {
+    if (_currentSection == 'profil') return _buildProfilStep();
+    return _isEducated ? _buildPage2Educated() : _buildPage2Uneducated();
+  }
+
+  // Phase 3, item 5: the Profil step. Sector suggestions come from the
+  // user's own answers (work type, tools, skills) via the phrase bank.
+  Widget _buildProfilStep() {
+    final snapshot = <String, dynamic>{};
+    _collectAnswersInto(snapshot);
+    return ProfileSummaryStep(
+      language: _lang,
+      isAusbildung: false,
+      workExperience: _workExperience ?? '',
+      initialThemes: _profilThemes,
+      initialSectors: _profilSectors,
+      initialText: _profilTextCtrl.text,
+      suggestedSectors: suggestedProfileSectors(snapshot),
+      onChanged: (themes, sectors, text) {
+        _profilThemes
+          ..clear()
+          ..addAll(themes);
+        _profilSectors
+          ..clear()
+          ..addAll(sectors);
+        _profilTextCtrl.text = text;
+      },
     );
   }
 
@@ -673,6 +981,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   Widget _buildPage2Uneducated() {
     return Column(
       children: [
+        if (_currentSection == 'skills') ...[
         // Q8 Skills grid
         _QCard(
           question: _lang == 'ps' ? '۸. تاسو کوم مهارتونه لری؟'
@@ -685,6 +994,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         ),
         const SizedBox(height: 12),
 
+        ],
+        if (_currentSection == 'experience') ...[
         // Q9 Work experience
         _QCard(
           question: _lang == 'ps' ? '۹. ایا مخکې مو چیرت کار کړی دی؟'
@@ -736,6 +1047,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           const SizedBox(height: 12),
         ],
 
+        ],
+        if (_currentSection == 'toolsIt') ...[
         // Q10 Tools
         _QCard(
           question: _lang == 'ps' ? '۱۰. تاسو کوم ډول سامان یا ماشینونو سره کار کولی شی؟'
@@ -771,6 +1084,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         ),
         const SizedBox(height: 12),
 
+        ],
+        if (_currentSection == 'languages') ...[
         // Q12 Languages
         _QCard(
           question: _lang == 'ps' ? '۱۲. تاسو په کومو ژبو خبري کولی شئ؟'
@@ -783,6 +1098,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         ),
         const SizedBox(height: 12),
 
+        ],
+        if (_currentSection == 'availability') ...[
         // Q13 Availability
         _QCard(
           question: _lang == 'ps' ? '۱۳. څرنګه کار غواړی پیدا کړي؟'
@@ -810,6 +1127,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           child: _bigChoices(_startOptions(), _startDate,
               (v) => setState(() => _startDate = v)),
         ),
+        ],
       ],
     );
   }
@@ -821,6 +1139,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   Widget _buildPage2Educated() {
     return Column(
       children: [
+        if (_currentSection == 'education') ...[
         // Education level (moved from the old personal-info page - job-CV
         // specific, not shared with the Ausbildung CV questionnaire).
         _QCard(
@@ -874,6 +1193,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           const SizedBox(height: 12),
         ],
 
+        ],
+        if (_currentSection == 'skills') ...[
         // Q9 Skills with search
         _QCard(
           question: _lang == 'ps' ? '۹. تاسو کوم مهارتونه لري؟'
@@ -884,6 +1205,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         ),
         const SizedBox(height: 12),
 
+        ],
+        if (_currentSection == 'experience') ...[
         // Q10 Work experience
         _QCard(
           question: _lang == 'ps' ? '۱۰. تاسو څومره کاری تجربه لری؟'
@@ -955,6 +1278,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           const SizedBox(height: 12),
         ],
 
+        ],
+        if (_currentSection == 'toolsIt') ...[
         _QCard(
           question: _lang == 'ps' ? '۱۱. تاسو کوم ډول سامان یا ماشینونو سره کار کولی شی؟'
               : _lang == 'fa' ? '۱۱. کار با ابزار'
@@ -1000,6 +1325,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         ),
         const SizedBox(height: 12),
 
+        ],
+        if (_currentSection == 'languages') ...[
         _QCard(
           question: _lang == 'ps' ? '۱۳. ژبې'
               : _lang == 'fa' ? '۱۳. زبان‌ها'
@@ -1009,6 +1336,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         ),
         const SizedBox(height: 12),
 
+        ],
+        if (_currentSection == 'availability') ...[
         _QCard(
           question: _lang == 'ps' ? '۱۴. څرنګه کار غواړی پیدا کړي؟'
               : _lang == 'fa' ? '۱۴. چی رقم کار می‌خواهید؟'
@@ -1036,6 +1365,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _referenceSection(),
         ),
+        ],
       ],
     );
   }
@@ -3317,70 +3647,6 @@ class _TxtField extends StatelessWidget {
               color: Color(0xFF65738A), fontSize: 14),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(14),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Navigation button — navy gradient (page 1) or green (page 2)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _BigButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final bool isGreen;
-
-  const _BigButton({
-    required this.label,
-    required this.onTap,
-    this.isGreen = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 58,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(29),
-        color: isGreen ? const Color(0xFF39EA2B) : null,
-        gradient: isGreen
-            ? null
-            : const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Color(0xFF081532), Color(0xFF07112B)],
-              ),
-        boxShadow: [
-          BoxShadow(
-            color: isGreen
-                ? const Color(0xFF39EA2B).withValues(alpha: 0.35)
-                : const Color(0xFF07112B).withValues(alpha: 0.30),
-            blurRadius: 22,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(29),
-          onTap: onTap,
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isGreen
-                    ? const Color(0xFF091733)
-                    : Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.2,
-              ),
-            ),
-          ),
         ),
       ),
     );

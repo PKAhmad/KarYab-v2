@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
@@ -6,7 +7,11 @@ import 'package:http/http.dart' as http;
 import '../data/karyab_data.dart';
 import '../models/user_profile.dart';
 import '../services/analytics_service.dart';
+import '../services/cv_completion.dart';
+import '../services/profile_summary_bank.dart';
 import '../services/tts_service.dart';
+import '../widgets/cv_wizard.dart';
+import '../widgets/profile_summary_step.dart';
 import 'ausbildung_document_preview_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -101,6 +106,20 @@ class _AusbildungCvQuestionnaireScreenState
   late bool _voiceMode;
   bool _saving = false;
 
+  // ── Phase 3 wizard state ──────────────────────────────────────────────
+  // The five existing sections plus the new Profil step, one per screen.
+  // Drafts autosave into the cv_documents row (document flows only).
+  int _stepIndex = 0;
+  final Set<String> _profilThemes = {};
+  final Set<String> _profilSectors = {};
+  final _profilTextCtrl = TextEditingController();
+  Timer? _autosaveTimer;
+  String _lastSavedJson = '';
+
+  List<String> get _steps =>
+      wizardStepSections('ausbildung', educated: _isEducated);
+  String get _currentSection => _steps[_stepIndex];
+
   // ── Section 1 - Berufserfahrung und Praktika (shared with
   // questionnaire_screen.dart) ────────────────────────────────────────────────
   final List<_WorkExpEntry> _workEntries = [_WorkExpEntry()];
@@ -149,9 +168,65 @@ class _AusbildungCvQuestionnaireScreenState
     TtsService().addListener(_onSoundChange);
     // Only reload previous answers in edit mode - a fresh "Create CV" pass
     // (isEditMode: false, the default) starts blank except for the shared
-    // personal-data fields PersonalDataScreen already collected.
-    if (widget.isEditMode) {
-      _loadExisting();
+    // personal-data fields PersonalDataScreen already collected. Document
+    // flows always prefill, from the document's own payload (Phase 3).
+    _initWizard();
+  }
+
+  // Phase 3: wizard setup - prefill (document payload wins over the shared
+  // profile), Profil step state, resume position, draft autosave timer.
+  Future<void> _initWizard() async {
+    Map<String, dynamic>? docPayload;
+    if (widget.documentId != null) {
+      try {
+        final rec =
+            await KaryabData.documents?.getCvDocument(widget.documentId!);
+        docPayload = rec?.payload;
+      } catch (_) {}
+    }
+    if (widget.isEditMode || docPayload != null) {
+      await _loadExisting(source: docPayload);
+    }
+    // Profil step: document payload first, shared profile as fallback.
+    Map<String, dynamic>? profilSource = docPayload;
+    if (profilSource == null ||
+        (profilSource['profileSummary']?.toString().isEmpty ?? true)) {
+      try {
+        profilSource =
+            await KaryabData.profile.loadProfileMap() ?? profilSource;
+      } catch (_) {}
+    }
+    if (profilSource != null) {
+      final themes = (profilSource['profileSummaryThemes'] as String? ?? '')
+          .split(',')
+          .where((s) => s.isNotEmpty);
+      final sectors = (profilSource['profileSummarySectors'] as String? ?? '')
+          .split(',')
+          .where((s) => s.isNotEmpty);
+      final text = profilSource['profileSummary'] as String? ?? '';
+      if (mounted) {
+        setState(() {
+          _profilThemes.addAll(themes);
+          _profilSectors.addAll(sectors);
+          if (text.isNotEmpty) _profilTextCtrl.text = text;
+        });
+      }
+    }
+    // Resume position: explicit section (ATS jump) beats the saved step.
+    var idx = 0;
+    if (docPayload != null) {
+      final saved = cvResumeStep(docPayload);
+      if (saved >= 0 && saved < _steps.length) idx = saved;
+    }
+    if (widget.initialSection != null) {
+      final i = wizardStepForSection('ausbildung',
+          educated: _isEducated, section: widget.initialSection!);
+      if (i >= 0) idx = i;
+    }
+    if (mounted) setState(() => _stepIndex = idx);
+    if (widget.documentId != null) {
+      _autosaveTimer = Timer.periodic(
+          const Duration(seconds: 10), (_) => _saveDocumentDraft());
     }
   }
 
@@ -161,6 +236,10 @@ class _AusbildungCvQuestionnaireScreenState
 
   @override
   void dispose() {
+    _autosaveTimer?.cancel();
+    // Best-effort final draft save (step navigation already saved along
+    // the way; this catches edits made on the final step).
+    _saveDocumentDraft();
     TtsService().removeListener(_onSoundChange);
     TtsService().stop();
     for (final e in _workEntries) {
@@ -173,6 +252,7 @@ class _AusbildungCvQuestionnaireScreenState
     _itSkillsCustomCtrl.dispose();
     _escoSearchCtrl.dispose();
     _customSkillCtrl.dispose();
+    _profilTextCtrl.dispose();
     super.dispose();
   }
 
@@ -240,9 +320,11 @@ class _AusbildungCvQuestionnaireScreenState
     }
   }
 
-  Future<void> _loadExisting() async {
+  // [source] lets document flows prefill from the document's own payload
+  // instead of the shared profile map; the key handling is identical.
+  Future<void> _loadExisting({Map<String, dynamic>? source}) async {
     try {
-      final map = await KaryabData.profile.loadProfileMap();
+      final map = source ?? await KaryabData.profile.loadProfileMap();
       if (map == null || map.isEmpty) return;
       final langsRaw = map['languages'] as String? ?? '';
       final profRaw  = map['languageProficiency'] as String? ?? '';
@@ -371,9 +453,10 @@ class _AusbildungCvQuestionnaireScreenState
   // Navigation always happens once persistence has been attempted, even if
   // the SharedPreferences read/write itself fails, matching
   // schulabschluss_screen.dart's _persist()/_goToPreview() pattern.
-  Future<void> _continueToPreview() async {
-    setState(() => _saving = true);
-
+  // Phase 3: the answer collection, split out of _continueToPreview so
+  // the wizard can snapshot the same answers for the completion %, the
+  // live preview and the draft autosave without navigating.
+  void _collectAnswersInto(Map<String, dynamic> map) {
     final companies = <String>[];
     final roles = <String>[];
     final workOrts = <String>[];
@@ -410,11 +493,6 @@ class _AusbildungCvQuestionnaireScreenState
         .where((s) => s.isNotEmpty);
     final itSkills = <String>[..._itSkillsSelected, ...customIt];
 
-    var map = <String, dynamic>{};
-    try {
-      map = await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
-    } catch (_) {}
-
     // Berufserfahrung und Praktika - shared keys with
     // questionnaire_screen.dart (previousEmployers/previousJobTitles/
     // previousJobDurations are also what UserProfile.fromMap() reads).
@@ -436,10 +514,94 @@ class _AusbildungCvQuestionnaireScreenState
     map['ausbildungEscoSkills']          = _selectedSkills.join(',');
     map['ausbildungTargetOccupation']    = _selectedOccupation?.title ?? '';
     map['ausbildungTargetOccupationUri'] = _selectedOccupation?.uri ?? '';
+    // Profil step (Phase 3) - the generators read these from the map.
+    map['profileSummary']         = _profilTextCtrl.text.trim();
+    map['profileSummaryThemes']   = _profilThemes.join(',');
+    map['profileSummarySectors']  = _profilSectors.join(',');
+  }
+
+  Future<Map<String, dynamic>> _buildMergedMap() async {
+    var map = <String, dynamic>{};
+    try {
+      map = await KaryabData.profile.loadProfileMap() ?? <String, dynamic>{};
+    } catch (_) {}
+    _collectAnswersInto(map);
+    return map;
+  }
+
+  int _completionPercent() {
+    final snapshot = <String, dynamic>{};
+    _collectAnswersInto(snapshot);
+    return cvCompletionPercent(snapshot, 'ausbildung');
+  }
+
+  // Phase 3: persists the current answers + wizard position into the
+  // cv_documents row. No-op for the classic profile-only flow.
+  Future<void> _saveDocumentDraft({
+    Map<String, dynamic>? merged,
+    bool finished = false,
+  }) async {
+    final id = widget.documentId;
+    if (id == null) return;
+    try {
+      final map = merged ?? await _buildMergedMap();
+      map[kWizardStepKey] = '$_stepIndex';
+      // Only ever set the done flag here; re-editing a finished document
+      // must not flip it back to a draft by closing the wizard early.
+      if (finished) map[kWizardDoneKey] = 'true';
+      final encoded = jsonEncode(map);
+      if (!finished && encoded == _lastSavedJson) return;
+      _lastSavedJson = encoded;
+      await KaryabData.documents?.updateCvDocument(id, payload: map);
+    } catch (_) {}
+  }
+
+  void _goToStep(int index) {
+    if (index < 0 || index >= _steps.length) return;
+    setState(() => _stepIndex = index);
+    _saveDocumentDraft();
+  }
+
+  void _onContinue() {
+    if (_stepIndex >= _steps.length - 1) {
+      _continueToPreview();
+    } else {
+      _goToStep(_stepIndex + 1);
+    }
+  }
+
+  // Phase 3, item 3: live preview of the current draft from any step.
+  // The generators read Ausbildung data from the shared profile map, so
+  // the draft merge is saved there (and into the document) first.
+  Future<void> _openPreview() async {
+    final map = await _buildMergedMap();
+    try {
+      await KaryabData.profile.saveProfileMap(map);
+    } catch (_) {}
+    await _saveDocumentDraft(merged: map);
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AusbildungDocumentPreviewScreen(
+          profile: UserProfile.fromMap(map),
+          language: _lang,
+          documentId: widget.documentId,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _continueToPreview() async {
+    setState(() => _saving = true);
+
+    final map = await _buildMergedMap();
 
     try {
       await KaryabData.profile.saveProfileMap(map);
     } catch (_) {}
+
+    await _saveDocumentDraft(merged: map, finished: true);
 
     final profile = UserProfile.fromMap(map);
 
@@ -451,6 +613,7 @@ class _AusbildungCvQuestionnaireScreenState
         builder: (_) => AusbildungDocumentPreviewScreen(
           profile: profile,
           language: _lang,
+          documentId: widget.documentId,
         ),
       ),
     );
@@ -568,16 +731,6 @@ class _AusbildungCvQuestionnaireScreenState
       case 'ps': return 'د زده کړې لیوالتیا لیک';
       case 'fa': return 'رزومه کارآموزی';
       default:   return 'Ausbildungs-Lebenslauf';
-    }
-  }
-
-  // Same literal strings as questionnaire_screen.dart's "Create CV →"
-  // button, so finishing this questionnaire mirrors that exact flow/label.
-  String get _continueLabel {
-    switch (_lang) {
-      case 'ps': return ' جوړ کړئ CV →';
-      case 'fa': return 'ایجاد CV →';
-      default:   return 'Create CV →';
     }
   }
 
@@ -886,30 +1039,34 @@ class _AusbildungCvQuestionnaireScreenState
               child: Column(
                 children: [
                   _buildHeader(),
+                  // Phase 3 wizard chrome: progress + Preview from every
+                  // step, one existing section per step below.
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                    child: WizardStepHeader(
+                      language: _lang,
+                      section: _currentSection,
+                      stepIndex: _stepIndex,
+                      stepCount: _steps.length,
+                      percent: _completionPercent(),
+                      onPreview: _openPreview,
+                    ),
+                  ),
                   Expanded(
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-                      child: Column(
-                        children: [
-                          _buildWorkSection(),
-                          const SizedBox(height: 14),
-                          _buildEduSection(),
-                          const SizedBox(height: 14),
-                          _buildLangSection(),
-                          const SizedBox(height: 14),
-                          _buildItSection(),
-                          const SizedBox(height: 14),
-                          _buildEscoSection(),
-                          const SizedBox(height: 20),
-                          _BigButton(
-                            label: _continueLabel,
-                            enabled: !_saving,
-                            onTap: _continueToPreview,
-                          ),
-                        ],
-                      ),
+                      child: _buildCurrentStep(),
                     ),
+                  ),
+                  WizardBottomBar(
+                    language: _lang,
+                    showBack: _stepIndex > 0,
+                    showSkip: !wizardSectionRequired(
+                        'ausbildung', _currentSection),
+                    onBack: () => _goToStep(_stepIndex - 1),
+                    onSkip: _onContinue,
+                    onContinue: _saving ? null : _onContinue,
                   ),
                 ],
               ),
@@ -918,6 +1075,45 @@ class _AusbildungCvQuestionnaireScreenState
         ),
       ),
     );
+  }
+
+  // Phase 3: one existing section builder per wizard step - the field
+  // widgets, controllers and validation are untouched.
+  Widget _buildCurrentStep() {
+    switch (_currentSection) {
+      case 'experience':
+        return _buildWorkSection();
+      case 'education':
+        return _buildEduSection();
+      case 'languages':
+        return _buildLangSection();
+      case 'toolsIt':
+        return _buildItSection();
+      case 'esco':
+        return _buildEscoSection();
+      case 'profil':
+        final snapshot = <String, dynamic>{};
+        _collectAnswersInto(snapshot);
+        return ProfileSummaryStep(
+          language: _lang,
+          isAusbildung: true,
+          initialThemes: _profilThemes,
+          initialSectors: _profilSectors,
+          initialText: _profilTextCtrl.text,
+          suggestedSectors: suggestedProfileSectors(snapshot),
+          onChanged: (themes, sectors, text) {
+            _profilThemes
+              ..clear()
+              ..addAll(themes);
+            _profilSectors
+              ..clear()
+              ..addAll(sectors);
+            _profilTextCtrl.text = text;
+          },
+        );
+      default:
+        return _buildWorkSection();
+    }
   }
 
   Widget _buildHeader() {
@@ -2249,63 +2445,6 @@ class _TxtField extends StatelessWidget {
           hintStyle: const TextStyle(color: Color(0xFF65738A), fontSize: 14),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(14),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Big action button
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _BigButton extends StatelessWidget {
-  final String label;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  const _BigButton({
-    required this.label,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedOpacity(
-      opacity: enabled ? 1.0 : 0.45,
-      duration: const Duration(milliseconds: 200),
-      child: Container(
-        height: 58,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(29),
-          color: const Color(0xFF39EA2B),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF39EA2B).withValues(alpha: 0.35),
-              blurRadius: 22,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(29),
-            onTap: enabled ? onTap : null,
-            child: Center(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  color: Color(0xFF091733),
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );
