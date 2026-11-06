@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../data/karyab_data.dart';
+import '../data/repositories.dart';
 import '../providers/language_provider.dart';
 import '../services/analytics_service.dart';
+import '../services/job_search_service.dart';
+import '../services/jobs_strings.dart';
 import '../services/tts_service.dart';
 import '../utils/location_helpers.dart';
 import '../utils/navigation_helpers.dart';
@@ -33,6 +34,10 @@ class _Job {
   final String strasseHausnummer;
   final String refnr;
 
+  /// Raw BA payload, kept so the posting can be saved and cached
+  /// (Phase 7).
+  final Map<String, dynamic>? rawJson;
+
   const _Job({
     required this.title,
     required this.company,
@@ -40,6 +45,7 @@ class _Job {
     required this.plz,
     required this.strasseHausnummer,
     required this.refnr,
+    this.rawJson,
   });
 
   String get locationDisplay {
@@ -49,17 +55,36 @@ class _Job {
 
   factory _Job.fromJson(Map<String, dynamic> j) {
     final locs = j['stellenlokationen'] as List<dynamic>? ?? [];
-    final loc  = locs.isNotEmpty ? locs.first as Map<String, dynamic> : {};
-    final ao   = loc['adresse'] as Map<String, dynamic>? ?? {};
+    final loc = locs.isNotEmpty ? locs.first as Map<String, dynamic> : {};
+    final ao = loc['adresse'] as Map<String, dynamic>? ?? {};
     return _Job(
-      title:             j['stellenangebotsTitel'] as String? ?? '',
-      company:           j['firma']                as String? ?? '',
-      ort:               ao['ort']                 as String? ?? '',
-      plz:               ao['plz']                 as String? ?? '',
-      strasseHausnummer: ao['strasseHausnummer']   as String? ?? '',
-      refnr:             j['referenznummer']       as String? ?? '',
+      title: j['stellenangebotsTitel'] as String? ?? '',
+      company: j['firma'] as String? ?? '',
+      ort: ao['ort'] as String? ?? '',
+      plz: ao['plz'] as String? ?? '',
+      strasseHausnummer: ao['strasseHausnummer'] as String? ?? '',
+      refnr: j['referenznummer'] as String? ?? '',
+      rawJson: j,
     );
   }
+
+  factory _Job.fromBaJob(BaJob b) => _Job(
+    title: b.title,
+    company: b.company,
+    ort: b.ort,
+    plz: b.plz,
+    strasseHausnummer: b.strasseHausnummer,
+    refnr: b.refnr,
+    rawJson: b.raw,
+  );
+}
+
+/// The outcome of a job list load: fresh results, or results served
+/// from the offline cache ([cachedAt] set) after a transport failure.
+class _JobsLoadResult {
+  final List<_Job> jobs;
+  final DateTime? cachedAt;
+  const _JobsLoadResult(this.jobs, {this.cachedAt});
 }
 
 // ── Category descriptor ───────────────────────────────────────────────────────
@@ -98,46 +123,107 @@ class AusbildungScreen extends StatefulWidget {
 }
 
 class _AusbildungScreenState extends State<AusbildungScreen> {
-  static const Color _navy  = KColors.navy;
+  static const Color _navy = KColors.navy;
   static const Color _green = KColors.green;
   static const Color _muted = KColors.textSecondary;
-
-  static const _kApiKey  = 'jobboerse-jobsuche';
-  static const _kBaseUrl =
-      'https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs';
 
   static const _kRadii = [5, 10, 25, 50, 100];
 
   static const _kCats = <_Cat>[
-    _Cat('All',          '',                        Icons.apps_rounded,              'All',          'ټول',      'همه'),
-    _Cat('IT',           'Fachinformatiker',         Icons.computer_rounded,          'IT / Tech',    'IT / ټیک', 'IT / فناوری'),
-    _Cat('Handwerk',     'Handwerk Ausbildung',      Icons.build_rounded,             'Trades',       'کسب',      'صنعت'),
-    _Cat('Einzelhandel', 'Kaufmann Einzelhandel',    Icons.store_rounded,             'Retail',       'پلور',     'خرده‌فروشی'),
-    _Cat('Gesundheit',   'Pflege Ausbildung',        Icons.health_and_safety_rounded, 'Health',       'روغتیا',   'بهداشت'),
-    _Cat('Buero',        'Kaufmann Büromanagement',  Icons.business_center_rounded,   'Office',       'دفتر',     'اداری'),
-    _Cat('Gastro',       'Koch Ausbildung',          Icons.restaurant_rounded,        'Gastronomy',   'هوتل',     'هتل‌داری'),
-    _Cat('Bau',          'Bauhandwerk Ausbildung',   Icons.construction_rounded,      'Construction', 'ساختمان',  'ساختمان'),
-    _Cat('Logistik',     'Fachlagerist',             Icons.local_shipping_rounded,    'Logistics',    'لوجستیک',  'لجستیک'),
+    _Cat('All', '', Icons.apps_rounded, 'All', 'ټول', 'همه'),
+    _Cat(
+      'IT',
+      'Fachinformatiker',
+      Icons.computer_rounded,
+      'IT / Tech',
+      'IT / ټیک',
+      'IT / فناوری',
+    ),
+    _Cat(
+      'Handwerk',
+      'Handwerk Ausbildung',
+      Icons.build_rounded,
+      'Trades',
+      'کسب',
+      'صنعت',
+    ),
+    _Cat(
+      'Einzelhandel',
+      'Kaufmann Einzelhandel',
+      Icons.store_rounded,
+      'Retail',
+      'پلور',
+      'خرده‌فروشی',
+    ),
+    _Cat(
+      'Gesundheit',
+      'Pflege Ausbildung',
+      Icons.health_and_safety_rounded,
+      'Health',
+      'روغتیا',
+      'بهداشت',
+    ),
+    _Cat(
+      'Buero',
+      'Kaufmann Büromanagement',
+      Icons.business_center_rounded,
+      'Office',
+      'دفتر',
+      'اداری',
+    ),
+    _Cat(
+      'Gastro',
+      'Koch Ausbildung',
+      Icons.restaurant_rounded,
+      'Gastronomy',
+      'هوتل',
+      'هتل‌داری',
+    ),
+    _Cat(
+      'Bau',
+      'Bauhandwerk Ausbildung',
+      Icons.construction_rounded,
+      'Construction',
+      'ساختمان',
+      'ساختمان',
+    ),
+    _Cat(
+      'Logistik',
+      'Fachlagerist',
+      Icons.local_shipping_rounded,
+      'Logistics',
+      'لوجستیک',
+      'لجستیک',
+    ),
   ];
 
-  String _lang           = 'en';
-  String _city           = '';
-  int    _selectedRadius = 25;
+  String _lang = 'en';
+  String _city = '';
+  int _selectedRadius = 25;
   String _selectedCatKey = 'All';
-  bool   _editingCity    = false;
-  bool   _locating       = false;
-  Future<List<_Job>>? _jobsFuture;
+  bool _editingCity = false;
+  bool _locating = false;
+  Future<_JobsLoadResult>? _jobsFuture;
 
-  final _cityCtrl   = TextEditingController();
+  // Phase 7: shared search client + bookmarked refnrs.
+  final JobSearchService _searchService = JobSearchService();
+  JobQuery? _lastQuery;
+  String? _lastTopRefnr;
+  Set<String> _savedRefnrs = {};
+
+  final _cityCtrl = TextEditingController();
   final _searchCtrl = TextEditingController();
-  final _cityFocus  = FocusNode();
+  final _cityFocus = FocusNode();
 
-  void _onSoundChange() { if (mounted) setState(() {}); }
+  void _onSoundChange() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
     AnalyticsService().logScreen('ausbildung');
+    _loadSavedRefnrs();
     TtsService().addListener(_onSoundChange);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -174,60 +260,124 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
 
   // ── API ───────────────────────────────────────────────────────────────────
 
-  Future<List<_Job>> _fetch() async {
+  /// Phase 7 fetch: through JobSearchService, with the offline cache
+  /// fallback (same contract as the job finder).
+  Future<_JobsLoadResult> _fetch() async {
     final cat = _kCats.firstWhere(
       (c) => c.key == _selectedCatKey,
       orElse: () => _kCats.first,
     );
     final typed = _searchCtrl.text.trim();
     final searchTerm = typed.isNotEmpty ? typed : cat.searchTerm;
-    final params = <String, String>{
-      'wo':          _city,
-      'umkreis':     _selectedRadius.toString(),
-      'page':        '1',
-      'size':        '25',
-      'angebotsart': '4',
-      'pav':         'false',
-    };
-    if (searchTerm.isNotEmpty) params['was'] = searchTerm;
+    final query = JobQuery.ausbildung(
+      was: searchTerm,
+      wo: _city,
+      umkreis: _selectedRadius,
+    );
+    _lastQuery = query;
+    final repo = KaryabData.jobs;
 
-    final uri = Uri.parse(_kBaseUrl).replace(queryParameters: params);
-    // Logged without the query string, which holds the city and search term.
-    final logUrl = '${uri.scheme}://${uri.host}${uri.path}';
-    int? status;
     try {
-      final response = await http
-          .get(uri, headers: {'X-API-Key': _kApiKey})
-          .timeout(const Duration(seconds: 15));
-      status = response.statusCode;
-
-      if (response.statusCode == 200) {
-        final data  = jsonDecode(response.body) as Map<String, dynamic>;
-        final items = data['ergebnisliste'] as List<dynamic>? ?? [];
-        return items.map((j) => _Job.fromJson(j as Map<String, dynamic>)).toList();
+      final results = await _searchService.runQuery(query);
+      _lastTopRefnr = results.isEmpty ? null : results.first.refnr;
+      if (repo != null) {
+        unawaited(
+          repo.putCache(
+            JobsRepository.searchCacheKey(query.cacheKey),
+            jsonEncode(results.map((j) => j.raw).toList()),
+          ),
+        );
       }
-      throw const _JobsException(_JobsErrorKind.unavailable);
-    } catch (e) {
-      // 401, 403, 404, 429, 5xx, a bad JSON body, a changed response format
-      // and anything unexpected all end up as "unavailable"; only a missing
-      // network and a timeout get their own message.
-      final kind = e is _JobsException
-          ? e.kind
-          : e is TimeoutException
-              ? _JobsErrorKind.timeout
-              : (e is SocketException || e is http.ClientException)
-                  ? _JobsErrorKind.noConnection
-                  : _JobsErrorKind.unavailable;
-      if (kDebugMode) {
-        debugPrint('[jobs] ${e.runtimeType} status=$status url=$logUrl -> $kind');
+      return _JobsLoadResult(results.map(_Job.fromBaJob).toList());
+    } on BaJobsException catch (e) {
+      final kind = switch (e.kind) {
+        BaJobsErrorKind.noConnection => _JobsErrorKind.noConnection,
+        BaJobsErrorKind.timeout => _JobsErrorKind.timeout,
+        BaJobsErrorKind.unavailable => _JobsErrorKind.unavailable,
+      };
+      final cached = repo == null
+          ? null
+          : await repo.getCache(JobsRepository.searchCacheKey(query.cacheKey));
+      if (cached != null &&
+          JobSearchService.shouldUseCachedResults(e.kind, true)) {
+        try {
+          final rawList = jsonDecode(cached.payload) as List<dynamic>;
+          final jobs = rawList
+              .map((j) => _Job.fromJson(j as Map<String, dynamic>))
+              .toList();
+          _lastTopRefnr = jobs.isEmpty ? null : jobs.first.refnr;
+          return _JobsLoadResult(jobs, cachedAt: cached.fetchedAt);
+        } catch (_) {
+          // Corrupt cache entry: fall through to the honest error.
+        }
       }
       throw _JobsException(kind);
     }
   }
 
+  Future<void> _loadSavedRefnrs() async {
+    final repo = KaryabData.jobs;
+    if (repo == null) return;
+    final saved = await repo.savedRefnrs();
+    if (mounted) setState(() => _savedRefnrs = saved);
+  }
+
+  /// Bookmark toggle on an Ausbildung card (Phase 7 saved jobs).
+  Future<void> _toggleSaveJob(_Job job) async {
+    final repo = KaryabData.jobs;
+    if (repo == null || job.refnr.isEmpty) return;
+    final wasSaved = _savedRefnrs.contains(job.refnr);
+    setState(() {
+      if (wasSaved) {
+        _savedRefnrs.remove(job.refnr);
+      } else {
+        _savedRefnrs.add(job.refnr);
+      }
+    });
+    if (wasSaved) {
+      await repo.unsaveJob(job.refnr);
+    } else {
+      await repo.saveJob(
+        refnr: job.refnr,
+        title: job.title,
+        company: job.company,
+        location: job.locationDisplay,
+        source: 'ausbildung',
+        payload:
+            job.rawJson ??
+            <String, dynamic>{
+              'stellenangebotsTitel': job.title,
+              'firma': job.company,
+              'referenznummer': job.refnr,
+            },
+      );
+    }
+  }
+
+  /// "Save search" for the current Ausbildung search (Phase 7).
+  Future<void> _saveCurrentSearch() async {
+    final repo = KaryabData.jobs;
+    final query = _lastQuery;
+    if (repo == null || query == null) return;
+    const prefix = 'Ausbildung';
+    var label = query.autoLabel;
+    label = label.isEmpty ? prefix : '$prefix, $label';
+    await repo.saveSearch(
+      label: label,
+      params: query.toJson(),
+      topRefnr: _lastTopRefnr,
+    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(JobsStrings.searchSaved(_lang))));
+  }
+
   void _refetch() {
     if (_city.isEmpty) return;
-    setState(() { _jobsFuture = _fetch(); });
+    setState(() {
+      _jobsFuture = _fetch();
+    });
   }
 
   void _commitCity(String v) {
@@ -284,6 +434,16 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
   }
 
   void _openJob(_Job job) async {
+    // Phase 7 offline cache for opened postings.
+    final repo = KaryabData.jobs;
+    if (repo != null && job.refnr.isNotEmpty && job.rawJson != null) {
+      unawaited(
+        repo.putCache(
+          JobsRepository.detailCacheKey(job.refnr),
+          jsonEncode(job.rawJson),
+        ),
+      );
+    }
     await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
     final addrParts = <String>[];
@@ -294,18 +454,19 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       context,
       '/job_apply',
       arguments: <String, String>{
-        'jobTitle':       job.title,
-        'companyName':    job.company,
+        'jobTitle': job.title,
+        'companyName': job.company,
         'companyAddress': addrParts.join(', '),
-        'jobLocation':    job.locationDisplay,
-        'formUrl':        'https://www.arbeitsagentur.de/jobsuche/jobdetail/${job.refnr}',
-        'companyPhone':   '',
-        'companyEmail':   '',
+        'jobLocation': job.locationDisplay,
+        'formUrl':
+            'https://www.arbeitsagentur.de/jobsuche/jobdetail/${job.refnr}',
+        'companyPhone': '',
+        'companyEmail': '',
         'companyWebsite': '',
-        'refnr':          job.refnr,
-        'language':       _lang,
-        'voiceMode':      widget.voiceMode.toString(),
-        'isAusbildung':   'true',
+        'refnr': job.refnr,
+        'language': _lang,
+        'voiceMode': widget.voiceMode.toString(),
+        'isAusbildung': 'true',
       },
     );
   }
@@ -314,26 +475,34 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
 
   String get _titleLabel {
     switch (_lang) {
-      case 'ps': return 'د زده کړې کار ومومئ';
-      case 'fa': return 'کارآموزی پیدا کنید';
-      default:   return 'Find Ausbildung';
+      case 'ps':
+        return 'د زده کړې کار ومومئ';
+      case 'fa':
+        return 'کارآموزی پیدا کنید';
+      default:
+        return 'Find Ausbildung';
     }
   }
 
   String get _cityHint {
     switch (_lang) {
-      case 'ps': return 'دلته د ښار نوم ولیکئ';
-      case 'fa': return 'نام شهر را بنویسید';
-      default:   return 'Enter city name';
+      case 'ps':
+        return 'دلته د ښار نوم ولیکئ';
+      case 'fa':
+        return 'نام شهر را بنویسید';
+      default:
+        return 'Enter city name';
     }
   }
 
-
   String get _loadingLbl {
     switch (_lang) {
-      case 'ps': return 'د زده کړې کارونه پلټل کیږي...';
-      case 'fa': return 'در حال جستجوی کارآموزی...';
-      default:   return 'Searching apprenticeships...';
+      case 'ps':
+        return 'د زده کړې کارونه پلټل کیږي...';
+      case 'fa':
+        return 'در حال جستجوی کارآموزی...';
+      default:
+        return 'Searching apprenticeships...';
     }
   }
 
@@ -344,10 +513,14 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
     required String fa,
   }) {
     switch (_lang) {
-      case 'ps': return ps;
-      case 'fa': return fa;
-      case 'de': return de;
-      default:   return en;
+      case 'ps':
+        return ps;
+      case 'fa':
+        return fa;
+      case 'de':
+        return de;
+      default:
+        return en;
     }
   }
 
@@ -356,9 +529,12 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
 
   IconData _errorIcon(_JobsErrorKind kind) {
     switch (kind) {
-      case _JobsErrorKind.noConnection: return Icons.wifi_off_rounded;
-      case _JobsErrorKind.timeout:      return Icons.hourglass_bottom_rounded;
-      case _JobsErrorKind.unavailable:  return Icons.cloud_off_rounded;
+      case _JobsErrorKind.noConnection:
+        return Icons.wifi_off_rounded;
+      case _JobsErrorKind.timeout:
+        return Icons.hourglass_bottom_rounded;
+      case _JobsErrorKind.unavailable:
+        return Icons.cloud_off_rounded;
     }
   }
 
@@ -390,80 +566,107 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
 
   String get _emptyLbl {
     switch (_lang) {
-      case 'ps': return 'د زده کړې کارونه ونه موندل شول';
-      case 'fa': return 'کارآموزی یافت نشد';
-      default:   return 'No apprenticeships found';
+      case 'ps':
+        return 'د زده کړې کارونه ونه موندل شول';
+      case 'fa':
+        return 'کارآموزی یافت نشد';
+      default:
+        return 'No apprenticeships found';
     }
   }
 
   String get _emptySuggestionLbl => _msg(
-        en: 'Try another distance or job type',
-        de: 'Versuche einen anderen Umkreis oder eine andere Stellenart',
-        ps: 'بل واټن یا د کار ډول هڅه وکړئ',
-        fa: 'فاصله یا نوع کار دیگری را امتحان کنید',
-      );
+    en: 'Try another distance or job type',
+    de: 'Versuche einen anderen Umkreis oder eine andere Stellenart',
+    ps: 'بل واټن یا د کار ډول هڅه وکړئ',
+    fa: 'فاصله یا نوع کار دیگری را امتحان کنید',
+  );
 
   String get _retryLbl {
     switch (_lang) {
-      case 'ps': return 'بیا هڅه وکړئ';
-      case 'fa': return 'دوباره تلاش کنید';
-      default:   return 'Retry';
+      case 'ps':
+        return 'بیا هڅه وکړئ';
+      case 'fa':
+        return 'دوباره تلاش کنید';
+      default:
+        return 'Retry';
     }
   }
 
   String get _applyLbl {
     switch (_lang) {
-      case 'ps': return 'غوښتنلیک';
-      case 'fa': return 'ثبت نام';
-      default:   return 'Apply';
+      case 'ps':
+        return 'غوښتنلیک';
+      case 'fa':
+        return 'ثبت نام';
+      default:
+        return 'Apply';
     }
   }
 
   String get _searchHint {
     switch (_lang) {
-      case 'ps': return 'د زده کړې کار ولټوئ...';
-      case 'fa': return 'جستجوی کارآموزی...';
-      default:   return 'Search apprenticeships...';
+      case 'ps':
+        return 'د زده کړې کار ولټوئ...';
+      case 'fa':
+        return 'جستجوی کارآموزی...';
+      default:
+        return 'Search apprenticeships...';
     }
   }
 
   String get _locationServiceDisabledMsg {
     switch (_lang) {
-      case 'ps': return 'د لوکیشن خدمت غیرفعال دی. مهرباني وکړئ يې فعال کړئ.';
-      case 'fa': return 'سرویس موقعیت‌مکانی غیرفعال است. لطفاً آن را فعال کنید.';
-      default:   return 'Location services are disabled. Please enable them.';
+      case 'ps':
+        return 'د لوکیشن خدمت غیرفعال دی. مهرباني وکړئ يې فعال کړئ.';
+      case 'fa':
+        return 'سرویس موقعیت‌مکانی غیرفعال است. لطفاً آن را فعال کنید.';
+      default:
+        return 'Location services are disabled. Please enable them.';
     }
   }
 
   String get _locationPermissionDeniedMsg {
     switch (_lang) {
-      case 'ps': return 'د لوکیشن اجازه ونه درکړل شوه. مهرباني وکړئ ښار پخپله ولیکئ.';
-      case 'fa': return 'اجازه دسترسی به موقعیت داده نشد. لطفاً شهر را دستی وارد کنید.';
-      default:   return 'Location permission denied. Please enter your city manually.';
+      case 'ps':
+        return 'د لوکیشن اجازه ونه درکړل شوه. مهرباني وکړئ ښار پخپله ولیکئ.';
+      case 'fa':
+        return 'اجازه دسترسی به موقعیت داده نشد. لطفاً شهر را دستی وارد کنید.';
+      default:
+        return 'Location permission denied. Please enter your city manually.';
     }
   }
 
   String get _locationLookupFailedMsg {
     switch (_lang) {
-      case 'ps': return 'ستاسو ښار ونه موندل شو. مهرباني وکړئ يې پخپله ولیکئ.';
-      case 'fa': return 'شهر شما پیدا نشد. لطفاً آن را به‌صورت دستی وارد کنید.';
-      default:   return 'Could not detect your city. Please enter it manually.';
+      case 'ps':
+        return 'ستاسو ښار ونه موندل شو. مهرباني وکړئ يې پخپله ولیکئ.';
+      case 'fa':
+        return 'شهر شما پیدا نشد. لطفاً آن را به‌صورت دستی وارد کنید.';
+      default:
+        return 'Could not detect your city. Please enter it manually.';
     }
   }
 
   String get _cityPromptLabel {
     switch (_lang) {
-      case 'ps': return 'د زده کړې کارونو د موندلو لپاره خپل ښار ولیکئ یا خپل موقعیت وکاروئ';
-      case 'fa': return 'برای یافتن کارآموزی، نام شهر خود را بنویسید یا از موقعیت مکانی خود استفاده کنید';
-      default:   return 'Enter your city or use your location to find apprenticeships near you';
+      case 'ps':
+        return 'د زده کړې کارونو د موندلو لپاره خپل ښار ولیکئ یا خپل موقعیت وکاروئ';
+      case 'fa':
+        return 'برای یافتن کارآموزی، نام شهر خود را بنویسید یا از موقعیت مکانی خود استفاده کنید';
+      default:
+        return 'Enter your city or use your location to find apprenticeships near you';
     }
   }
 
   String get _useMyLocationLabel {
     switch (_lang) {
-      case 'ps': return 'زما موقعیت وکاروئ';
-      case 'fa': return 'استفاده از موقعیت من';
-      default:   return 'Use my location';
+      case 'ps':
+        return 'زما موقعیت وکاروئ';
+      case 'fa':
+        return 'استفاده از موقعیت من';
+      default:
+        return 'Use my location';
     }
   }
 
@@ -480,43 +683,44 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         TtsService().stop();
       },
       child: Scaffold(
-      backgroundColor: KColors.pageBase,
-      body: Stack(
-        children: [
-          const KBackgroundGlow(),
-          SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 8),
-                _buildLocationCard(),
-                const SizedBox(height: 10),
-                _buildSearchBar(isRtl),
-                const SizedBox(height: 10),
-                _buildFilterDropdownRow(),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: _jobsFuture == null
-                      ? _buildCityPrompt()
-                      : FutureBuilder<List<_Job>>(
-                          future: _jobsFuture,
-                          builder: (_, snap) {
-                            if (snap.connectionState ==
-                                ConnectionState.waiting) {
-                              return _buildLoading();
-                            }
-                            if (snap.hasError) return _buildError(snap.error);
-                            final jobs = snap.data ?? [];
-                            if (jobs.isEmpty) return _buildEmpty();
-                            return _buildList(jobs, isRtl);
-                          },
-                        ),
-                ),
-              ],
+        backgroundColor: KColors.pageBase,
+        body: Stack(
+          children: [
+            const KBackgroundGlow(),
+            SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 8),
+                  _buildLocationCard(),
+                  const SizedBox(height: 10),
+                  _buildSearchBar(isRtl),
+                  const SizedBox(height: 10),
+                  _buildFilterDropdownRow(),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: _jobsFuture == null
+                        ? _buildCityPrompt()
+                        : FutureBuilder<_JobsLoadResult>(
+                            future: _jobsFuture,
+                            builder: (_, snap) {
+                              if (snap.connectionState ==
+                                  ConnectionState.waiting) {
+                                return _buildLoading();
+                              }
+                              if (snap.hasError) return _buildError(snap.error);
+                              final result =
+                                  snap.data ?? const _JobsLoadResult(<_Job>[]);
+                              if (result.jobs.isEmpty) return _buildEmpty();
+                              return _buildList(result, isRtl);
+                            },
+                          ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -574,7 +778,10 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.9),
+            width: 1.2,
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.18),
@@ -595,7 +802,10 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
                       focusNode: _cityFocus,
                       autofocus: true,
                       style: const TextStyle(
-                          color: _navy, fontSize: 14, fontWeight: FontWeight.w600),
+                        color: _navy,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -618,8 +828,9 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
                         style: TextStyle(
                           color: _city.isEmpty ? _muted : _navy,
                           fontSize: 14,
-                          fontWeight:
-                              _city.isEmpty ? FontWeight.w500 : FontWeight.w600,
+                          fontWeight: _city.isEmpty
+                              ? FontWeight.w500
+                              : FontWeight.w600,
                         ),
                       ),
                     ),
@@ -632,10 +843,15 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: _green),
+                        strokeWidth: 2,
+                        color: _green,
+                      ),
                     )
-                  : const Icon(Icons.my_location_rounded,
-                      color: _green, size: 20),
+                  : const Icon(
+                      Icons.my_location_rounded,
+                      color: _green,
+                      size: 20,
+                    ),
             ),
             const SizedBox(width: 6),
             if (_editingCity)
@@ -663,7 +879,11 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.location_searching_rounded, color: _muted, size: 52),
+              const Icon(
+                Icons.location_searching_rounded,
+                color: _muted,
+                size: 52,
+              ),
               const SizedBox(height: 16),
               Text(
                 _cityPromptLabel,
@@ -680,7 +900,9 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
                 onTap: _locating ? null : _useMyLocation,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: _green,
                     borderRadius: BorderRadius.circular(14),
@@ -700,11 +922,16 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: _navy),
+                            strokeWidth: 2,
+                            color: _navy,
+                          ),
                         )
                       else
-                        const Icon(Icons.my_location_rounded,
-                            color: _navy, size: 18),
+                        const Icon(
+                          Icons.my_location_rounded,
+                          color: _navy,
+                          size: 18,
+                        ),
                       const SizedBox(width: 8),
                       Text(
                         _useMyLocationLabel,
@@ -736,9 +963,15 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.9),
+            width: 1.2,
+          ),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+            ),
           ],
         ),
         child: Row(
@@ -763,16 +996,21 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
             ),
             GestureDetector(
               onTap: _refetch,
-              child: const Icon(Icons.arrow_forward_rounded,
-                  color: _green, size: 20),
+              child: const Icon(
+                Icons.arrow_forward_rounded,
+                color: _green,
+                size: 20,
+              ),
             ),
             if (_lang == 'ps') ...[
               const SizedBox(width: 8),
               GestureDetector(
-                onTap: () =>
-                    TtsService().speak('د زده کړې کار ولټوئ', 'ps'),
-                child: const Icon(Icons.volume_up_rounded,
-                    color: _green, size: 18),
+                onTap: () => TtsService().speak('د زده کړې کار ولټوئ', 'ps'),
+                child: const Icon(
+                  Icons.volume_up_rounded,
+                  color: _green,
+                  size: 18,
+                ),
               ),
             ],
           ],
@@ -799,12 +1037,17 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       child: Row(
         children: [
           Expanded(
-            child: _dropdownPill(label: categoryLabel, onTap: _showCategorySheet),
+            child: _dropdownPill(
+              label: categoryLabel,
+              onTap: _showCategorySheet,
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: _dropdownPill(
-                label: '${_selectedRadius}km', onTap: _showRadiusSheet),
+              label: '${_selectedRadius}km',
+              onTap: _showRadiusSheet,
+            ),
           ),
         ],
       ),
@@ -821,7 +1064,9 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
           color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-              color: Colors.white.withValues(alpha: 0.9), width: 1.2),
+            color: Colors.white.withValues(alpha: 0.9),
+            width: 1.2,
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.06),
@@ -846,8 +1091,11 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
               ),
             ),
             const SizedBox(width: 2),
-            const Icon(Icons.keyboard_arrow_down_rounded,
-                color: _muted, size: 18),
+            const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: _muted,
+              size: 18,
+            ),
           ],
         ),
       ),
@@ -885,9 +1133,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
             ),
             const SizedBox(height: 14),
             Flexible(
-              child: SingleChildScrollView(
-                child: Column(children: options),
-              ),
+              child: SingleChildScrollView(child: Column(children: options)),
             ),
           ],
         ),
@@ -940,39 +1186,43 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
   }
 
   void _showRadiusSheet() {
-    _openFilterSheet(_kRadii.map((r) {
-      final selected = r == _selectedRadius;
-      return _sheetOption(
-        label: '${r}km',
-        selected: selected,
-        onTap: () {
-          Navigator.pop(context);
-          if (!selected) {
-            setState(() => _selectedRadius = r);
-            _refetch();
-          }
-        },
-      );
-    }).toList());
+    _openFilterSheet(
+      _kRadii.map((r) {
+        final selected = r == _selectedRadius;
+        return _sheetOption(
+          label: '${r}km',
+          selected: selected,
+          onTap: () {
+            Navigator.pop(context);
+            if (!selected) {
+              setState(() => _selectedRadius = r);
+              _refetch();
+            }
+          },
+        );
+      }).toList(),
+    );
   }
 
   void _showCategorySheet() {
-    _openFilterSheet(_kCats.map((cat) {
-      final selected = cat.key == _selectedCatKey;
-      return _sheetOption(
-        label: cat.label(_lang),
-        selected: selected,
-        icon: cat.icon,
-        onTap: () {
-          Navigator.pop(context);
-          if (!selected) {
-            _searchCtrl.clear();
-            setState(() => _selectedCatKey = cat.key);
-            _refetch();
-          }
-        },
-      );
-    }).toList());
+    _openFilterSheet(
+      _kCats.map((cat) {
+        final selected = cat.key == _selectedCatKey;
+        return _sheetOption(
+          label: cat.label(_lang),
+          selected: selected,
+          icon: cat.icon,
+          onTap: () {
+            Navigator.pop(context);
+            if (!selected) {
+              _searchCtrl.clear();
+              setState(() => _selectedCatKey = cat.key);
+              _refetch();
+            }
+          },
+        );
+      }).toList(),
+    );
   }
 
   // ── Loading / error / empty ───────────────────────────────────────────────
@@ -1016,21 +1266,31 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
             children: [
               Icon(_errorIcon(kind), color: Colors.redAccent, size: 48),
               const SizedBox(height: 16),
-              Text(_errorMessage(kind),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: _navy, fontSize: 14, height: 1.5)),
+              Text(
+                _errorMessage(kind),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: _navy, fontSize: 14, height: 1.5),
+              ),
               const SizedBox(height: 24),
               GestureDetector(
                 onTap: _refetch,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: _green,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Text(_retryLbl,
-                      style: const TextStyle(
-                          color: _navy, fontSize: 15, fontWeight: FontWeight.w700)),
+                  child: Text(
+                    _retryLbl,
+                    style: const TextStyle(
+                      color: _navy,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -1052,14 +1312,26 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
             children: [
               const Icon(Icons.search_off_rounded, color: _muted, size: 52),
               const SizedBox(height: 16),
-              Text(_emptyLbl,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: _navy, fontSize: 14, fontWeight: FontWeight.w600, height: 1.5)),
+              Text(
+                _emptyLbl,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: _navy,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  height: 1.5,
+                ),
+              ),
               const SizedBox(height: 8),
-              Text(_emptySuggestionLbl,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: _muted, fontSize: 12, height: 1.4)),
+              Text(
+                _emptySuggestionLbl,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: _muted,
+                  fontSize: 12,
+                  height: 1.4,
+                ),
+              ),
             ],
           ),
         ),
@@ -1069,15 +1341,84 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
 
   // ── Job list ──────────────────────────────────────────────────────────────
 
-  Widget _buildList(List<_Job> jobs, bool isRtl) {
+  Widget _buildList(_JobsLoadResult result, bool isRtl) {
+    final jobs = result.jobs;
+    final hasBanner = result.cachedAt != null;
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-      itemCount: jobs.length,
-      itemBuilder: (_, i) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: _buildCard(jobs[i], isRtl),
-      ),
+      itemCount: jobs.length + (hasBanner ? 2 : 1),
+      itemBuilder: (_, i) {
+        var idx = i;
+        if (hasBanner) {
+          if (idx == 0) {
+            final time = JobsStrings.cacheTime(result.cachedAt!);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFF2C078)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.cloud_off_rounded,
+                      size: 18,
+                      color: Color(0xFFB26A00),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        JobsStrings.offlineBanner(_lang, time),
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          color: Color(0xFF7A4A00),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          idx--;
+        }
+        if (idx == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    JobsStrings.resultsCount(_lang, jobs.length),
+                    style: const TextStyle(
+                      color: _muted,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: _saveCurrentSearch,
+                  icon: const Icon(Icons.bookmark_add_outlined, size: 18),
+                  label: Text(JobsStrings.saveSearch(_lang)),
+                ),
+              ],
+            ),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _buildCard(jobs[idx - 1], isRtl),
+        );
+      },
     );
   }
 
@@ -1087,60 +1428,97 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       padding: const EdgeInsets.all(14),
       onTap: () => _openJob(job),
       child: Row(
-          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: KColors.mint,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _green.withValues(alpha: 0.3), width: 1),
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: KColors.mint,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _green.withValues(alpha: 0.3),
+                width: 1,
               ),
-              child: const Icon(Icons.school_rounded, color: _green, size: 22),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                    isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  Text(job.company,
-                      style: const TextStyle(
-                          color: _navy, fontSize: 15, fontWeight: FontWeight.w700),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 2),
-                  Text(job.title,
-                      style: const TextStyle(color: _muted, fontSize: 13, height: 1.3),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
-                  Row(
-                    textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-                    children: [
-                      const Icon(Icons.location_on_rounded, color: _muted, size: 12),
-                      const SizedBox(width: 3),
-                      Expanded(
-                        child: Text(job.locationDisplay,
-                            style: const TextStyle(color: _muted, fontSize: 12),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                      ),
-                    ],
+            child: const Icon(Icons.school_rounded, color: _green, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: isRtl
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: [
+                Text(
+                  job.company,
+                  style: const TextStyle(
+                    color: _navy,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                   ),
-                ],
-              ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  job.title,
+                  style: const TextStyle(
+                    color: _muted,
+                    fontSize: 13,
+                    height: 1.3,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  children: [
+                    const Icon(
+                      Icons.location_on_rounded,
+                      color: _muted,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        job.locationDisplay,
+                        style: const TextStyle(color: _muted, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            Text(_applyLbl,
-                style: const TextStyle(
-                    color: _green, fontSize: 12, fontWeight: FontWeight.w700)),
-            const SizedBox(width: 4),
-            const Icon(Icons.arrow_forward_ios_rounded, color: _green, size: 14),
-          ],
-        ),
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            icon: Icon(
+              _savedRefnrs.contains(job.refnr)
+                  ? Icons.bookmark_rounded
+                  : Icons.bookmark_border_rounded,
+              color: _savedRefnrs.contains(job.refnr) ? _green : _muted,
+              size: 22,
+            ),
+            tooltip: JobsStrings.saveJob(_lang),
+            onPressed: () => _toggleSaveJob(job),
+          ),
+          Text(
+            _applyLbl,
+            style: const TextStyle(
+              color: _green,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.arrow_forward_ios_rounded, color: _green, size: 14),
+        ],
+      ),
     );
   }
 }

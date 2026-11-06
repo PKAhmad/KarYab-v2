@@ -63,6 +63,8 @@ class JobsStrings {
       'Ergebnisse zeigen', 'پایلې وګورئ', 'نمایش نتایج');
   static String results(String lang) =>
       _s(lang, 'Results', 'Ergebnisse', 'پایلې', 'نتایج');
+  static String resultsCount(String lang, int n) => _s(lang, '$n results',
+      '$n Ergebnisse', '$n پایلې', '$n نتیجه');
   static String apply(String lang) =>
       _s(lang, 'Apply', 'Bewerben', 'غوښتنلیک', 'ثبت نام');
   static String delete(String lang) =>
@@ -179,6 +181,13 @@ class JobsStrings {
   static String yes(String lang) => _s(lang, 'Yes', 'Ja', 'هو', 'بله');
   static String notNow(String lang) =>
       _s(lang, 'Not now', 'Nicht jetzt', 'اوس نه', 'حالا نه');
+
+  /// "dd.MM.yyyy HH:mm" for the offline banner (kept dependency-free
+  /// on purpose: package:intl is only a transitive dependency here).
+  static String cacheTime(DateTime t) {
+    String two(int v) => v.toString().padLeft(2, '0');
+    return '${two(t.day)}.${two(t.month)}.${t.year} ${two(t.hour)}:${two(t.minute)}';
+  }
 
   // Offline banner
   static String offlineBanner(String lang, String time) => _s(
