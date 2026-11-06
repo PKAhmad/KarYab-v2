@@ -171,6 +171,15 @@ class JobsStrings {
   static String noneOption(String lang) =>
       _s(lang, 'None', 'Keine', 'هیڅ یو نه', 'هیچکدام');
 
+  static String searchError(String lang) => _s(
+      lang,
+      'The search could not be loaded. Check your connection and try again.',
+      'Die Suche konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.',
+      'لټون پورته نه شو. خپل اتصال وګورئ او بیا هڅه وکړئ.',
+      'جستجو بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.');
+  static String retry(String lang) => _s(lang, 'Try again',
+      'Erneut versuchen', 'بیا هڅه وکړئ', 'دوباره تلاش کنید');
+
   // Letter editor hook (Phase 4 -> tracker)
   static String letterAppliedBody(String lang) => _s(
       lang,

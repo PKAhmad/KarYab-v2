@@ -20,6 +20,7 @@ import '../widgets/cv_upload_info_sheet.dart';
 import '../widgets/home_dashboard.dart';
 import '../services/account_strings.dart';
 import '../services/jobs_strings.dart';
+import '../widgets/feedback_sheet.dart';
 import 'account_screen.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
@@ -66,6 +67,10 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   bool    _dashHasData = false;
   int     _dashProfilePercent = 0;
   String? _dashContinueName;
+  // Phase 7 dashboard summary (real JobsRepository counts).
+  int?    _dashSavedJobsCount;
+  int?    _dashApplicationsCount;
+  int?    _dashAppliedCount;
   int?    _dashContinuePercent;
 
   void _onSoundChange() {
@@ -202,6 +207,21 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
       } catch (_) {
         // Dashboard continue card is optional; never block home loading.
       }
+      int? dashSavedJobs;
+      int? dashApplications;
+      int? dashApplied;
+      try {
+        final jobsRepo = KaryabData.jobs;
+        if (jobsRepo != null) {
+          dashSavedJobs = (await jobsRepo.listSavedJobs()).length;
+          final apps = await jobsRepo.listApplications();
+          dashApplications = apps.length;
+          dashApplied =
+              apps.where((a) => a.status == 'applied').length;
+        }
+      } catch (_) {
+        // Summary counts are optional; never block home loading.
+      }
       final hasPhoto = photo.isNotEmpty && await File(photo).exists();
       final voiceMode = prefs.getBool('voice_mode') ?? false;
       final savedLang = prefs.getString('app_language');
@@ -220,6 +240,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           _dashProfilePercent = dashPercent;
           _dashContinueName = dashContinueName;
           _dashContinuePercent = dashContinuePercent;
+          _dashSavedJobsCount = dashSavedJobs;
+          _dashApplicationsCount = dashApplications;
+          _dashAppliedCount = dashApplied;
           if (savedLang != null) _lang = savedLang;
           _isLoading     = false;
         });
@@ -523,6 +546,22 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     );
   }
 
+  void _openSavedJobs() {
+    Navigator.pushNamed(
+      context,
+      '/saved-jobs',
+      arguments: {'language': _lang, 'voiceMode': _voiceMode},
+    );
+  }
+
+  void _openTracker() {
+    Navigator.pushNamed(
+      context,
+      '/tracker',
+      arguments: {'language': _lang, 'voiceMode': _voiceMode},
+    );
+  }
+
   void _openMinijobs() {
     Navigator.pushNamed(
       context,
@@ -655,6 +694,10 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                   '/tracker',
                   arguments: {'language': _lang, 'voiceMode': _voiceMode},
                 );
+              }),
+              entry(Icons.feedback_rounded, JobsStrings.sendFeedback(_lang),
+                  () {
+                showFeedbackSheet(context, language: _lang);
               }),
               entry(Icons.mail_rounded, _myLettersLabel, () {
                 Navigator.push(
@@ -818,6 +861,11 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                     ? _openMyCvs
                                     : null,
                                 onMinijobs: _openMinijobs,
+                                savedJobsCount: _dashSavedJobsCount,
+                                onSavedJobs: _openSavedJobs,
+                                applicationsCount: _dashApplicationsCount,
+                                appliedCount: _dashAppliedCount,
+                                onTracker: _openTracker,
                               ),
                               const SizedBox(height: 14),
                             ],

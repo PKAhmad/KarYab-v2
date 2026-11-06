@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../services/jobs_strings.dart';
 import '../ui/karyab_ui.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -148,6 +149,7 @@ String homeTipFor(String lang, DateTime day) {
     default:
       return tip.en;
   }
+
 }
 
 class _RingPainter extends CustomPainter {
@@ -195,6 +197,14 @@ class HomeDashboard extends StatelessWidget {
   final VoidCallback onMinijobs;
   final DateTime? day;
 
+  // Phase 7: real saved-jobs / tracker summary counts. All optional;
+  // the summary row renders only for a count whose tap target exists.
+  final int? savedJobsCount;
+  final VoidCallback? onSavedJobs;
+  final int? applicationsCount;
+  final int? appliedCount;
+  final VoidCallback? onTracker;
+
   const HomeDashboard({
     super.key,
     required this.language,
@@ -204,6 +214,11 @@ class HomeDashboard extends StatelessWidget {
     this.continuePercent,
     this.onContinue,
     this.day,
+    this.savedJobsCount,
+    this.onSavedJobs,
+    this.applicationsCount,
+    this.appliedCount,
+    this.onTracker,
   });
 
   bool get _isRtl => language == 'ps' || language == 'fa';
@@ -364,6 +379,43 @@ class HomeDashboard extends StatelessWidget {
                     ],
                   ),
                 ),
+                // Phase 7 summary row (real saved jobs + tracker data)
+                if ((savedJobsCount != null && onSavedJobs != null) ||
+                    (applicationsCount != null && onTracker != null)) ...[
+                  const SizedBox(height: 14),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (savedJobsCount != null && onSavedJobs != null)
+                        Expanded(
+                          child: _summaryPanel(
+                            icon: Icons.bookmark_rounded,
+                            count: savedJobsCount!,
+                            label: JobsStrings.savedJobs(language),
+                            onTap: onSavedJobs!,
+                          ),
+                        ),
+                      if (savedJobsCount != null &&
+                          onSavedJobs != null &&
+                          applicationsCount != null &&
+                          onTracker != null)
+                        const SizedBox(width: 10),
+                      if (applicationsCount != null && onTracker != null)
+                        Expanded(
+                          child: _summaryPanel(
+                            icon: Icons.fact_check_rounded,
+                            count: applicationsCount!,
+                            label: JobsStrings.myApplications(language),
+                            sub: appliedCount == null
+                                ? null
+                                : '$appliedCount '
+                                    '${JobsStrings.statusName(language, 'applied')}',
+                            onTap: onTracker!,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 14),
                 // Daily tip
                 Row(
@@ -406,4 +458,51 @@ class HomeDashboard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _summaryPanel({
+    required IconData icon,
+    required int count,
+    required String label,
+    String? sub,
+    required VoidCallback onTap,
+  }) {
+    return KGlassPanel(
+      level: KGlassLevel.l1,
+      borderRadius: 20,
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: KColors.green, size: 19),
+              const SizedBox(width: 8),
+              Text(
+                '$count',
+                style: _style(17, FontWeight.w900, Colors.white),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: _style(12, FontWeight.w700, Colors.white),
+          ),
+          if (sub != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              sub,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: _style(11, FontWeight.w600, KLiquid.textOnDarkSoft),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
+
