@@ -16,6 +16,8 @@ import 'screens/choose_cv_type_screen.dart';
 import 'screens/questionnaire_screen.dart';
 import 'screens/job_finder_screen.dart';
 import 'screens/job_apply_screen.dart';
+import 'screens/saved_jobs_screen.dart';
+import 'screens/tracker_screen.dart';
 import 'screens/cv_preview_screen.dart';
 import 'screens/ausbildung_screen.dart';
 import 'screens/deutsch_courses_screen.dart';
@@ -208,6 +210,26 @@ class KarYabApp extends StatelessWidget {
             }
             final lang = args as String? ?? 'en';
             return fade(AusbildungScreen(language: lang));
+          }
+          case '/saved-jobs': {
+            final args = settings.arguments;
+            if (args is Map<String, dynamic>) {
+              final lang      = args['language']  as String? ?? 'en';
+              final voiceMode = args['voiceMode'] as bool?   ?? false;
+              return fade(SavedJobsScreen(language: lang, voiceMode: voiceMode));
+            }
+            final lang = args as String? ?? 'en';
+            return fade(SavedJobsScreen(language: lang));
+          }
+          case '/tracker': {
+            final args = settings.arguments;
+            if (args is Map<String, dynamic>) {
+              final lang      = args['language']  as String? ?? 'en';
+              final voiceMode = args['voiceMode'] as bool?   ?? false;
+              return fade(TrackerScreen(language: lang, voiceMode: voiceMode));
+            }
+            final lang = args as String? ?? 'en';
+            return fade(TrackerScreen(language: lang));
           }
           case '/deutsch-courses': {
             final args = settings.arguments;

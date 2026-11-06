@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../models/user_profile.dart';
 import '../services/analytics_service.dart';
+import '../services/jobs_strings.dart';
 import '../services/tts_service.dart';
 import '../utils/navigation_helpers.dart';
 import 'letter_editor_screen.dart';
@@ -90,6 +91,10 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   String _companyAddress = '';
 
+  // Phase 7: bookmark + tracker state for this posting.
+  bool _jobSaved = false;
+  bool _jobTracked = false;
+
   void _onSoundChange() {
     if (mounted) setState(() {});
   }
@@ -101,6 +106,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
     TtsService().addListener(_onSoundChange);
     _language = widget.language;
     _loadUserData();
+    _loadJobTrackingState();
 
     _highlightController = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -978,6 +984,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildJobInfoCard(),
+                            const SizedBox(height: 12),
+                            _buildTrackingRow(),
                             const SizedBox(height: 20),
                             _buildOptionsSection(context),
                             if (widget.voiceMode) ...[
@@ -997,6 +1005,109 @@ class _JobApplyScreenState extends State<JobApplyScreen>
           ),
         ),
       ),
+    );
+  }
+
+  // ── Phase 7: save + track this posting ─────────────────────────────
+
+  Future<void> _loadJobTrackingState() async {
+    final repo = KaryabData.jobs;
+    if (repo == null || widget.refnr.isEmpty) return;
+    final saved = await repo.isJobSaved(widget.refnr);
+    final tracked = await repo.applicationByRefnr(widget.refnr) != null;
+    if (mounted) {
+      setState(() {
+        _jobSaved = saved;
+        _jobTracked = tracked;
+      });
+    }
+  }
+
+  Future<void> _toggleSaveJob() async {
+    final repo = KaryabData.jobs;
+    if (repo == null || widget.refnr.isEmpty) return;
+    final wasSaved = _jobSaved;
+    setState(() => _jobSaved = !wasSaved);
+    if (wasSaved) {
+      await repo.unsaveJob(widget.refnr);
+    } else {
+      await repo.saveJob(
+        refnr: widget.refnr,
+        title: widget.jobTitle,
+        company: widget.companyName,
+        location: widget.jobLocation,
+        source: widget.isAusbildung ? 'ausbildung' : 'jobs',
+        payload: <String, dynamic>{
+          'stellenangebotsTitel': widget.jobTitle,
+          'firma': widget.companyName,
+          'referenznummer': widget.refnr,
+        },
+      );
+    }
+  }
+
+  Future<void> _trackApplication() async {
+    final repo = KaryabData.jobs;
+    if (repo == null) return;
+    if (widget.refnr.isNotEmpty) {
+      final existing = await repo.applicationByRefnr(widget.refnr);
+      if (existing != null) {
+        if (mounted) {
+          setState(() => _jobTracked = true);
+          kSnack(context, JobsStrings.alreadyTracked(_language));
+        }
+        return;
+      }
+    }
+    await repo.createApplication(
+      refnr: widget.refnr.isEmpty ? null : widget.refnr,
+      company: widget.companyName,
+      jobTitle: widget.jobTitle,
+    );
+    if (!mounted) return;
+    setState(() => _jobTracked = true);
+    kSnack(context, JobsStrings.addedToTracker(_language));
+  }
+
+  Widget _buildTrackingRow() {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: _toggleSaveJob,
+            icon: Icon(
+              _jobSaved
+                  ? Icons.bookmark_rounded
+                  : Icons.bookmark_border_rounded,
+              size: 19,
+            ),
+            label: Text(
+              _jobSaved
+                  ? JobsStrings.savedLabel(_language)
+                  : JobsStrings.saveJob(_language),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: _jobTracked ? null : _trackApplication,
+            icon: Icon(
+              _jobTracked
+                  ? Icons.fact_check_rounded
+                  : Icons.fact_check_outlined,
+              size: 19,
+            ),
+            label: Text(
+              JobsStrings.trackApplication(_language),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

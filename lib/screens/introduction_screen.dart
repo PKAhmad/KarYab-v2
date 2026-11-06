@@ -19,6 +19,7 @@ import '../utils/navigation_helpers.dart';
 import '../widgets/cv_upload_info_sheet.dart';
 import '../widgets/home_dashboard.dart';
 import '../services/account_strings.dart';
+import '../services/jobs_strings.dart';
 import 'account_screen.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
@@ -637,6 +638,22 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                     builder: (_) => AccountScreen(
                         language: _lang, voiceMode: _voiceMode),
                   ),
+                );
+              }),
+              entry(Icons.bookmark_rounded, JobsStrings.savedJobs(_lang),
+                  () {
+                Navigator.pushNamed(
+                  context,
+                  '/saved-jobs',
+                  arguments: {'language': _lang, 'voiceMode': _voiceMode},
+                );
+              }),
+              entry(Icons.fact_check_rounded,
+                  JobsStrings.myApplications(_lang), () {
+                Navigator.pushNamed(
+                  context,
+                  '/tracker',
+                  arguments: {'language': _lang, 'voiceMode': _voiceMode},
                 );
               }),
               entry(Icons.mail_rounded, _myLettersLabel, () {

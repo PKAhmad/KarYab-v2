@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import '../models/user_profile.dart';
+import '../services/job_search_service.dart';
 import 'app_database.dart';
 import 'profile_store.dart';
 
@@ -404,6 +405,9 @@ class SavedSearchRecord {
     this.lastRunAt,
     this.lastTopRefnr,
   });
+
+  /// The stored params as a runnable query.
+  JobQuery get query => JobQuery.fromJson(params);
 }
 
 /// One tracked application (see [Applications]).

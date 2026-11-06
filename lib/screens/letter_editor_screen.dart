@@ -10,6 +10,7 @@ import '../models/user_profile.dart';
 import '../services/ats_checker.dart';
 import '../services/letter_model.dart';
 import '../services/letter_pdf.dart';
+import '../services/jobs_strings.dart';
 import '../services/letter_phrase_bank.dart';
 import '../services/tts_service.dart';
 import '../ui/karyab_ui.dart';
@@ -268,6 +269,7 @@ class _LetterEditorScreenState extends State<LetterEditorScreen> {
 
   Future<void> _createLetter() async {
     if (_busy) return;
+    final wasNew = _id == null;
     setState(() => _busy = true);
     try {
       final ctx = _contextFor(
@@ -317,8 +319,55 @@ class _LetterEditorScreenState extends State<LetterEditorScreen> {
         _busy = false;
       });
       _refreshPageCount();
+      // Phase 7 hook: a letter created for a posting (it carries the BA
+      // reference number) offers to mark the matching application as
+      // Applied and link this letter to it.
+      if (wasNew) await _offerMarkApplied(id, data);
     } catch (_) {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _offerMarkApplied(int? letterId, LetterData data) async {
+    final refnr = _refCtrl.text.trim();
+    final jobs = KaryabData.jobs;
+    if (jobs == null || refnr.isEmpty || !mounted) return;
+    final yes = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(JobsStrings.myApplications(_lang)),
+        content: Text(JobsStrings.letterAppliedBody(_lang)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(JobsStrings.notNow(_lang)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(JobsStrings.yes(_lang)),
+          ),
+        ],
+      ),
+    );
+    if (yes != true) return;
+    var app = await jobs.applicationByRefnr(refnr);
+    if (app == null) {
+      await jobs.createApplication(
+        refnr: refnr,
+        company: data.companyName,
+        jobTitle: data.jobTitle,
+        status: ApplicationStatus.applied,
+      );
+      app = await jobs.applicationByRefnr(refnr);
+    } else if (app.status == ApplicationStatus.saved) {
+      await jobs.updateApplicationStatus(app.id, ApplicationStatus.applied);
+    }
+    if (letterId != null && app != null) {
+      await jobs.linkApplicationDocuments(
+        app.id,
+        letterDocumentId: letterId,
+        setLetter: true,
+      );
     }
   }
 
