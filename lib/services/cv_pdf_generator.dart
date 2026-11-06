@@ -150,9 +150,15 @@ String _resolveAnschreibenPosition(UserProfile profile, _AusbildungData ausbildu
       : _targetPosition(profile, ausbildung, isAusbildungCv);
 }
 
+// Deterministic letter picks (Phase 4): a fixed seed for every letter
+// compose in this file. User-visible randomness is removed - reopening or
+// regenerating a letter through the legacy paths now yields the identical
+// text every time, matching the v2 freeze rule.
+Random _letterRng() => Random(20261106);
+
 AnschreibenTexts _composeAnschreibenTexts(UserProfile profile,
     _AusbildungData ausbildung, String position, bool isAusbildungCv) {
-  final rng = Random();
+  final rng = _letterRng();
   final body = _anschreibenBody(profile, ausbildung, position, isAusbildungCv, rng);
   return AnschreibenTexts(
     subject: _anschreibenSubject(position, isAusbildungCv, rng),
@@ -2502,7 +2508,8 @@ Future<Uint8List> _buildWeissBraunSchlicht(
 //
 // Each section (Betreff, opening, skills, closing) has exactly 2 fixed
 // German phrasing variants; the caller passes in a single shared `Random`
-// (one per document/builder call, NOT one per call site) so that when a
+// (one per document/builder call, NOT one per call site, and always the
+// fixed-seed _letterRng since Phase 4) so that when a
 // template renders the subject line twice (e.g. braunIconSet's sidebar +
 // Betreff), both call sites must reuse the SAME already-picked string
 // instead of re-rolling - see each _buildAnschreibenXxx() below, which
@@ -2646,7 +2653,7 @@ Future<Uint8List> _buildAnschreibenBlauMinimal(UserProfile p, _AusbildungData au
   final fonts = await _loadFonts();
   final blue = PdfColor.fromHex('#1A4A8A');
   final doc = pw.Document(title: 'Anschreiben – ${p.fullName}', author: 'KarYab');
-  final rng = Random();
+  final rng = _letterRng();
   final subject = texts?.subject ?? _anschreibenSubject(position, isAusbildungCv, rng);
   final body = texts?.body ?? _anschreibenBody(p, ausbildung, position, isAusbildungCv, rng);
   final companyLine = companyName.isNotEmpty ? companyName : '[Unternehmen]';
@@ -2725,7 +2732,7 @@ Future<Uint8List> _buildAnschreibenBeigeEleganz(UserProfile p, _AusbildungData a
   final fonts = await _loadFonts();
   final beige = PdfColor.fromHex('#F3ECDF');
   final doc = pw.Document(title: 'Anschreiben – ${p.fullName}', author: 'KarYab');
-  final rng = Random();
+  final rng = _letterRng();
   final subject = texts?.subject ?? _anschreibenSubject(position, isAusbildungCv, rng);
   final body = texts?.body ?? _anschreibenBody(p, ausbildung, position, isAusbildungCv, rng);
   final companyLine = companyName.isNotEmpty ? companyName : '[Unternehmen]';
@@ -2838,7 +2845,7 @@ Future<Uint8List> _buildAnschreibenBoldHeadlineGrau(UserProfile p, _AusbildungDa
   final fonts = await _loadFonts();
   const darkGrey = PdfColor.fromInt(0xFF2E2E2E);
   final doc = pw.Document(title: 'Anschreiben – ${p.fullName}', author: 'KarYab');
-  final rng = Random();
+  final rng = _letterRng();
   final subject = texts?.subject ?? _anschreibenSubject(position, isAusbildungCv, rng);
   final body = texts?.body ?? _anschreibenBody(p, ausbildung, position, isAusbildungCv, rng);
   final companyLine = companyName.isNotEmpty ? companyName : '[Unternehmen]';
@@ -2920,7 +2927,7 @@ Future<Uint8List> _buildAnschreibenBraunIconSet(UserProfile p, _AusbildungData a
   final fonts = await _loadFonts();
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
   final doc = pw.Document(title: 'Anschreiben – ${p.fullName}', author: 'KarYab');
-  final rng = Random();
+  final rng = _letterRng();
   final subject = texts?.subject ?? _anschreibenSubject(position, isAusbildungCv, rng);
   final body = texts?.body ?? _anschreibenBody(p, ausbildung, position, isAusbildungCv, rng);
   final companyLine = companyName.isNotEmpty ? companyName : '[Unternehmen]';
@@ -3018,7 +3025,7 @@ Future<Uint8List> _buildAnschreibenGrauSchlicht(UserProfile p, _AusbildungData a
   final fonts = await _loadFonts();
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
   final doc = pw.Document(title: 'Anschreiben – ${p.fullName}', author: 'KarYab');
-  final rng = Random();
+  final rng = _letterRng();
   final subject = texts?.subject ?? _anschreibenSubject(position, isAusbildungCv, rng);
   final body = texts?.body ?? _anschreibenBody(p, ausbildung, position, isAusbildungCv, rng);
   final companyLine = companyName.isNotEmpty ? companyName : '[Unternehmen]';
@@ -3138,7 +3145,7 @@ Future<Uint8List> _buildAnschreibenWeissBraunSchlicht(UserProfile p, _Ausbildung
   const darkText = PdfColor.fromInt(0xFF1A1A1A);
   final panelGrey = PdfColor.fromHex('#EFEFEF');
   final doc = pw.Document(title: 'Anschreiben – ${p.fullName}', author: 'KarYab');
-  final rng = Random();
+  final rng = _letterRng();
   final subject = texts?.subject ?? _anschreibenSubject(position, isAusbildungCv, rng);
   final body = texts?.body ?? _anschreibenBody(p, ausbildung, position, isAusbildungCv, rng);
   final companyLine = companyName.isNotEmpty ? companyName : '[Unternehmen]';
