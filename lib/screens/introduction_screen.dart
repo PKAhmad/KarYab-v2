@@ -728,96 +728,108 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           );
         }
 
+        // Overflow fix (Phase 10): ten entries no longer fit a plain
+        // Column on shorter phones / larger text scales - cap the
+        // height and scroll, same pattern as the template pickers.
         return Container(
           decoration: kSheetDecoration,
-          padding: const EdgeInsets.fromLTRB(8, 12, 8, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const KSheetHandle(),
-              const SizedBox(height: 10),
-              entry(
-                Icons.account_circle_rounded,
-                AccountStrings.account(_lang),
-                () {
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(8, 12, 8, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const KSheetHandle(),
+                const SizedBox(height: 10),
+                entry(
+                  Icons.account_circle_rounded,
+                  AccountStrings.account(_lang),
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AccountScreen(
+                          language: _lang,
+                          voiceMode: _voiceMode,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                entry(Icons.bookmark_rounded, JobsStrings.savedJobs(_lang), () {
+                  Navigator.pushNamed(
+                    context,
+                    '/saved-jobs',
+                    arguments: {'language': _lang, 'voiceMode': _voiceMode},
+                  );
+                }),
+                entry(
+                  Icons.fact_check_rounded,
+                  JobsStrings.myApplications(_lang),
+                  () {
+                    Navigator.pushNamed(
+                      context,
+                      '/tracker',
+                      arguments: {'language': _lang, 'voiceMode': _voiceMode},
+                    );
+                  },
+                ),
+                entry(
+                  Icons.feedback_rounded,
+                  JobsStrings.sendFeedback(_lang),
+                  () {
+                    showFeedbackSheet(context, language: _lang);
+                  },
+                ),
+                entry(
+                  Icons.mark_email_read_outlined,
+                  OfficialLetterStrings.title(_lang),
+                  () {
+                    _openOfficialLetters();
+                  },
+                ),
+                entry(Icons.mail_rounded, _myLettersLabel, () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          AccountScreen(language: _lang, voiceMode: _voiceMode),
+                      builder: (_) => MyLettersScreen(
+                        language: _lang,
+                        voiceMode: _voiceMode,
+                      ),
                     ),
                   );
-                },
-              ),
-              entry(Icons.bookmark_rounded, JobsStrings.savedJobs(_lang), () {
-                Navigator.pushNamed(
-                  context,
-                  '/saved-jobs',
-                  arguments: {'language': _lang, 'voiceMode': _voiceMode},
-                );
-              }),
-              entry(
-                Icons.fact_check_rounded,
-                JobsStrings.myApplications(_lang),
-                () {
+                }),
+                entry(Icons.description_rounded, _viewCvLabel, _openSavedCv),
+                entry(
+                  Icons.add_circle_outline_rounded,
+                  _newCvLabel,
+                  _goToQuestionnaire,
+                ),
+                entry(
+                  Icons.upload_file_rounded,
+                  _uploadDifferentCvLabel,
+                  () => _uploadCv(),
+                ),
+                entry(Icons.translate_rounded, _learnGermanLabel, () {
                   Navigator.pushNamed(
                     context,
-                    '/tracker',
+                    '/deutsch-courses',
                     arguments: {'language': _lang, 'voiceMode': _voiceMode},
                   );
-                },
-              ),
-              entry(
-                Icons.feedback_rounded,
-                JobsStrings.sendFeedback(_lang),
-                () {
-                  showFeedbackSheet(context, language: _lang);
-                },
-              ),
-              entry(
-                Icons.mark_email_read_outlined,
-                OfficialLetterStrings.title(_lang),
-                () {
-                  _openOfficialLetters();
-                },
-              ),
-              entry(Icons.mail_rounded, _myLettersLabel, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        MyLettersScreen(language: _lang, voiceMode: _voiceMode),
+                }),
+                const SizedBox(height: 6),
+                const Text(
+                  'KarYab v1.0',
+                  style: TextStyle(
+                    color: KColors.textSecondary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
                   ),
-                );
-              }),
-              entry(Icons.description_rounded, _viewCvLabel, _openSavedCv),
-              entry(
-                Icons.add_circle_outline_rounded,
-                _newCvLabel,
-                _goToQuestionnaire,
-              ),
-              entry(
-                Icons.upload_file_rounded,
-                _uploadDifferentCvLabel,
-                () => _uploadCv(),
-              ),
-              entry(Icons.translate_rounded, _learnGermanLabel, () {
-                Navigator.pushNamed(
-                  context,
-                  '/deutsch-courses',
-                  arguments: {'language': _lang, 'voiceMode': _voiceMode},
-                );
-              }),
-              const SizedBox(height: 6),
-              const Text(
-                'KarYab v1.0',
-                style: TextStyle(
-                  color: KColors.textSecondary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w400,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

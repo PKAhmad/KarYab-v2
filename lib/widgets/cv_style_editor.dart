@@ -125,11 +125,11 @@ String cvStyleSummary(String lang, CvCustomisation style) {
   final accent = style.accentColorHex == null
       ? cvStyleText(lang, 'templateDefault')
       : kCvAccentPalette
-          .firstWhere(
-            (o) => o.hex == style.accentColorHex,
-            orElse: () => CvAccentOption(style.accentColorHex!, ''),
-          )
-          .labelDe;
+            .firstWhere(
+              (o) => o.hex == style.accentColorHex,
+              orElse: () => CvAccentOption(style.accentColorHex!, ''),
+            )
+            .labelDe;
   final font = cvStyleText(lang, style.fontSize);
   final spacing = cvStyleText(lang, style.spacing);
   return '$accent · $font · $spacing';
@@ -181,102 +181,119 @@ class _CvStyleSheetState extends State<_CvStyleSheet> {
 
   @override
   Widget build(BuildContext context) {
+    // Overflow fix (Phase 10): this content used to be a plain,
+    // non-scrolling Column. Its natural height (swatch wrap + two
+    // segmented rows + photo row + CTA) exceeds the sheet area on
+    // shorter phones and at larger accessibility text scales, which
+    // threw a RenderFlex overflow on the View/Download My CV screens.
+    // Same remedy as the template pickers: cap the height and scroll.
+    final maxHeight = MediaQuery.of(context).size.height * 0.85;
     return Directionality(
       textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
       child: Container(
+        constraints: BoxConstraints(maxHeight: maxHeight),
         decoration: const BoxDecoration(
           color: Color(0xFFF7FAFF),
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Center(child: KSheetHandle()),
-            const SizedBox(height: 14),
-            Text(
-              t('design'),
-              style: const TextStyle(
-                color: KColors.navy,
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _label(t('accent')),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _swatch(
-                  color: null,
-                  selected: _style.accentColorHex == null,
-                  label: t('templateDefault'),
-                  onTap: () =>
-                      _update(_style.copyWith(clearAccent: true)),
-                ),
-                for (final option in kCvAccentPalette)
-                  _swatch(
-                    color: Color(
-                        int.parse(option.hex.replaceFirst('#', '0xFF'))),
-                    selected: _style.accentColorHex == option.hex,
-                    label: option.labelDe,
-                    onTap: () =>
-                        _update(_style.copyWith(accentColorHex: option.hex)),
+                const Center(child: KSheetHandle()),
+                const SizedBox(height: 14),
+                Text(
+                  t('design'),
+                  style: const TextStyle(
+                    color: KColors.navy,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
                   ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            _label(t('fontSize')),
-            const SizedBox(height: 8),
-            _segmented(
-              values: const ['compact', 'normal', 'large'],
-              current: _style.fontSize,
-              onPick: (v) => _update(_style.copyWith(fontSize: v)),
-            ),
-            const SizedBox(height: 18),
-            _label(t('spacing')),
-            const SizedBox(height: 8),
-            _segmented(
-              values: const ['compact', 'normal'],
-              current: _style.spacing,
-              onPick: (v) => _update(_style.copyWith(spacing: v)),
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                const Icon(Icons.photo_camera_rounded,
-                    color: KColors.navy, size: 20),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    t('photo'),
-                    style: const TextStyle(
-                      color: KColors.navy,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                ),
+                const SizedBox(height: 16),
+                _label(t('accent')),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    _swatch(
+                      color: null,
+                      selected: _style.accentColorHex == null,
+                      label: t('templateDefault'),
+                      onTap: () => _update(_style.copyWith(clearAccent: true)),
                     ),
-                  ),
+                    for (final option in kCvAccentPalette)
+                      _swatch(
+                        color: Color(
+                          int.parse(option.hex.replaceFirst('#', '0xFF')),
+                        ),
+                        selected: _style.accentColorHex == option.hex,
+                        label: option.labelDe,
+                        onTap: () => _update(
+                          _style.copyWith(accentColorHex: option.hex),
+                        ),
+                      ),
+                  ],
                 ),
-                Switch(
-                  value: _style.showPhoto,
-                  activeTrackColor: KColors.green.withValues(alpha: 0.45),
-                  activeThumbColor: KColors.greenDark,
-                  onChanged: (v) => _update(_style.copyWith(showPhoto: v)),
+                const SizedBox(height: 18),
+                _label(t('fontSize')),
+                const SizedBox(height: 8),
+                _segmented(
+                  values: const ['compact', 'normal', 'large'],
+                  current: _style.fontSize,
+                  onPick: (v) => _update(_style.copyWith(fontSize: v)),
+                ),
+                const SizedBox(height: 18),
+                _label(t('spacing')),
+                const SizedBox(height: 8),
+                _segmented(
+                  values: const ['compact', 'normal'],
+                  current: _style.spacing,
+                  onPick: (v) => _update(_style.copyWith(spacing: v)),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.photo_camera_rounded,
+                      color: KColors.navy,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        t('photo'),
+                        style: const TextStyle(
+                          color: KColors.navy,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    Switch(
+                      value: _style.showPhoto,
+                      activeTrackColor: KColors.green.withValues(alpha: 0.45),
+                      activeThumbColor: KColors.greenDark,
+                      onChanged: (v) => _update(_style.copyWith(showPhoto: v)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                KPrimaryCta(
+                  icon: Icons.check_rounded,
+                  label: t('done'),
+                  isRtl: _isRtl,
+                  isSelected: false,
+                  onTap: () => Navigator.pop(context),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
-            KPrimaryCta(
-              icon: Icons.check_rounded,
-              label: t('done'),
-              isRtl: _isRtl,
-              isSelected: false,
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -316,12 +333,18 @@ class _CvStyleSheetState extends State<_CvStyleSheet> {
               ),
             ),
             child: color == null
-                ? const Icon(Icons.auto_awesome_rounded,
-                    color: KColors.textSecondary, size: 18)
+                ? const Icon(
+                    Icons.auto_awesome_rounded,
+                    color: KColors.textSecondary,
+                    size: 18,
+                  )
                 : (selected
-                    ? const Icon(Icons.check_rounded,
-                        color: Colors.white, size: 18)
-                    : null),
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        )
+                      : null),
           ),
           const SizedBox(height: 4),
           SizedBox(
@@ -373,7 +396,9 @@ class _CvStyleSheetState extends State<_CvStyleSheet> {
                   style: TextStyle(
                     color: KColors.navy,
                     fontSize: 13,
-                    fontWeight: current == v ? FontWeight.w800 : FontWeight.w600,
+                    fontWeight: current == v
+                        ? FontWeight.w800
+                        : FontWeight.w600,
                   ),
                 ),
               ),
@@ -405,8 +430,11 @@ class CvStyleRow extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, right: 4),
       child: Row(
         children: [
-          const Icon(Icons.palette_rounded,
-              color: KColors.textSecondary, size: 15),
+          const Icon(
+            Icons.palette_rounded,
+            color: KColors.textSecondary,
+            size: 15,
+          ),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
