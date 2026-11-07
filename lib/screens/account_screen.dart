@@ -82,7 +82,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   void _snack(String text) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+    kSnack(context, text);
   }
 
   String _dateText(DateTime at) {
@@ -310,47 +310,50 @@ class _AccountScreenState extends State<AccountScreen> {
     return Directionality(
       textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: KLiquid.navyTop,
-        body: LiquidBackground(
-          child: SafeArea(
-            child: StreamBuilder<KaryabUser?>(
-              stream: _auth.authStateChanges,
-              initialData: _auth.currentUser,
-              builder: (context, snapshot) {
-                final user = snapshot.data;
-                if (user != null) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _maybeOfferRestore(user);
-                  });
-                }
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _header(lang),
-                      const SizedBox(height: 18),
-                      if (user == null)
-                        _signedOut(lang)
-                      else
-                        _signedIn(lang, user),
-                      const SizedBox(height: 18),
-                      Text(
-                        AccountStrings.privacyNote(lang),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: karyabFontFamily(lang),
-                          color: KLiquid.textOnDarkSoft,
-                          fontSize: 13,
-                          height: 1.4,
+        backgroundColor: KColors.pageBase,
+        body: Stack(
+          children: [
+            const KBackgroundGlow(),
+            SafeArea(
+              child: StreamBuilder<KaryabUser?>(
+                stream: _auth.authStateChanges,
+                initialData: _auth.currentUser,
+                builder: (context, snapshot) {
+                  final user = snapshot.data;
+                  if (user != null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _maybeOfferRestore(user);
+                    });
+                  }
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _header(lang),
+                        const SizedBox(height: 18),
+                        if (user == null)
+                          _signedOut(lang)
+                        else
+                          _signedIn(lang, user),
+                        const SizedBox(height: 18),
+                        Text(
+                          AccountStrings.privacyNote(lang),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: karyabFontFamily(lang),
+                            color: KColors.textSecondary,
+                            fontSize: 13,
+                            height: 1.4,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -359,40 +362,37 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _header(String lang) {
     return Row(
       children: [
-        IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(
-            _isRtl
-                ? Icons.arrow_forward_ios_rounded
-                : Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
-            size: 20,
+        KNavButton(
+          icon: Icons.arrow_back_ios_new_rounded,
+          onTap: () => Navigator.pop(context),
+        ),
+        Expanded(
+          child: Text(
+            AccountStrings.account(lang),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: karyabFontFamily(lang),
+              color: KColors.navy,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
-        const SizedBox(width: 4),
-        Text(
-          AccountStrings.account(lang),
-          style: TextStyle(
-            fontFamily: karyabFontFamily(lang),
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        const SizedBox(width: 44),
       ],
     );
   }
 
   Widget _signedOut(String lang) {
-    return KGlassPanel(
-      level: KGlassLevel.l2,
+    return KGlassSurface(
+      borderRadius: 20,
       padding: const EdgeInsets.fromLTRB(18, 20, 18, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Icon(
             Icons.account_circle_rounded,
-            color: Colors.white,
+            color: KColors.navy,
             size: 52,
           ),
           const SizedBox(height: 12),
@@ -401,7 +401,7 @@ class _AccountScreenState extends State<AccountScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: karyabFontFamily(lang),
-              color: Colors.white,
+              color: KColors.navy,
               fontSize: 16,
               fontWeight: FontWeight.w700,
               height: 1.4,
@@ -413,44 +413,29 @@ class _AccountScreenState extends State<AccountScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: karyabFontFamily(lang),
-              color: KLiquid.textOnDarkSoft,
+              color: KColors.textSecondary,
               fontSize: 14,
               height: 1.4,
             ),
           ),
           const SizedBox(height: 18),
-          SizedBox(
-            height: 52,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LoginScreen(
-                      language: lang,
-                      voiceMode: widget.voiceMode,
-                      authService: widget.authService,
-                    ),
+          KPrimaryCta(
+            icon: Icons.login_rounded,
+            label: AccountStrings.signIn(lang),
+            isRtl: _isRtl,
+            isSelected: false,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => LoginScreen(
+                    language: lang,
+                    voiceMode: widget.voiceMode,
+                    authService: widget.authService,
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: KColors.green,
-                foregroundColor: const Color(0xFF06230A),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
                 ),
-                elevation: 0,
-              ),
-              child: Text(
-                AccountStrings.signIn(lang),
-                style: TextStyle(
-                  fontFamily: karyabFontFamily(lang),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
@@ -460,11 +445,11 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _avatar(KaryabUser user) {
     final initials = CircleAvatar(
       radius: 30,
-      backgroundColor: KColors.green.withValues(alpha: 0.22),
+      backgroundColor: KColors.mint,
       child: Text(
         user.initials,
         style: const TextStyle(
-          color: Colors.white,
+          color: KColors.greenDark,
           fontSize: 22,
           fontWeight: FontWeight.w800,
         ),
@@ -473,7 +458,7 @@ class _AccountScreenState extends State<AccountScreen> {
     if (user.photoUrl == null || user.photoUrl!.isEmpty) return initials;
     return CircleAvatar(
       radius: 30,
-      backgroundColor: KColors.green.withValues(alpha: 0.22),
+      backgroundColor: KColors.mint,
       child: ClipOval(
         child: Image.network(
           user.photoUrl!,
@@ -484,7 +469,7 @@ class _AccountScreenState extends State<AccountScreen> {
             child: Text(
               user.initials,
               style: const TextStyle(
-                color: Colors.white,
+                color: KColors.greenDark,
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
               ),
@@ -503,8 +488,8 @@ class _AccountScreenState extends State<AccountScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        KGlassPanel(
-          level: KGlassLevel.l2,
+        KGlassSurface(
+          borderRadius: 20,
           padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
           child: Row(
             children: [
@@ -518,7 +503,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       name,
                       style: TextStyle(
                         fontFamily: karyabFontFamily(lang),
-                        color: Colors.white,
+                        color: KColors.navy,
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                       ),
@@ -528,7 +513,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         user.email!,
                         style: TextStyle(
                           fontFamily: karyabFontFamily(lang),
-                          color: KLiquid.textOnDarkSoft,
+                          color: KColors.textSecondary,
                           fontSize: 14,
                         ),
                       ),
@@ -540,8 +525,8 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: 14),
         // Backup card
-        KGlassPanel(
-          level: KGlassLevel.l1,
+        KGlassCard(
+          borderRadius: 20,
           padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -554,7 +539,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     AccountStrings.cloudBackup(lang),
                     style: TextStyle(
                       fontFamily: karyabFontFamily(lang),
-                      color: Colors.white,
+                      color: KColors.navy,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                     ),
@@ -568,7 +553,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 AccountStrings.backupConsent(lang),
                 style: TextStyle(
                   fontFamily: karyabFontFamily(lang),
-                  color: KLiquid.textOnDarkSoft,
+                  color: KColors.textSecondary,
                   fontSize: 13,
                   height: 1.45,
                 ),
@@ -579,7 +564,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 '${_lastBackup == null ? AccountStrings.never(lang) : _dateText(_lastBackup!)}',
                 style: TextStyle(
                   fontFamily: karyabFontFamily(lang),
-                  color: KLiquid.textOnDarkSoft,
+                  color: KColors.textSecondary,
                   fontSize: 13,
                 ),
               ),
@@ -587,44 +572,20 @@ class _AccountScreenState extends State<AccountScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: (_busy || !_backupEnabled)
+                    child: _glassButton(
+                      label: AccountStrings.backupNow(lang),
+                      lang: lang,
+                      onTap: (_busy || !_backupEnabled)
                           ? null
                           : () => _backupNow(user),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: KLiquid.l2Border),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: Text(
-                        AccountStrings.backupNow(lang),
-                        style: TextStyle(
-                          fontFamily: karyabFontFamily(lang),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: _busy ? null : () => _restorePressed(user),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: KLiquid.l2Border),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: Text(
-                        AccountStrings.restore(lang),
-                        style: TextStyle(
-                          fontFamily: karyabFontFamily(lang),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                    child: _glassButton(
+                      label: AccountStrings.restore(lang),
+                      lang: lang,
+                      onTap: _busy ? null : () => _restorePressed(user),
                     ),
                   ),
                 ],
@@ -666,6 +627,37 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
+  // Secondary action button in the kit glass style (same shape as the
+  // CV wizard's Back/Skip buttons): 52 high, radius 22, centred label.
+  // A null [onTap] renders it disabled (dimmed, no tap).
+  Widget _glassButton({
+    required String label,
+    required String lang,
+    required VoidCallback? onTap,
+  }) {
+    return Opacity(
+      opacity: onTap == null ? 0.5 : 1,
+      child: SizedBox(
+        height: 52,
+        child: KGlassCard(
+          borderRadius: 22,
+          onTap: onTap,
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontFamily: karyabFontFamily(lang),
+                color: KColors.navy,
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _actionTile({
     required IconData icon,
     required String label,
@@ -673,10 +665,9 @@ class _AccountScreenState extends State<AccountScreen> {
     required VoidCallback? onTap,
     bool danger = false,
   }) {
-    final color = danger ? const Color(0xFFFF9D9D) : Colors.white;
-    return KGlassPanel(
-      level: KGlassLevel.l1,
-      inList: true,
+    final color = danger ? const Color(0xFFC0392B) : KColors.navy;
+    return KGlassCard(
+      borderRadius: 16,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Material(
         type: MaterialType.transparency,
