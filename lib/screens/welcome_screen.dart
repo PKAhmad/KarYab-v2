@@ -456,7 +456,7 @@ class _LanguageCard extends StatelessWidget {
       curve: Curves.easeOut,
       height: 116,
       decoration: BoxDecoration(
-        color: selected ? const Color(0xF0F6FFF5) : Colors.white.withValues(alpha: 0.62),
+        color: selected ? const Color(0xF0F6FFF5) : Colors.white.withValues(alpha: KColors.glassFillAlpha),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
           color: selected ? green : Colors.white.withValues(alpha: 0.80),

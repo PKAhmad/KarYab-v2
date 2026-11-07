@@ -383,7 +383,7 @@ class _CvStyleSheetState extends State<_CvStyleSheet> {
                 decoration: BoxDecoration(
                   color: current == v
                       ? KColors.green.withValues(alpha: 0.14)
-                      : Colors.white.withValues(alpha: 0.7),
+                      : Colors.white.withValues(alpha: KColors.glassFillAlpha),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: current == v ? KColors.green : KColors.borderSoft,

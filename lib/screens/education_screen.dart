@@ -443,7 +443,7 @@ class _OptionCard extends StatelessWidget {
             ? (isYes
                 ? const Color(0xF0F6FFF5)
                 : const Color(0xFFFFF5F5))
-            : Colors.white.withValues(alpha: 0.62),
+            : Colors.white.withValues(alpha: KColors.glassFillAlpha),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: selected ? _accentColor : Colors.white.withValues(alpha: 0.80),

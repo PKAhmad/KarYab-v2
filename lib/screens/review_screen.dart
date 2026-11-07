@@ -586,7 +586,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 child: Container(
                   height: 56,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Colors.white.withValues(alpha: KColors.glassFillAlpha),
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(color: _navy, width: 1.8),
                   ),

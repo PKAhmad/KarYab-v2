@@ -38,6 +38,15 @@ class KColors {
   static const Color borderSoft = Color(0xFFE4EAF5);
   static const Color handle = Color(0xFFD1D9E6);
 
+  /// Fill alpha for the light glass surfaces and glass buttons
+  /// (KGlassSurface / KGlassCard / KGridTile and their private copies
+  /// in screens). Phase 10, on the CEO's word: reduced from 0.62 so
+  /// buttons read more transparent. Borders (white 0.85) and all text
+  /// stay full-opacity, so contrast is unchanged; only the fill
+  /// becomes more see-through. Single source: never hardcode a glass
+  /// fill alpha in a screen again.
+  static const double glassFillAlpha = 0.45;
+
   // Page
   static const Color pageBase = Color(0xFFF7FAFF);
   static const Color gradientTop = Color(0xFFF9FBFF);
@@ -150,7 +159,7 @@ class KGlassSurface extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.62),
+            color: Colors.white.withValues(alpha: KColors.glassFillAlpha),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
                 color: Colors.white.withValues(alpha: 0.85), width: 1.2),
@@ -439,7 +448,7 @@ class KGridTile extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.62),
+              color: Colors.white.withValues(alpha: KColors.glassFillAlpha),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
                   color: Colors.white.withValues(alpha: 0.85), width: 1.2),
@@ -514,7 +523,8 @@ class KGridTile extends StatelessWidget {
 // ── Glass card ───────────────────────────────────────────────────────────────
 
 // Translucent (not blurred) card with the same decoration as [KGridTile]:
-// white 0.62 fill, white 0.85 border at 1.2, one black 0.06 shadow. Safe to
+// white fill at [KColors.glassFillAlpha], white 0.85 border at 1.2, one
+// black 0.06 shadow. Safe to
 // use inside lists, because it never uses a BackdropFilter. [selected] gives
 // the 2.0 green border and a 0.07 green tint.
 class KGlassCard extends StatelessWidget {
@@ -540,7 +550,7 @@ class KGlassCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: selected
             ? KColors.green.withValues(alpha: 0.07)
-            : Colors.white.withValues(alpha: 0.62),
+            : Colors.white.withValues(alpha: KColors.glassFillAlpha),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
           color: selected ? KColors.green : Colors.white.withValues(alpha: 0.85),

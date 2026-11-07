@@ -203,7 +203,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              color: selected ? _navy : Colors.white.withValues(alpha: 0.7),
+              color: selected ? _navy : Colors.white.withValues(alpha: KColors.glassFillAlpha),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: selected ? _navy : KColors.border,
