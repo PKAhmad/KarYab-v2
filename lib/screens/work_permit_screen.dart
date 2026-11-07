@@ -65,8 +65,10 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
 
   String get _lang {
     try {
-      final providerLang =
-          Provider.of<LanguageProvider>(context, listen: false).language;
+      final providerLang = Provider.of<LanguageProvider>(
+        context,
+        listen: false,
+      ).language;
       return providerLang.isNotEmpty ? providerLang : widget.language;
     } catch (_) {
       return widget.language;
@@ -142,7 +144,10 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
 
   String get _dob {
     final p = _profile;
-    if (p == null || p.dobDay == null || p.dobMonth == null || p.dobYear == null) {
+    if (p == null ||
+        p.dobDay == null ||
+        p.dobMonth == null ||
+        p.dobYear == null) {
       return '';
     }
     return formatGermanDate(DateTime(p.dobYear!, p.dobMonth!, p.dobDay!));
@@ -211,8 +216,11 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
       );
       _savedForLetterHash = hash;
       if (mounted) {
-        kSnack(context, WorkPermitStrings.savedNote(_lang),
-            kind: KSnackKind.success);
+        kSnack(
+          context,
+          WorkPermitStrings.savedNote(_lang),
+          kind: KSnackKind.success,
+        );
       }
     } catch (_) {
       // Saving the record must never block sending the letter.
@@ -228,10 +236,7 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
     await _ensureSaved(d, letter);
     final uri = Uri(
       scheme: 'mailto',
-      queryParameters: {
-        'subject': workPermitSubject(d),
-        'body': letter,
-      },
+      queryParameters: {'subject': workPermitSubject(d), 'body': letter},
     );
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
@@ -245,14 +250,16 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
       final saved = await savePdfToDownloads(bytes, name);
       if (!mounted) return;
       if (saved) {
-        kSnack(context, WorkPermitStrings.pdfSaved(_lang),
-            kind: KSnackKind.success);
+        kSnack(
+          context,
+          WorkPermitStrings.pdfSaved(_lang),
+          kind: KSnackKind.success,
+        );
       } else {
         // Same fallback as the other document screens: share the file.
-        await Share.shareXFiles(
-          [XFile.fromData(bytes, name: name, mimeType: 'application/pdf')],
-          subject: workPermitSubject(d),
-        );
+        await Share.shareXFiles([
+          XFile.fromData(bytes, name: name, mimeType: 'application/pdf'),
+        ], subject: workPermitSubject(d));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -262,8 +269,11 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
   void _guarded(Future<void> Function(WorkPermitData, String) action) {
     final d = _data;
     if (d == null || !_formComplete) {
-      kSnack(context, WorkPermitStrings.fillFirst(_lang),
-          kind: KSnackKind.error);
+      kSnack(
+        context,
+        WorkPermitStrings.fillFirst(_lang),
+        kind: KSnackKind.error,
+      );
       return;
     }
     if (!_confirmed) return; // Buttons are disabled until confirmed.
@@ -278,38 +288,42 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
     return Directionality(
       textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: KLiquid.navyTop,
-        body: LiquidBackground(
-          child: SafeArea(
-            child: _loading
-                ? const Center(
-                    child: CircularProgressIndicator(color: KColors.green))
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _header(lang),
-                        const SizedBox(height: 16),
-                        _introPanel(lang),
-                        const SizedBox(height: 14),
-                        _yourDataPanel(lang),
-                        const SizedBox(height: 14),
-                        _formPanel(lang),
-                        if (_formComplete) ...[
+        backgroundColor: KColors.pageBase,
+        body: Stack(
+          children: [
+            const KBackgroundGlow(),
+            SafeArea(
+              child: _loading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: KColors.green),
+                    )
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _header(lang),
+                          const SizedBox(height: 16),
+                          _introPanel(lang),
                           const SizedBox(height: 14),
-                          _letterPanel(lang),
+                          _yourDataPanel(lang),
                           const SizedBox(height: 14),
-                          _explanationPanel(lang),
-                          const SizedBox(height: 14),
-                          _confirmRow(lang),
-                          const SizedBox(height: 12),
-                          _actions(lang),
+                          _formPanel(lang),
+                          if (_formComplete) ...[
+                            const SizedBox(height: 14),
+                            _letterPanel(lang),
+                            const SizedBox(height: 14),
+                            _explanationPanel(lang),
+                            const SizedBox(height: 14),
+                            _confirmRow(lang),
+                            const SizedBox(height: 12),
+                            _actions(lang),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -318,38 +332,33 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
   Widget _header(String lang) {
     return Row(
       children: [
-        IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(
-            _isRtl
-                ? Icons.arrow_forward_ios_rounded
-                : Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
+        KNavButton(
+          icon: Icons.arrow_back_ios_new_rounded,
+          onTap: () => Navigator.pop(context),
         ),
-        const SizedBox(width: 4),
         Expanded(
           child: Text(
             WorkPermitStrings.title(lang),
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: karyabFontFamily(lang),
-              color: Colors.white,
-              fontSize: 22,
+              color: KColors.navy,
+              fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
           ),
         ),
+        const SizedBox(width: 44),
       ],
     );
   }
 
   TextStyle _panelText(String lang, {double size = 14}) => TextStyle(
-        fontFamily: karyabFontFamily(lang),
-        color: Colors.white,
-        fontSize: size,
-        height: 1.5,
-      );
+    fontFamily: karyabFontFamily(lang),
+    color: KColors.navy,
+    fontSize: size,
+    height: 1.5,
+  );
 
   Widget _listenButton(String text, String speakLang, String lang) {
     return TextButton.icon(
@@ -367,8 +376,8 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
   }
 
   Widget _introPanel(String lang) {
-    return KGlassPanel(
-      level: KGlassLevel.l2,
+    return KGlassSurface(
+      borderRadius: 20,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,17 +394,18 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
 
   Widget _yourDataPanel(String lang) {
     final p = _profile;
-    return KGlassPanel(
-      level: KGlassLevel.l1,
+    return KGlassCard(
+      borderRadius: 20,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             WorkPermitStrings.yourDataTitle(lang),
-            style: _panelText(lang, size: 15).copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: _panelText(
+              lang,
+              size: 15,
+            ).copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           if (p == null || p.fullName.isEmpty)
@@ -419,7 +429,7 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
       child: Text(
         text,
         style: const TextStyle(
-          color: KLiquid.textOnDarkSoft,
+          color: KColors.textSecondary,
           fontSize: 14,
           height: 1.4,
         ),
@@ -465,8 +475,8 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
   }
 
   Widget _formPanel(String lang) {
-    return KGlassPanel(
-      level: KGlassLevel.l1,
+    return KGlassCard(
+      borderRadius: 20,
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -477,13 +487,17 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
             lang,
             hint: WorkPermitStrings.authorityNameHint(lang),
           ),
-          _field(_authorityCityCtrl, WorkPermitStrings.authorityCity(lang), lang),
+          _field(
+            _authorityCityCtrl,
+            WorkPermitStrings.authorityCity(lang),
+            lang,
+          ),
           if (_offers.isNotEmpty) ...[
             Text(
               WorkPermitStrings.savedOffer(lang),
               style: TextStyle(
                 fontFamily: karyabFontFamily(lang),
-                color: KLiquid.textOnDarkSoft,
+                color: KColors.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -581,7 +595,7 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
                 WorkPermitStrings.letterTitle(lang),
                 style: TextStyle(
                   fontFamily: karyabFontFamily(lang),
-                  color: Colors.white,
+                  color: KColors.navy,
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                 ),
@@ -591,11 +605,8 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
+        KGlassSurface(
+          borderRadius: 20,
           padding: const EdgeInsets.all(16),
           child: SelectableText(
             letter,
@@ -613,16 +624,18 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
   Widget _explanationPanel(String lang) {
     final d = _data!;
     final explanation = workPermitExplanation(lang, d);
-    return KGlassPanel(
-      level: KGlassLevel.l1,
+    return KGlassCard(
+      borderRadius: 20,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             WorkPermitStrings.explanationTitle(lang),
-            style: _panelText(lang, size: 15)
-                .copyWith(fontWeight: FontWeight.w800),
+            style: _panelText(
+              lang,
+              size: 15,
+            ).copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           Text(explanation, style: _panelText(lang)),
@@ -643,7 +656,7 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
           value: _confirmed,
           activeColor: KColors.green,
           checkColor: KColors.navy,
-          side: const BorderSide(color: Colors.white70),
+          side: const BorderSide(color: KColors.textSecondary),
           onChanged: (v) => setState(() => _confirmed = v ?? false),
         ),
         Expanded(
@@ -662,73 +675,69 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
     );
   }
 
+  // Secondary action button in the kit glass style (same shape as the
+  // CV wizard's Back/Skip buttons): 52 high, radius 22, centred label.
+  Widget _glassButton({
+    required String label,
+    required String lang,
+    required VoidCallback? onTap,
+  }) {
+    return Opacity(
+      opacity: onTap == null ? 0.5 : 1,
+      child: SizedBox(
+        height: 52,
+        child: KGlassCard(
+          borderRadius: 22,
+          onTap: onTap,
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontFamily: karyabFontFamily(lang),
+                color: KColors.navy,
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _actions(String lang) {
     final enabled = _confirmed && !_busy;
-    Widget mainButton() {
-      return GestureDetector(
-        onTap: enabled ? () => _guarded(_share) : null,
-        child: Opacity(
-          opacity: enabled ? 1 : 0.45,
-          child: Container(
-            width: double.infinity,
-            height: 56,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: const LinearGradient(
-                colors: [KColors.ctaStart, KColors.ctaEnd],
-              ),
-              border: Border.all(color: KColors.green.withValues(alpha: 0.5)),
-            ),
-            child: Center(
-              child: Text(
-                WorkPermitStrings.sendShare(lang),
-                style: TextStyle(
-                  fontFamily: karyabFontFamily(lang),
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    Widget secondary(String label, VoidCallback onTap) {
-      return Expanded(
-        child: OutlinedButton(
-          onPressed: enabled ? onTap : null,
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.white54),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(fontFamily: karyabFontFamily(lang), fontSize: 14),
-          ),
-        ),
-      );
-    }
-
     return Column(
       children: [
-        mainButton(),
+        Opacity(
+          opacity: enabled ? 1 : 0.45,
+          child: KPrimaryCta(
+            icon: Icons.share_rounded,
+            label: WorkPermitStrings.sendShare(lang),
+            isRtl: _isRtl,
+            isSelected: false,
+            onTap: () {
+              if (enabled) _guarded(_share);
+            },
+          ),
+        ),
         const SizedBox(height: 10),
         Row(
           children: [
-            secondary(
-              WorkPermitStrings.openInEmail(lang),
-              () => _guarded(_email),
+            Expanded(
+              child: _glassButton(
+                label: WorkPermitStrings.openInEmail(lang),
+                lang: lang,
+                onTap: enabled ? () => _guarded(_email) : null,
+              ),
             ),
             const SizedBox(width: 10),
-            secondary(
-              WorkPermitStrings.savePdf(lang),
-              () => _guarded(_pdf),
+            Expanded(
+              child: _glassButton(
+                label: WorkPermitStrings.savePdf(lang),
+                lang: lang,
+                onTap: enabled ? () => _guarded(_pdf) : null,
+              ),
             ),
           ],
         ),

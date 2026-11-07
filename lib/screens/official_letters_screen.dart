@@ -555,37 +555,40 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
     return Directionality(
       textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: KLiquid.navyTop,
-        body: LiquidBackground(
-          child: SafeArea(
-            child: _loading
-                ? const Center(
-                    child: CircularProgressIndicator(color: KColors.green),
-                  )
-                : Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _header(lang),
-                              const SizedBox(height: 14),
-                              _stepHeader(lang),
-                              const SizedBox(height: 14),
-                              if (_step == 0) _officeStep(lang),
-                              if (_step == 1) _purposeStep(lang),
-                              if (_step == 2) _attachmentsStep(lang),
-                              if (_step == 3) _reviewStep(lang),
-                            ],
+        backgroundColor: KColors.pageBase,
+        body: Stack(
+          children: [
+            const KBackgroundGlow(),
+            SafeArea(
+              child: _loading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: KColors.green),
+                    )
+                  : Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _header(lang),
+                                const SizedBox(height: 14),
+                                _stepHeader(lang),
+                                const SizedBox(height: 14),
+                                if (_step == 0) _officeStep(lang),
+                                if (_step == 1) _purposeStep(lang),
+                                if (_step == 2) _attachmentsStep(lang),
+                                if (_step == 3) _reviewStep(lang),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      _bottomBar(lang),
-                    ],
-                  ),
-          ),
+                        _bottomBar(lang),
+                      ],
+                    ),
+            ),
+          ],
         ),
       ),
     );
@@ -594,35 +597,30 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
   Widget _header(String lang) {
     return Row(
       children: [
-        IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(
-            _isRtl
-                ? Icons.arrow_forward_ios_rounded
-                : Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
+        KNavButton(
+          icon: Icons.arrow_back_ios_new_rounded,
+          onTap: () => Navigator.pop(context),
         ),
-        const SizedBox(width: 4),
         Expanded(
           child: Text(
             OfficialLetterStrings.title(lang),
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: karyabFontFamily(lang),
-              color: Colors.white,
-              fontSize: 22,
+              color: KColors.navy,
+              fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
           ),
         ),
+        const SizedBox(width: 44),
       ],
     );
   }
 
   TextStyle _panelText(String lang, {double size = 14}) => TextStyle(
     fontFamily: karyabFontFamily(lang),
-    color: Colors.white,
+    color: KColors.navy,
     fontSize: size,
     height: 1.5,
   );
@@ -649,7 +647,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
           '${_stepName(lang, _step)}',
           style: TextStyle(
             fontFamily: karyabFontFamily(lang),
-            color: KLiquid.textOnDarkSoft,
+            color: KColors.textSecondary,
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
@@ -663,9 +661,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                 child: Container(
                   height: 5,
                   decoration: BoxDecoration(
-                    color: i <= _step
-                        ? KColors.green
-                        : Colors.white.withValues(alpha: 0.18),
+                    color: i <= _step ? KColors.green : KColors.border,
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -786,8 +782,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        KGlassPanel(
-          level: KGlassLevel.l2,
+        KGlassSurface(
+          borderRadius: 20,
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -825,16 +821,18 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                     fontFamily: karyabFontFamily(lang),
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
-                    color: _officeType == type ? KColors.navy : Colors.white,
+                    color: _officeType == type ? Colors.white : KColors.navy,
                   ),
                 ),
                 selected: _officeType == type,
                 selectedColor: KColors.green,
-                backgroundColor: Colors.white.withValues(alpha: 0.12),
+                backgroundColor: Colors.white.withValues(
+                  alpha: KColors.glassFillAlpha,
+                ),
                 side: BorderSide(
                   color: _officeType == type
                       ? KColors.green
-                      : Colors.white.withValues(alpha: 0.25),
+                      : KColors.borderSoft,
                 ),
                 onSelected: (_) {
                   setState(() {
@@ -853,8 +851,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        KGlassPanel(
-          level: KGlassLevel.l1,
+        KGlassCard(
+          borderRadius: 20,
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -918,8 +916,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
         for (final purpose in OfficialPurpose.values)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: KGlassPanel(
-              level: KGlassLevel.l1,
+            child: KGlassCard(
               borderRadius: 16,
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
               onTap: () => setState(() => _purpose = purpose),
@@ -929,7 +926,9 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                     _purpose == purpose
                         ? Icons.radio_button_checked_rounded
                         : Icons.radio_button_unchecked_rounded,
-                    color: _purpose == purpose ? KColors.green : Colors.white54,
+                    color: _purpose == purpose
+                        ? KColors.green
+                        : KColors.textSecondary,
                     size: 20,
                   ),
                   const SizedBox(width: 10),
@@ -950,8 +949,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
         const SizedBox(height: 6),
         _yourDataPanel(lang),
         const SizedBox(height: 14),
-        KGlassPanel(
-          level: KGlassLevel.l1,
+        KGlassCard(
+          borderRadius: 20,
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
           child: _purposeFields(lang),
         ),
@@ -961,8 +960,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
 
   Widget _yourDataPanel(String lang) {
     final p = _profile;
-    return KGlassPanel(
-      level: KGlassLevel.l1,
+    return KGlassCard(
+      borderRadius: 20,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -996,7 +995,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
       child: Text(
         text,
         style: const TextStyle(
-          color: KLiquid.textOnDarkSoft,
+          color: KColors.textSecondary,
           fontSize: 14,
           height: 1.4,
         ),
@@ -1015,7 +1014,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                 WorkPermitStrings.savedOffer(lang),
                 style: TextStyle(
                   fontFamily: karyabFontFamily(lang),
-                  color: KLiquid.textOnDarkSoft,
+                  color: KColors.textSecondary,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1196,8 +1195,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        KGlassPanel(
-          level: KGlassLevel.l1,
+        KGlassCard(
+          borderRadius: 20,
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1226,8 +1225,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
         for (var i = 0; i < _attachments.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: KGlassPanel(
-              level: KGlassLevel.l1,
+            child: KGlassCard(
               borderRadius: 16,
               padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
               child: Row(
@@ -1253,7 +1251,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                     onPressed: () => setState(() => _attachments.removeAt(i)),
                     icon: const Icon(
                       Icons.close_rounded,
-                      color: Colors.white70,
+                      color: KColors.textSecondary,
                       size: 19,
                     ),
                   ),
@@ -1261,29 +1259,22 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
               ),
             ),
           ),
-        GestureDetector(
-          onTap: _attachments.length >= kMaxOfficialAttachments
-              ? null
-              : _pickFiles,
-          child: Opacity(
-            opacity: _attachments.length >= kMaxOfficialAttachments ? 0.45 : 1,
-            child: Container(
-              width: double.infinity,
-              height: 54,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: KColors.green.withValues(alpha: 0.6),
-                  width: 1.2,
-                ),
-                color: Colors.white.withValues(alpha: 0.08),
-              ),
+        Opacity(
+          opacity: _attachments.length >= kMaxOfficialAttachments ? 0.45 : 1,
+          child: SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: KGlassCard(
+              borderRadius: 16,
+              onTap: _attachments.length >= kMaxOfficialAttachments
+                  ? null
+                  : _pickFiles,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(
                     Icons.attach_file_rounded,
-                    color: KColors.green,
+                    color: KColors.greenDark,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -1291,7 +1282,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                     OfficialLetterStrings.attachButton(lang),
                     style: TextStyle(
                       fontFamily: karyabFontFamily(lang),
-                      color: Colors.white,
+                      color: KColors.navy,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -1322,7 +1313,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                 WorkPermitStrings.letterTitle(lang),
                 style: TextStyle(
                   fontFamily: karyabFontFamily(lang),
-                  color: Colors.white,
+                  color: KColors.navy,
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                 ),
@@ -1332,11 +1323,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
+        KGlassSurface(
+          borderRadius: 20,
           padding: const EdgeInsets.all(16),
           child: SelectableText(
             letter,
@@ -1348,8 +1336,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
           ),
         ),
         const SizedBox(height: 14),
-        KGlassPanel(
-          level: KGlassLevel.l1,
+        KGlassCard(
+          borderRadius: 20,
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1367,7 +1355,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
               Text(
                 OfficialLetterStrings.legalNote(lang),
                 style: _panelText(lang, size: 12.5).copyWith(
-                  color: KLiquid.textOnDarkSoft,
+                  color: KColors.textSecondary,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -1392,7 +1380,7 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
           value: _confirmed,
           activeColor: KColors.green,
           checkColor: KColors.navy,
-          side: const BorderSide(color: Colors.white70),
+          side: const BorderSide(color: KColors.textSecondary),
           onChanged: (v) => setState(() => _confirmed = v ?? false),
         ),
         Expanded(
@@ -1414,9 +1402,39 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
   // ── Bottom bar: navigation / review actions ──────────────────────────
 
   Widget _bottomBar(String lang) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
       child: _step < 3 ? _navButtons(lang) : _reviewActions(lang),
+    );
+  }
+
+  // Secondary action button in the kit glass style (same shape as the
+  // CV wizard's Back/Skip buttons): 52 high, radius 22, centred label.
+  Widget _glassButton({
+    required String lang,
+    required String label,
+    required VoidCallback? onTap,
+  }) {
+    return Opacity(
+      opacity: onTap == null ? 0.5 : 1,
+      child: SizedBox(
+        height: 52,
+        child: KGlassCard(
+          borderRadius: 22,
+          onTap: onTap,
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontFamily: karyabFontFamily(lang),
+                color: KColors.navy,
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1425,52 +1443,23 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
       children: [
         if (_step > 0) ...[
           Expanded(
-            child: OutlinedButton(
-              onPressed: _back,
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.white54),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                OfficialLetterStrings.back(lang),
-                style: TextStyle(
-                  fontFamily: karyabFontFamily(lang),
-                  fontSize: 15,
-                ),
-              ),
+            flex: 2,
+            child: _glassButton(
+              lang: lang,
+              label: OfficialLetterStrings.back(lang),
+              onTap: _back,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
         ],
         Expanded(
-          flex: _step > 0 ? 2 : 1,
-          child: GestureDetector(
+          flex: _step > 0 ? 3 : 1,
+          child: KPrimaryCta(
+            icon: Icons.arrow_forward_rounded,
+            label: OfficialLetterStrings.continueLabel(lang),
+            isRtl: _isRtl,
+            isSelected: false,
             onTap: _next,
-            child: Container(
-              height: 54,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
-                  colors: [KColors.ctaStart, KColors.ctaEnd],
-                ),
-                border: Border.all(color: KColors.green.withValues(alpha: 0.5)),
-              ),
-              child: Center(
-                child: Text(
-                  OfficialLetterStrings.continueLabel(lang),
-                  style: TextStyle(
-                    fontFamily: karyabFontFamily(lang),
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
           ),
         ),
       ],
@@ -1482,37 +1471,16 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GestureDetector(
-          onTap: enabled ? _sendEmail : null,
-          child: Opacity(
-            opacity: enabled ? 1 : 0.45,
-            child: Container(
-              width: double.infinity,
-              height: 56,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
-                  colors: [KColors.ctaStart, KColors.ctaEnd],
-                ),
-                border: Border.all(color: KColors.green.withValues(alpha: 0.5)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.send_rounded, color: Colors.white, size: 19),
-                  const SizedBox(width: 8),
-                  Text(
-                    OfficialLetterStrings.sendEmail(lang),
-                    style: TextStyle(
-                      fontFamily: karyabFontFamily(lang),
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        Opacity(
+          opacity: enabled ? 1 : 0.45,
+          child: KPrimaryCta(
+            icon: Icons.send_rounded,
+            label: OfficialLetterStrings.sendEmail(lang),
+            isRtl: _isRtl,
+            isSelected: false,
+            onTap: () {
+              if (enabled) _sendEmail();
+            },
           ),
         ),
         const SizedBox(height: 6),
@@ -1525,44 +1493,18 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed: _back,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white54),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  OfficialLetterStrings.back(lang),
-                  style: TextStyle(
-                    fontFamily: karyabFontFamily(lang),
-                    fontSize: 14,
-                  ),
-                ),
+              child: _glassButton(
+                lang: lang,
+                label: OfficialLetterStrings.back(lang),
+                onTap: _back,
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: OutlinedButton(
-                onPressed: enabled ? _savePdf : null,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white54),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  WorkPermitStrings.savePdf(lang),
-                  style: TextStyle(
-                    fontFamily: karyabFontFamily(lang),
-                    fontSize: 14,
-                  ),
-                ),
+              child: _glassButton(
+                lang: lang,
+                label: WorkPermitStrings.savePdf(lang),
+                onTap: enabled ? _savePdf : null,
               ),
             ),
           ],
