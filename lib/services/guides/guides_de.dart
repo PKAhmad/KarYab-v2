@@ -175,7 +175,7 @@ const List<GuideTrack> kGuidesDe = [
         title: 'Finden Sie einen Ausbildungsplatz aus dem Ausland',
         paragraphs: [
           'Die meisten Ausbildungen beginnen im August oder September. Firmen suchen ihre Azubis früh: Bewerben Sie sich 6 bis 12 Monate vor dem Start.',
-          'Suchen Sie in dieser App unter Ausbildung, und auf ausbildung.de und in der Stellenbörse der IHK. Lesen Sie die Anzeige gut: Was will die Firma?',
+          'Suchen Sie in dieser App unter Ausbildung, und in der Stellenbörse der IHK. Lesen Sie die Anzeige gut: Was will die Firma?',
           'Ihre Bewerbung ist ein Lebenslauf und ein Anschreiben auf Deutsch. Diese App baut beides mit Ihnen.',
           'Bewerben Sie sich bei vielen Firmen. Warten Sie nicht auf eine einzige Antwort.',
         ],
@@ -183,12 +183,6 @@ const List<GuideTrack> kGuidesDe = [
           GuideAction.ausbildungSearch,
           GuideAction.cvBuilder,
           GuideAction.coverLetter,
-        ],
-        links: [
-          GuideLink(
-            url: 'https://www.ausbildung.de',
-            label: 'ausbildung.de, offizielle Suchseite',
-          ),
         ],
       ),
       GuideStep(

@@ -170,7 +170,7 @@ const List<GuideTrack> kGuidesPs = [
         title: 'له بهر څخه د Ausbildung ځای ومومئ',
         paragraphs: [
           'ډېر Ausbildung د اګست یا سپټمبر په میاشت کې پیل کیږي. شرکتونه وختي زده کوونکي لټوي: له پیل څخه 6 تر 12 میاشتو مخکې غوښتنه وکړئ.',
-          'په دې اپلیکیشن کې د Ausbildung برخه کې ولټوئ، او په ausbildung.de او د IHK د کارونو په تخته کې. اعلان ښه ولولئ: شرکت څه غواړي؟',
+          'په دې اپلیکیشن کې د Ausbildung برخه کې ولټوئ، او د IHK د کارونو په تخته کې. اعلان ښه ولولئ: شرکت څه غواړي؟',
           'ستاسو غوښتنه يو CV (Lebenslauf) او يو پوښلیک (Anschreiben) دی په الماني ژبه کې. دا اپلیکیشن دواړه له تاسو سره جوړوي.',
           'ډېرو شرکتونو ته غوښتنه وکړئ. د یوه ځواب په تمه مه کېنئ.',
         ],
@@ -178,12 +178,6 @@ const List<GuideTrack> kGuidesPs = [
           GuideAction.ausbildungSearch,
           GuideAction.cvBuilder,
           GuideAction.coverLetter,
-        ],
-        links: [
-          GuideLink(
-            url: 'https://www.ausbildung.de',
-            label: 'ausbildung.de، رسمي لټون پاڼه',
-          ),
         ],
       ),
       GuideStep(

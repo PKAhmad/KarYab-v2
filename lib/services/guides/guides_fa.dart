@@ -173,7 +173,7 @@ const List<GuideTrack> kGuidesFa = [
         title: 'از خارج جای Ausbildung پیدا کنید',
         paragraphs: [
           'بیشتر Ausbildungها در ماه آگست یا سپتمبر شروع می‌شوند. شرکت‌ها شاگردان را زود می‌جویند: 6 تا 12 ماه قبل از شروع درخواست بدهید.',
-          'در این اپلیکیشن در بخش Ausbildung جستجو کنید، و در ausbildung.de و در تابلوی کار IHK. اعلان را خوب بخوانید: شرکت چه می‌خواهد؟',
+          'در این اپلیکیشن در بخش Ausbildung جستجو کنید، و در تابلوی کار IHK. اعلان را خوب بخوانید: شرکت چه می‌خواهد؟',
           'درخواست شما یک CV (Lebenslauf) و یک نامه پوششی (Anschreiben) به زبان آلمانی است. این اپلیکیشن هر دو را با شما می‌سازد.',
           'به شرکت‌های زیادی درخواست بدهید. منتظر یک جواب نمانید.',
         ],
@@ -181,12 +181,6 @@ const List<GuideTrack> kGuidesFa = [
           GuideAction.ausbildungSearch,
           GuideAction.cvBuilder,
           GuideAction.coverLetter,
-        ],
-        links: [
-          GuideLink(
-            url: 'https://www.ausbildung.de',
-            label: 'ausbildung.de، صفحه جستجوی رسمی',
-          ),
         ],
       ),
       GuideStep(

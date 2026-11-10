@@ -175,7 +175,7 @@ const List<GuideTrack> kGuidesEn = [
         title: 'Find an Ausbildungsplatz from abroad',
         paragraphs: [
           'Most Ausbildung starts in August or September. Companies look for trainees early: apply 6 to 12 months before the start.',
-          'Search in this app under Ausbildung, and on ausbildung.de and the job board of the IHK. Read the advertisement well: what does the company want?',
+          'Search in this app under Ausbildung, and on the job board of the IHK. Read the advertisement well: what does the company want?',
           'Your application is a CV (Lebenslauf) and a cover letter (Anschreiben) in German. This app builds both with you.',
           'Apply to many companies. Do not wait for one answer.',
         ],
@@ -183,12 +183,6 @@ const List<GuideTrack> kGuidesEn = [
           GuideAction.ausbildungSearch,
           GuideAction.cvBuilder,
           GuideAction.coverLetter,
-        ],
-        links: [
-          GuideLink(
-            url: 'https://www.ausbildung.de',
-            label: 'ausbildung.de, official search page',
-          ),
         ],
       ),
       GuideStep(

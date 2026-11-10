@@ -901,6 +901,79 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   // ── Build ───────────────────────────────────────────────────────────────────
 
+  // ── The Karyab name box ──────────────────────────────────────────────
+  // The hero box of the new-user home: the KarYab name, the page
+  // title and the subtitle. Phase 13: it used to sit inside the
+  // scroll content, below the official-letters and guides cards and
+  // below the language/sound row. The CEO asked for the name box to
+  // be the first thing on the home page, so build() now renders it
+  // above everything else and the controls row sits below it.
+  Widget _heroNameBox() {
+    return KGlassSurface(
+      borderRadius: 24,
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
+      child: Column(
+        children: [
+          const Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                'Kar',
+                style: TextStyle(
+                  color: navy,
+                  fontSize: 26,
+                  height: 1,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -1,
+                ),
+              ),
+              Text(
+                'Yab',
+                style: TextStyle(
+                  color: green,
+                  fontSize: 26,
+                  height: 1,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -1,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Directionality(
+            textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
+            child: Text(
+              _pageTitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: navy,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                height: 1.3,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Directionality(
+            textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
+            child: Text(
+              _pageSubtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: KColors.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _lang = context.watch<LanguageProvider>().language;
@@ -928,62 +1001,52 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── Fixed top row ──────────────────────────────────────────
+                  // ── Phase 13: the Karyab name box comes first ─────────
+                  // Nothing renders above it: no card, no button. The
+                  // language pill and the sound toggle that used to
+                  // share the top row with a small text logo now sit in
+                  // their own controls row BELOW the name box. The box
+                  // exists in the new-user state; returning users (who
+                  // have their welcome box in the content) go straight
+                  // to the controls row, as before.
+                  if (!_cvCreated && !_ausbildungCvCreated) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 430),
+                          child: _heroNameBox(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  // ── Controls row (language + sound) ─────────────────────
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        RichText(
-                          text: const TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Kar',
-                                style: TextStyle(
-                                  color: navy,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
-                                  height: 1,
-                                ),
-                              ),
-                              TextSpan(
-                                text: 'Yab',
-                                style: TextStyle(
-                                  color: green,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
-                                  height: 1,
-                                ),
-                              ),
-                            ],
-                          ),
+                        _LangPill(
+                          lang: _lang,
+                          onLanguageChanged: (newLang, voiceMode) {
+                            if (mounted) {
+                              setState(() => _voiceMode = voiceMode);
+                            }
+                          },
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _LangPill(
-                              lang: _lang,
-                              onLanguageChanged: (newLang, voiceMode) {
-                                if (mounted) {
-                                  setState(() => _voiceMode = voiceMode);
-                                }
-                              },
-                            ),
-                            const SizedBox(width: 8),
-                            KNavButton(
-                              icon: TtsService().soundEnabled
-                                  ? Icons.volume_up_rounded
-                                  : Icons.volume_off_rounded,
-                              active: TtsService().soundEnabled,
-                              hintPulse: TtsService().hintPulseActive,
-                              onTap: () {
-                                TtsService().toggleSound();
-                                setState(() {});
-                              },
-                            ),
-                          ],
+                        const SizedBox(width: 8),
+                        KNavButton(
+                          icon: TtsService().soundEnabled
+                              ? Icons.volume_up_rounded
+                              : Icons.volume_off_rounded,
+                          active: TtsService().soundEnabled,
+                          hintPulse: TtsService().hintPulseActive,
+                          onTap: () {
+                            TtsService().toggleSound();
+                            setState(() {});
+                          },
                         ),
                       ],
                     ),
@@ -1028,7 +1091,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                               // also lives inside the dashboard itself,
                               // so it is visible in both home states) ──
                               if (!_dashHasData) ...[
-                                KGlassSurface(
+                                KGlassCard(
                                   borderRadius: 24,
                                   padding: const EdgeInsets.fromLTRB(
                                     18,
@@ -1036,10 +1099,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                     18,
                                     16,
                                   ),
-                                  child: GestureDetector(
-                                    onTap: _openOfficialLetters,
-                                    behavior: HitTestBehavior.opaque,
-                                    child: Row(
+                                  onTap: _openOfficialLetters,
+                                  child: Row(
                                       children: [
                                         Container(
                                           width: 44,
@@ -1101,7 +1162,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                         ),
                                       ],
                                     ),
-                                  ),
                                 ),
                                 const SizedBox(height: 14),
                               ],
@@ -1109,7 +1169,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                               // ── Phase 11: guides card, same standalone
                               // treatment as official letters above ──
                               if (!_dashHasData) ...[
-                                KGlassSurface(
+                                KGlassCard(
                                   borderRadius: 24,
                                   padding: const EdgeInsets.fromLTRB(
                                     18,
@@ -1117,10 +1177,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                     18,
                                     16,
                                   ),
-                                  child: GestureDetector(
-                                    onTap: _openGuides,
-                                    behavior: HitTestBehavior.opaque,
-                                    child: Row(
+                                  onTap: _openGuides,
+                                  child: Row(
                                       children: [
                                         Container(
                                           width: 44,
@@ -1178,7 +1236,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                         ),
                                       ],
                                     ),
-                                  ),
                                 ),
                                 const SizedBox(height: 14),
                               ],
@@ -1193,81 +1250,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                               // Home button (Postings or Preview screen) they
                               // used to get back here.
                               if (!_cvCreated && !_ausbildungCvCreated) ...[
-                                KGlassSurface(
-                                  borderRadius: 24,
-                                  padding: const EdgeInsets.fromLTRB(
-                                    20,
-                                    22,
-                                    20,
-                                    22,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.baseline,
-                                        textBaseline: TextBaseline.alphabetic,
-                                        children: [
-                                          Text(
-                                            'Kar',
-                                            style: TextStyle(
-                                              color: navy,
-                                              fontSize: 26,
-                                              height: 1,
-                                              fontWeight: FontWeight.w900,
-                                              letterSpacing: -1,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Yab',
-                                            style: TextStyle(
-                                              color: green,
-                                              fontSize: 26,
-                                              height: 1,
-                                              fontWeight: FontWeight.w900,
-                                              letterSpacing: -1,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 14),
-                                      Directionality(
-                                        textDirection: _isRtl
-                                            ? TextDirection.rtl
-                                            : TextDirection.ltr,
-                                        child: Text(
-                                          _pageTitle,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            color: navy,
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w800,
-                                            height: 1.3,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Directionality(
-                                        textDirection: _isRtl
-                                            ? TextDirection.rtl
-                                            : TextDirection.ltr,
-                                        child: Text(
-                                          _pageSubtitle,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            color: KColors.textSecondary,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.4,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const SizedBox(height: 16),
 
                                 // Action grid — 2 columns, same tile style and
                                 // educated/uneducated sizing rule as State 2's

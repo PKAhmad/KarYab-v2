@@ -176,7 +176,7 @@ const List<GuideTrack> kGuidesAr = [
         title: 'ابحث عن مكان تدريب من الخارج',
         paragraphs: [
           'أكثر التدريبات تبدأ في أغسطس أو سبتمبر. الشركات تبحث عن متدربيها مبكرًا: قدّم قبل البدء بـ 6 إلى 12 شهرًا.',
-          'ابحث في هذا التطبيق تحت Ausbildung، وفي ausbildung.de وفي بورصة وظائف IHK. اقرأ الإعلان جيدًا: ماذا تريد الشركة؟',
+          'ابحث في هذا التطبيق تحت Ausbildung، وفي بورصة وظائف IHK. اقرأ الإعلان جيدًا: ماذا تريد الشركة؟',
           'طلبك هو سيرة ذاتية (Lebenslauf) ورسالة تقديم (Anschreiben) بالألمانية. هذا التطبيق يبني الاثنين معك.',
           'قدّم إلى شركات كثيرة. لا تنتظر جوابًا واحدًا.',
         ],
@@ -184,12 +184,6 @@ const List<GuideTrack> kGuidesAr = [
           GuideAction.ausbildungSearch,
           GuideAction.cvBuilder,
           GuideAction.coverLetter,
-        ],
-        links: [
-          GuideLink(
-            url: 'https://www.ausbildung.de',
-            label: 'ausbildung.de، صفحة البحث الرسمية',
-          ),
         ],
       ),
       GuideStep(

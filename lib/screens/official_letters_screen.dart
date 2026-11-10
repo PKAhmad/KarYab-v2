@@ -104,6 +104,12 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
   bool _busy = false;
   String? _savedForLetterHash;
 
+  // Phase 13: the message of the last failed Continue gate. Shown as a
+  // persistent inline error above the bottom bar (see _gateErrorBar),
+  // never as a SnackBar: the floating SnackBar used before rendered on
+  // top of the Continue button and swallowed the user's taps.
+  String? _gateError;
+
   List<TextEditingController> get _controllers => [
     _officeNameCtrl,
     _officeEmailCtrl,
@@ -214,6 +220,24 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
       _officeNameCtrl.text.trim().isNotEmpty &&
       isValidOfficeEmail(_officeEmailCtrl.text);
 
+  /// Whether the current step's Continue gate is still unmet. The
+  /// inline gate error (Phase 13) shows only while this is true, so
+  /// it clears itself the moment the user completes the step's input.
+  bool get _gateStillFailing {
+    switch (_step) {
+      case 0:
+        return !_officeComplete;
+      case 1:
+        return !_profileComplete || !_purposeComplete;
+      case 2:
+        return _purpose == OfficialPurpose.submitDocuments &&
+            _documentNames.isEmpty &&
+            _attachments.isEmpty;
+      default:
+        return false;
+    }
+  }
+
   bool get _purposeComplete {
     switch (_purpose) {
       case OfficialPurpose.workPermit:
@@ -283,20 +307,22 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
 
   void _next() {
     final lang = _lang;
+    // Phase 13: gate failures set the persistent inline gate error
+    // instead of firing a SnackBar. The old floating SnackBar landed
+    // exactly on the Continue button, absorbed every tap while it was
+    // visible and stacked on repeated taps, so after a single failed
+    // tap the button was dead even once the input was fixed (the
+    // CEO's phone report). The gates themselves are unchanged.
     if (_step == 0 && !_officeComplete) {
-      setState(() => _emailTouched = true);
-      kSnack(
-        context,
-        OfficialLetterStrings.fillOfficeFirst(lang),
-        kind: KSnackKind.error,
-      );
+      setState(() {
+        _emailTouched = true;
+        _gateError = OfficialLetterStrings.fillOfficeFirst(lang);
+      });
       return;
     }
     if (_step == 1 && (!_profileComplete || !_purposeComplete)) {
-      kSnack(
-        context,
-        OfficialLetterStrings.fillPurposeFirst(lang),
-        kind: KSnackKind.error,
+      setState(
+        () => _gateError = OfficialLetterStrings.fillPurposeFirst(lang),
       );
       return;
     }
@@ -304,23 +330,25 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
         _purpose == OfficialPurpose.submitDocuments &&
         _documentNames.isEmpty &&
         _attachments.isEmpty) {
-      kSnack(
-        context,
-        OfficialLetterStrings.docsNeeded(lang),
-        kind: KSnackKind.error,
-      );
+      setState(() => _gateError = OfficialLetterStrings.docsNeeded(lang));
       return;
     }
     if (_step < 3) {
       setState(() {
         _step++;
         _confirmed = false;
+        _gateError = null;
       });
     }
   }
 
   void _back() {
-    if (_step > 0) setState(() => _step--);
+    if (_step > 0) {
+      setState(() {
+        _step--;
+        _gateError = null;
+      });
+    }
   }
 
   // ── Attachments ──────────────────────────────────────────────────────
@@ -584,6 +612,8 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                             ),
                           ),
                         ),
+                        if (_gateError != null && _gateStillFailing)
+                          _gateErrorBar(),
                         _bottomBar(lang),
                       ],
                     ),
@@ -869,10 +899,12 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
                 lang,
                 hint: OfficialLetterStrings.officeEmailHint(lang),
                 keyboardType: TextInputType.emailAddress,
+                // Phase 13: also flag an EMPTY email once the field
+                // was touched (blur or a failed Continue tap). Before,
+                // an empty address showed no inline error at all, so
+                // nothing on screen said what Continue was waiting for.
                 errorText:
-                    _emailTouched &&
-                        _officeEmailCtrl.text.trim().isNotEmpty &&
-                        !isValidOfficeEmail(_officeEmailCtrl.text)
+                    _emailTouched && !isValidOfficeEmail(_officeEmailCtrl.text)
                     ? OfficialLetterStrings.emailInvalid(lang)
                     : null,
                 onBlur: () => setState(() => _emailTouched = true),
@@ -1400,6 +1432,38 @@ class _OfficialLettersScreenState extends State<OfficialLettersScreen> {
   }
 
   // ── Bottom bar: navigation / review actions ──────────────────────────
+
+  // Phase 13: persistent inline error for a failed Continue gate.
+  // Sits above the bottom bar, stays until the step is completed and
+  // never overlaps a button, unlike the SnackBar it replaces.
+  Widget _gateErrorBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.error_outline_rounded,
+            color: Color(0xFFB3261E),
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _gateError!,
+              style: TextStyle(
+                fontFamily: karyabFontFamily(_lang),
+                color: const Color(0xFFB3261E),
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _bottomBar(String lang) {
     return Padding(
