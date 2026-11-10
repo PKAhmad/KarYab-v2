@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/secrets.dart';
+import 'prerecorded_voice.dart';
 
 class TtsService {
   static final TtsService _instance = TtsService._internal();
@@ -113,6 +114,25 @@ class TtsService {
     }
     await stop();
     final myRequestId = _requestId;
+
+    // Pre-generated clips (Phase 14): a fixed set of ps/fa/ar texts has a
+    // recorded ElevenLabs clip bundled as an asset (see
+    // prerecorded_voice.dart). Play the asset instead of the Azure
+    // round-trip. Any text that misses the lookup (dynamic texts, de/en,
+    // texts from screens not yet recorded) falls through to the Azure
+    // path below, unchanged.
+    final asset = prerecordedVoiceAsset(language, text);
+    if (asset != null) {
+      try {
+        if (myRequestId != _requestId) return;
+        _setPlaying(true);
+        await _player.play(AssetSource(asset));
+      } catch (_) {
+        _setPlaying(false);
+      }
+      return;
+    }
+
     try {
       final voiceName = _voices[language] ?? _voices['en']!;
       final langCode  = _langCodes[language] ?? 'de-DE';
