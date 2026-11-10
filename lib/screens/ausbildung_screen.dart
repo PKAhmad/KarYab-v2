@@ -96,12 +96,14 @@ class _Cat {
   final String en;
   final String ps;
   final String fa;
+  final String ar;
 
-  const _Cat(this.key, this.searchTerm, this.icon, this.en, this.ps, this.fa);
+  const _Cat(this.key, this.searchTerm, this.icon, this.en, this.ps, this.fa, this.ar);
 
   String label(String lang) {
     if (lang == 'ps') return ps;
     if (lang == 'fa') return fa;
+    if (lang == 'ar') return ar;
     return en;
   }
 }
@@ -130,7 +132,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
   static const _kRadii = [5, 10, 25, 50, 100];
 
   static const _kCats = <_Cat>[
-    _Cat('All', '', Icons.apps_rounded, 'All', 'ټول', 'همه'),
+    _Cat('All', '', Icons.apps_rounded, 'All', 'ټول', 'همه', 'الكل'),
     _Cat(
       'IT',
       'Fachinformatiker',
@@ -138,6 +140,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'IT / Tech',
       'IT / ټیک',
       'IT / فناوری',
+      'IT / تقنية',
     ),
     _Cat(
       'Handwerk',
@@ -146,6 +149,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'Trades',
       'کسب',
       'صنعت',
+      'حرف',
     ),
     _Cat(
       'Einzelhandel',
@@ -154,6 +158,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'Retail',
       'پلور',
       'خرده‌فروشی',
+      'بيع',
     ),
     _Cat(
       'Gesundheit',
@@ -162,6 +167,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'Health',
       'روغتیا',
       'بهداشت',
+      'صحة',
     ),
     _Cat(
       'Buero',
@@ -170,6 +176,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'Office',
       'دفتر',
       'اداری',
+      'مكتب',
     ),
     _Cat(
       'Gastro',
@@ -178,6 +185,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'Gastronomy',
       'هوتل',
       'هتل‌داری',
+      'مطاعم',
     ),
     _Cat(
       'Bau',
@@ -186,6 +194,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'Construction',
       'ساختمان',
       'ساختمان',
+      'بناء',
     ),
     _Cat(
       'Logistik',
@@ -194,6 +203,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
       'Logistics',
       'لوجستیک',
       'لجستیک',
+      'نقل وتخزين',
     ),
   ];
 
@@ -479,6 +489,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'د زده کړې کار ومومئ';
       case 'fa':
         return 'کارآموزی پیدا کنید';
+      case 'ar':
+        return 'ابحث عن Ausbildung';
       default:
         return 'Find Ausbildung';
     }
@@ -490,6 +502,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'دلته د ښار نوم ولیکئ';
       case 'fa':
         return 'نام شهر را بنویسید';
+      case 'ar':
+        return 'اكتب اسم المدينة هنا';
       default:
         return 'Enter city name';
     }
@@ -501,6 +515,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'د زده کړې کارونه پلټل کیږي...';
       case 'fa':
         return 'در حال جستجوی کارآموزی...';
+      case 'ar':
+        return 'يتم البحث عن Ausbildung...';
       default:
         return 'Searching apprenticeships...';
     }
@@ -511,12 +527,15 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
     required String de,
     required String ps,
     required String fa,
+    required String ar,
   }) {
     switch (_lang) {
       case 'ps':
         return ps;
       case 'fa':
         return fa;
+      case 'ar':
+        return ar;
       case 'de':
         return de;
       default:
@@ -546,6 +565,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
           de: 'Keine Internetverbindung. Bitte prüfe deine Verbindung und versuche es erneut.',
           ps: 'انټرنیټ نشته. خپل اتصال وګورئ او بیا هڅه وکړئ.',
           fa: 'اتصال اینترنت وجود ندارد. اتصال خود را بررسی کنید و دوباره تلاش کنید.',
+          ar: 'لا يوجد اتصال بالإنترنت. تحقق من اتصالك وحاول مرة أخرى.',
         );
       case _JobsErrorKind.timeout:
         return _msg(
@@ -553,6 +573,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
           de: 'Der Server antwortet zu langsam. Bitte versuche es erneut.',
           ps: 'سرور ډېر ورو ځواب ورکوي. بیا هڅه وکړئ.',
           fa: 'سرور خیلی کند پاسخ می‌دهد. دوباره تلاش کنید.',
+          ar: 'الخادم يرد ببطء شديد. يرجى المحاولة مرة أخرى.',
         );
       case _JobsErrorKind.unavailable:
         return _msg(
@@ -560,6 +581,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
           de: 'Der Jobdienst ist vorübergehend nicht erreichbar. Bitte versuche es später erneut.',
           ps: 'د کارونو خدمت اوس مهال نشته. وروسته بیا هڅه وکړئ.',
           fa: 'سرویس کاریابی موقتا در دسترس نیست. بعدا دوباره تلاش کنید.',
+          ar: 'خدمة الوظائف غير متاحة مؤقتا. يرجى المحاولة لاحقا.',
         );
     }
   }
@@ -570,6 +592,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'د زده کړې کارونه ونه موندل شول';
       case 'fa':
         return 'کارآموزی یافت نشد';
+      case 'ar':
+        return 'لم يتم العثور على Ausbildung';
       default:
         return 'No apprenticeships found';
     }
@@ -580,6 +604,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
     de: 'Versuche einen anderen Umkreis oder eine andere Stellenart',
     ps: 'بل واټن یا د کار ډول هڅه وکړئ',
     fa: 'فاصله یا نوع کار دیگری را امتحان کنید',
+    ar: 'جرب مسافة أخرى أو نوع عمل آخر',
   );
 
   String get _retryLbl {
@@ -588,6 +613,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'بیا هڅه وکړئ';
       case 'fa':
         return 'دوباره تلاش کنید';
+      case 'ar':
+        return 'حاول مرة أخرى';
       default:
         return 'Retry';
     }
@@ -599,6 +626,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'غوښتنلیک';
       case 'fa':
         return 'ثبت نام';
+      case 'ar':
+        return 'تقديم طلب';
       default:
         return 'Apply';
     }
@@ -610,6 +639,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'د زده کړې کار ولټوئ...';
       case 'fa':
         return 'جستجوی کارآموزی...';
+      case 'ar':
+        return 'ابحث عن Ausbildung...';
       default:
         return 'Search apprenticeships...';
     }
@@ -621,6 +652,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'د لوکیشن خدمت غیرفعال دی. مهرباني وکړئ يې فعال کړئ.';
       case 'fa':
         return 'سرویس موقعیت‌مکانی غیرفعال است. لطفاً آن را فعال کنید.';
+      case 'ar':
+        return 'خدمة الموقع متوقفة. يرجى تشغيلها.';
       default:
         return 'Location services are disabled. Please enable them.';
     }
@@ -632,6 +665,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'د لوکیشن اجازه ونه درکړل شوه. مهرباني وکړئ ښار پخپله ولیکئ.';
       case 'fa':
         return 'اجازه دسترسی به موقعیت داده نشد. لطفاً شهر را دستی وارد کنید.';
+      case 'ar':
+        return 'لم يتم إعطاء إذن الموقع. يرجى كتابة المدينة بنفسك.';
       default:
         return 'Location permission denied. Please enter your city manually.';
     }
@@ -643,6 +678,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'ستاسو ښار ونه موندل شو. مهرباني وکړئ يې پخپله ولیکئ.';
       case 'fa':
         return 'شهر شما پیدا نشد. لطفاً آن را به‌صورت دستی وارد کنید.';
+      case 'ar':
+        return 'لم يتم العثور على مدينتك. يرجى كتابتها بنفسك.';
       default:
         return 'Could not detect your city. Please enter it manually.';
     }
@@ -654,6 +691,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'د زده کړې کارونو د موندلو لپاره خپل ښار ولیکئ یا خپل موقعیت وکاروئ';
       case 'fa':
         return 'برای یافتن کارآموزی، نام شهر خود را بنویسید یا از موقعیت مکانی خود استفاده کنید';
+      case 'ar':
+        return 'للعثور على Ausbildung، اكتب مدينتك أو استخدم موقعك';
       default:
         return 'Enter your city or use your location to find apprenticeships near you';
     }
@@ -665,6 +704,8 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
         return 'زما موقعیت وکاروئ';
       case 'fa':
         return 'استفاده از موقعیت من';
+      case 'ar':
+        return 'استخدم موقعي';
       default:
         return 'Use my location';
     }
@@ -675,7 +716,7 @@ class _AusbildungScreenState extends State<AusbildungScreen> {
   @override
   Widget build(BuildContext context) {
     _lang = context.watch<LanguageProvider>().language;
-    final isRtl = _lang == 'ps' || _lang == 'fa';
+    final isRtl = _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
     return PopScope(
       canPop: true,

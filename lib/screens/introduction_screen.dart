@@ -277,8 +277,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     );
   }
 
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
-  bool get _showSpeaker => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _showSpeaker => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
   void _selectCard(String card, VoidCallback navigate) {
     if (_selectedCard != null) return;
@@ -300,6 +300,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'تاسو  کولای دلته لاندی کارونه ترسره کړئ';
       case 'fa':
         return 'شما می‌توانید کارهای زیر را انجام دهید.';
+      case 'ar':
+        return 'يمكنك عمل الأشياء التالية هنا';
       default:
         return 'Click on one of the options below to get started';
     }
@@ -311,6 +313,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'د پیل لپاره یوه بټن کلیک کړئ';
       case 'fa':
         return 'یک گزینه را برای شروع انتخاب کنید';
+      case 'ar':
+        return 'اختر خيارا واحدا للبدء';
       default:
         return 'Choose an option to get started';
     }
@@ -325,6 +329,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'غواړي چی نژدي کارونه پیدا کړي؟';
       case 'fa':
         return 'کارهای نزدیک من را پیدا کنید';
+      case 'ar':
+        return 'ابحث عن وظائف قريبة مني';
       default:
         return 'Find Jobs Near Me';
     }
@@ -336,6 +342,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'ښه راغلاست،';
       case 'fa':
         return 'خوش آمدید،';
+      case 'ar':
+        return 'أهلا بعودتك،';
       default:
         return 'Welcome back,';
     }
@@ -347,6 +355,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'نژدي کارونه پیدا کړئ';
       case 'fa':
         return 'کارهای نزدیک را پیدا کنید';
+      case 'ar':
+        return 'ابحث عن وظائف قريبة';
       default:
         return 'Find Jobs Near Me';
     }
@@ -358,6 +368,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'زما جوړه شوی CV وګورئ';
       case 'fa':
         return 'CV من را ببینید';
+      case 'ar':
+        return 'شاهد CV الخاص بي';
       default:
         return 'View / Download My CV';
     }
@@ -373,6 +385,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'ستاسو CV جوړه شوی ده.✓';
       case 'fa':
         return 'CV شما جور شد. ✓';
+      case 'ar':
+        return 'تم إنشاء CV الخاص بك ✓';
       default:
         return 'CV Created ✓';
     }
@@ -384,6 +398,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'خپله CV اپلوډ کړئ';
       case 'fa':
         return 'CV خود را اپلوډ کنید';
+      case 'ar':
+        return 'حمّل CV الخاص بك';
       default:
         return 'Upload Your own CV';
     }
@@ -395,6 +411,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'زه خپله CV لرم.';
       case 'fa':
         return 'من قبلاً CV دارم';
+      case 'ar':
+        return 'عندي CV من قبل';
       default:
         return 'I Already Have a CV';
     }
@@ -406,6 +424,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'آلمانی زده کړئ';
       case 'fa':
         return 'آلمانی یاد بگیرید';
+      case 'ar':
+        return 'تعلم اللغة الألمانية';
       default:
         return 'Learn German';
     }
@@ -462,6 +482,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                         ? 'CV اپلوډ شوه'
                         : _lang == 'fa'
                         ? 'CV آپلود شد'
+                        : _lang == 'ar'
+                        ? 'تم تحميل CV'
                         : 'CV uploaded successfully',
                   ),
                   backgroundColor: KColors.green,
@@ -493,6 +515,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                       ? 'د CV فایل ونه موندل شو'
                       : _lang == 'fa'
                       ? 'فایل CV پیدا نشد'
+                      : _lang == 'ar'
+                      ? 'لم يتم العثور على ملف CV'
                       : 'CV file not found',
                 ),
               ),
@@ -512,6 +536,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                       ? 'CV پرانستل نشوه'
                       : _lang == 'fa'
                       ? 'CV باز نشد'
+                      : _lang == 'ar'
+                      ? 'لا يمكن فتح ملف CV'
                       : 'Could not open CV file',
                 ),
               ),
@@ -643,6 +669,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'کور';
       case 'fa':
         return 'خانه';
+      case 'ar':
+        return 'الرئيسية';
       default:
         return 'Home';
     }
@@ -654,6 +682,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'کارونه';
       case 'fa':
         return 'کارها';
+      case 'ar':
+        return 'الوظائف';
       default:
         return 'Jobs';
     }
@@ -665,6 +695,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'زما سیوي';
       case 'fa':
         return 'CVهای من';
+      case 'ar':
+        return 'سيري الذاتية';
       default:
         return 'My CVs';
     }
@@ -676,6 +708,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'نور';
       case 'fa':
         return 'بیشتر';
+      case 'ar':
+        return 'المزيد';
       default:
         return 'More';
     }
@@ -687,6 +721,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'زما پوښلیکونه';
       case 'fa':
         return 'نامه‌های من';
+      case 'ar':
+        return 'رسائلي';
       default:
         return 'My Cover Letters';
     }
@@ -856,6 +892,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         return 'ستاسی سییوی پیدا نشوه، لطفاً نوی سییوی جوړ کړی.';
       case 'fa':
         return ' سییوی یافت نشد. لطفاًسییوی نو بسازید.';
+      case 'ar':
+        return 'لم يتم العثور على CV. يرجى إنشاء CV جديد أولا.';
       default:
         return 'No CV found. Please create one first.';
     }
@@ -1261,6 +1299,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'آیا غواړی چی د ځان لپاره یوه نوی سییوی جوړ کړي؟'
+                                                    : _lang == 'ar'
+                                                    ? 'هل تريد إنشاء CV جديد لنفسك؟'
                                                     : 'سییوی نو بسازید و کار پیدا کنید',
                                                 _lang,
                                               )
@@ -1281,6 +1321,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'غواړي چی نژدي کارونه پیدا کړي؟'
+                                                    : _lang == 'ar'
+                                                    ? 'هل تريد البحث عن وظائف قريبة؟'
                                                     : 'کارهای نزدیک من را پیدا کنید',
                                                 _lang,
                                               )
@@ -1304,6 +1346,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'زه خپله سییوی لرم'
+                                                    : _lang == 'ar'
+                                                    ? 'عندي CV من قبل'
                                                     : 'من قبلاً سییوی دارم',
                                                 _lang,
                                               )
@@ -1328,6 +1372,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                               ? () => TtsService().speak(
                                                   _lang == 'ps'
                                                       ? 'د زده کړې کار ومومئ'
+                                                      : _lang == 'ar'
+                                                      ? 'ابحث عن مكان Ausbildung'
                                                       : 'کارآموزی پیدا کنید',
                                                   _lang,
                                                 )
@@ -1355,6 +1401,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'آلمانی زده کړئ'
+                                                    : _lang == 'ar'
+                                                    ? 'تعلم اللغة الألمانية'
                                                     : 'آلمانی یاد بگیرید',
                                                 _lang,
                                               )
@@ -1506,6 +1554,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                         ? () => TtsService().speak(
                                             _lang == 'ps'
                                                 ? 'د خپل ښار نژدي کارونه پیدا کړئ'
+                                                : _lang == 'ar'
+                                                ? 'ابحث عن وظائف قريبة من مدينتك'
                                                 : 'کارهای نزدیک را پیدا کنید',
                                             _lang,
                                           )
@@ -1554,6 +1604,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'نوی سییوی جوړ کړئ'
+                                                    : _lang == 'ar'
+                                                    ? 'أنشئ CV جديدا'
                                                     : 'ایجاد CV جدید',
                                                 _lang,
                                               )
@@ -1571,6 +1623,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'زما جوړه شوی سییوی ښکاره کړی'
+                                                    : _lang == 'ar'
+                                                    ? 'شاهد CV الخاص بي'
                                                     : 'سییوی من را ببینید',
                                                 _lang,
                                               )
@@ -1590,6 +1644,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'خپله سییوی اپلوډ کړئ'
+                                                    : _lang == 'ar'
+                                                    ? 'حمّل CV الخاص بك'
                                                     : 'سییوی خود را اپلوډ کنید',
                                                 _lang,
                                               )
@@ -1611,6 +1667,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                               ? () => TtsService().speak(
                                                   _lang == 'ps'
                                                       ? 'د زده کړې کار ومومئ'
+                                                      : _lang == 'ar'
+                                                      ? 'ابحث عن مكان Ausbildung'
                                                       : 'کارآموزی پیدا کنید',
                                                   _lang,
                                                 )
@@ -1638,6 +1696,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             ? () => TtsService().speak(
                                                 _lang == 'ps'
                                                     ? 'آلمانی زده کړئ'
+                                                    : _lang == 'ar'
+                                                    ? 'تعلم اللغة الألمانية'
                                                     : 'آلمانی یاد بگیرید',
                                                 _lang,
                                               )
@@ -1754,7 +1814,7 @@ class _MyCvScreenState extends State<_MyCvScreen> {
     _selected = widget.jobExists ? 'job' : 'ausbildung';
   }
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
 
   String get _titleLabel {
     switch (widget.language) {
@@ -1762,6 +1822,8 @@ class _MyCvScreenState extends State<_MyCvScreen> {
         return 'زما CV';
       case 'fa':
         return 'CV من';
+      case 'ar':
+        return 'CV الخاص بي';
       default:
         return 'My CV';
     }
@@ -1773,6 +1835,8 @@ class _MyCvScreenState extends State<_MyCvScreen> {
         return 'د کار CV';
       case 'fa':
         return 'رزومه کاری';
+      case 'ar':
+        return 'CV العمل';
       default:
         return 'Job CV';
     }
@@ -1784,6 +1848,8 @@ class _MyCvScreenState extends State<_MyCvScreen> {
         return 'د زده کړې CV';
       case 'fa':
         return 'رزومه کارآموزی';
+      case 'ar':
+        return 'CV Ausbildung';
       default:
         return 'Ausbildung CV';
     }
@@ -1939,6 +2005,8 @@ class _LangPill extends StatelessWidget {
         return 'PS';
       case 'fa':
         return 'FA';
+      case 'ar':
+        return 'AR';
       default:
         return 'EN';
     }
@@ -1992,6 +2060,7 @@ class _LanguagePicker extends StatelessWidget {
     final langs = [
       {'code': 'ps', 'native': 'پښتو', 'roman': 'Pashto'},
       {'code': 'fa', 'native': 'دری', 'roman': 'Dari'},
+      {'code': 'ar', 'native': 'العربية', 'roman': 'Arabic'},
       {'code': 'en', 'native': 'English', 'roman': 'English'},
     ];
     return Container(

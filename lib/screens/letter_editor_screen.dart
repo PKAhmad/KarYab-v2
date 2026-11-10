@@ -76,7 +76,7 @@ class LetterEditorScreen extends StatefulWidget {
 
 class _LetterEditorScreenState extends State<LetterEditorScreen> {
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
   bool _loading = true;
   bool _setupMode = false;
@@ -860,7 +860,7 @@ class _LetterEditorScreenState extends State<LetterEditorScreen> {
         ? const ['ps']
         : _lang == 'fa'
         ? const ['fa']
-        : const ['ps', 'fa'];
+        : const ['ps', 'fa', 'ar'];
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
@@ -1524,12 +1524,14 @@ class _LetterEditorScreenState extends State<LetterEditorScreen> {
   // ── Strings ─────────────────────────────────────────────────────────────
 
   String t(String key) {
-    String pick(String ps, String fa, String en) {
+    String pick(String ps, String fa, String en, String ar) {
       switch (_lang) {
         case 'ps':
           return ps;
         case 'fa':
           return fa;
+        case 'ar':
+          return ar;
         default:
           return en;
       }
@@ -1537,211 +1539,227 @@ class _LetterEditorScreenState extends State<LetterEditorScreen> {
 
     switch (key) {
       case 'title':
-        return pick('پوښتنلیک', 'نامه پوششی', 'Cover letter');
+        return pick('پوښتنلیک', 'نامه پوششی', 'Cover letter', 'رسالة التغطية');
       case 'setupTitle':
-        return pick('نوی لیک', 'نامه جدید', 'New letter');
+        return pick('نوی لیک', 'نامه جدید', 'New letter', 'رسالة جديدة');
       case 'jobDetails':
-        return pick('د دندې معلومات', 'مشخصات شغل', 'Job details');
+        return pick('د دندې معلومات', 'مشخصات شغل', 'Job details', 'تفاصيل الوظيفة');
       case 'company':
-        return pick('شرکت', 'شرکت', 'Company');
+        return pick('شرکت', 'شرکت', 'Company', 'الشركة');
       case 'street':
-        return pick('کوڅه او شمېره', 'خیابان و شماره', 'Street and number');
+        return pick('کوڅه او شمېره', 'خیابان و شماره', 'Street and number', 'الشارع والرقم');
       case 'plz':
-        return pick('پوستي کوډ', 'کد پستی', 'Postal code');
+        return pick('پوستي کوډ', 'کد پستی', 'Postal code', 'الرمز البريدي');
       case 'city':
-        return pick('ښار', 'شهر', 'City');
+        return pick('ښار', 'شهر', 'City', 'المدينة');
       case 'contactPerson':
-        return pick('د اړیکې کس', 'شخص تماس', 'Contact person');
+        return pick('د اړیکې کس', 'شخص تماس', 'Contact person', 'شخص الاتصال');
       case 'jobTitle':
-        return pick('د دندې نوم', 'عنوان شغل', 'Job title');
+        return pick('د دندې نوم', 'عنوان شغل', 'Job title', 'المسمى الوظيفي');
       case 'jobLocation':
-        return pick('د کار ځای', 'محل کار', 'Work location');
+        return pick('د کار ځای', 'محل کار', 'Work location', 'مكان العمل');
       case 'reference':
-        return pick('حواله شمېره', 'شماره مرجع', 'Reference number');
+        return pick('حواله شمېره', 'شماره مرجع', 'Reference number', 'رقم المرجع');
       case 'salutation_none':
-        return pick('پرته له نومه', 'بدون نام', 'No name');
+        return pick('پرته له نومه', 'بدون نام', 'No name', 'بدون اسم');
       case 'salutation_frau':
-        return pick('اغلې (Frau)', 'خانم (Frau)', 'Mrs (Frau)');
+        return pick('اغلې (Frau)', 'خانم (Frau)', 'Mrs (Frau)', 'السيدة (Frau)');
       case 'salutation_herr':
-        return pick('ښاغلی (Herr)', 'آقا (Herr)', 'Mr (Herr)');
+        return pick('ښاغلی (Herr)', 'آقا (Herr)', 'Mr (Herr)', 'السيد (Herr)');
       case 'updateBetreff':
         return pick(
           'موضوع هم تازه کول',
           'موضوع را هم به‌روز کن',
           'Also update the subject line',
+          'تحديث سطر الموضوع أيضا',
         );
       case 'cancel':
-        return pick('لغوه', 'لغو', 'Cancel');
+        return pick('لغوه', 'لغو', 'Cancel', 'إلغاء');
       case 'save':
-        return pick('خوندي کول', 'ذخیره', 'Save');
+        return pick('خوندي کول', 'ذخیره', 'Save', 'حفظ');
       case 'ok':
-        return pick('سمه ده', 'باشه', 'OK');
+        return pick('سمه ده', 'باشه', 'OK', 'حسنا');
       case 'edit':
-        return pick('سمول', 'ویرایش', 'Edit');
+        return pick('سمول', 'ویرایش', 'Edit', 'تعديل');
       case 'editDetails':
-        return pick('معلومات سمول', 'ویرایش مشخصات', 'Edit details');
+        return pick('معلومات سمول', 'ویرایش مشخصات', 'Edit details', 'تعديل التفاصيل');
       case 'listen':
-        return pick('اورېدل', 'شنیدن', 'Listen');
+        return pick('اورېدل', 'شنیدن', 'Listen', 'استماع');
       case 'section_betreff':
-        return pick('موضوع', 'موضوع', 'Subject');
+        return pick('موضوع', 'موضوع', 'Subject', 'الموضوع');
       case 'section_einleitung':
-        return pick('پرانیسته', 'شروع', 'Opening');
+        return pick('پرانیسته', 'شروع', 'Opening', 'الافتتاح');
       case 'section_erfahrung':
-        return pick('زما تجربه', 'تجربه من', 'My experience');
+        return pick('زما تجربه', 'تجربه من', 'My experience', 'خبرتي');
       case 'section_kenntnisse':
         return pick(
           'مهارتونه او قوتونه',
           'مهارت‌ها و نقاط قوت',
           'Skills and strengths',
+          'المهارات ونقاط القوة',
         );
       case 'section_warum':
-        return pick('ولې دا شرکت', 'چرا این شرکت', 'Why this company');
+        return pick('ولې دا شرکت', 'چرا این شرکت', 'Why this company', 'لماذا هذه الشركة');
       case 'section_verfuegbarkeit':
-        return pick('شتون', 'دسترسی', 'Availability');
+        return pick('شتون', 'دسترسی', 'Availability', 'التوفر');
       case 'section_schluss':
-        return pick('پای', 'پایان', 'Closing');
+        return pick('پای', 'پایان', 'Closing', 'الخاتمة');
       case 'section_anlagen':
-        return pick('ضمیمې', 'پیوست‌ها', 'Attachments');
+        return pick('ضمیمې', 'پیوست‌ها', 'Attachments', 'المرفقات');
       case 'edited':
-        return pick('سمول شوی', 'ویرایش شده', 'Edited');
+        return pick('سمول شوی', 'ویرایش شده', 'Edited', 'تم تعديله');
       case 'hiddenChip':
-        return pick('پټ', 'پنهان', 'Hidden');
+        return pick('پټ', 'پنهان', 'Hidden', 'مخفي');
       case 'hiddenNote':
         return pick(
           'دا برخه په لیک کې نه چاپېږي.',
           'این بخش در نامه چاپ نمی‌شود.',
           'This part is not printed in the letter.',
+          'هذا الجزء لا يُطبع في الرسالة.',
         );
       case 'choosePhrase':
-        return pick('جمله غوره کول', 'انتخاب جمله', 'Choose a sentence');
+        return pick('جمله غوره کول', 'انتخاب جمله', 'Choose a sentence', 'اختيار جملة');
       case 'recommended':
-        return pick('وړاندیز شوی', 'پیشنهاد شده', 'Recommended');
+        return pick('وړاندیز شوی', 'پیشنهاد شده', 'Recommended', 'موصى به');
       case 'current':
-        return pick('اوسنی', 'فعلی', 'Current');
+        return pick('اوسنی', 'فعلی', 'Current', 'الحالي');
       case 'noPhrases':
         return pick(
           'د دې برخې لپاره جمله نشته، لومړی خپل معلومات ډک کړئ.',
           'برای این بخش جمله‌ای نیست، اول اطلاعات خود را کامل کنید.',
           'No sentence fits this part yet. Complete your profile data first.',
+          'لا توجد جملة لهذا الجزء بعد. أكمل بياناتك أولا.',
         );
       case 'tone_formal':
-        return pick('رسمي', 'رسمی', 'Formal');
+        return pick('رسمي', 'رسمی', 'Formal', 'رسمي');
       case 'tone_friendly':
-        return pick('دوستانه', 'دوستانه', 'Friendly');
+        return pick('دوستانه', 'دوستانه', 'Friendly', 'ودي');
       case 'tone_confident':
-        return pick('ډاډه', 'مطمئن', 'Confident');
+        return pick('ډاډه', 'مطمئن', 'Confident', 'واثق');
       case 'toneLabel':
-        return pick('ډول', 'لحن', 'Tone');
+        return pick('ډول', 'لحن', 'Tone', 'الأسلوب');
       case 'sector_general':
-        return pick('عمومي', 'عمومی', 'General');
+        return pick('عمومي', 'عمومی', 'General', 'عام');
       case 'sector_warehouse':
-        return pick('ګودام', 'انبار', 'Warehouse');
+        return pick('ګودام', 'انبار', 'Warehouse', 'المستودع');
       case 'sector_care':
-        return pick('پاملرنه', 'مراقبت', 'Care');
+        return pick('پاملرنه', 'مراقبت', 'Care', 'الرعاية');
       case 'sector_gastronomy':
-        return pick('رستورانت', 'رستوران', 'Gastronomy');
+        return pick('رستورانت', 'رستوران', 'Gastronomy', 'المطعم');
       case 'sector_retail':
-        return pick('پلورنه', 'فروش', 'Retail');
+        return pick('پلورنه', 'فروش', 'Retail', 'المبيعات');
       case 'sector_cleaning':
-        return pick('پاکول', 'نظافت', 'Cleaning');
+        return pick('پاکول', 'نظافت', 'Cleaning', 'التنظيف');
       case 'sector_construction':
-        return pick('ودانیز', 'ساختمان', 'Construction');
+        return pick('ودانیز', 'ساختمان', 'Construction', 'البناء');
       case 'sector_driving':
-        return pick('موټر چلول', 'رانندگی', 'Driving');
+        return pick('موټر چلول', 'رانندگی', 'Driving', 'القيادة');
       case 'sector_office':
-        return pick('دفتر', 'دفتر', 'Office');
+        return pick('دفتر', 'دفتر', 'Office', 'المكتب');
       case 'reasonSector':
-        return pick('ستاسو دندې ته مناسب', 'مناسب شغل شما', 'Fits your job');
+        return pick('ستاسو دندې ته مناسب', 'مناسب شغل شما', 'Fits your job', 'يناسب وظيفتك');
       case 'reasonTone':
-        return pick('ستاسو ډول ته مناسب', 'مناسب لحن شما', 'Fits your tone');
+        return pick('ستاسو ډول ته مناسب', 'مناسب لحن شما', 'Fits your tone', 'يناسب أسلوبك');
       case 'reasonSpecific':
         return pick(
           'ستاسو معلومات کاروي',
           'از اطلاعات شما استفاده می‌کند',
           'Uses your data',
+          'يستخدم بياناتك',
         );
       case 'reasonGeneral':
-        return pick('وړاندیز شوی', 'پیشنهاد شده', 'Recommended');
+        return pick('وړاندیز شوی', 'پیشنهاد شده', 'Recommended', 'موصى به');
       case 'translationNote':
         return pick(
           'دا ژباړه غوره شوې جمله پوښي. ستاسو خپل سمونونه یوازې په آلماني کې دي.',
           'این ترجمه جمله انتخاب‌شده را پوشش می‌دهد. ویرایش‌های شما فقط به آلمانی است.',
           'This translation covers the chosen sentence. Your own edits are in German only.',
+          'هذه الترجمة تغطي الجملة المختارة. تعديلاتك الخاصة بالألمانية فقط.',
         );
       case 'noPhraseNote':
         return pick(
           'دا متن تاسو پخپله لیکلی دی، ژباړه نشته.',
           'این متن را خودتان نوشته‌اید، ترجمه‌ای نیست.',
           'You wrote this text yourself, there is no translation.',
+          'أنت كتبت هذا النص بنفسك، لا توجد ترجمة.',
         );
       case 'placeholderTitle':
         return pick(
           'لیک لا بشپړ نه دی',
           'نامه هنوز کامل نیست',
           'The letter is not complete yet',
+          'الرسالة ليست كاملة بعد',
         );
       case 'placeholderBody':
         return pick(
           'په لیک کې لا ځای ناستي شته، لومړی یې سمول پکار دي:',
           'در نامه هنوز جای خالی هست، اول باید اصلاح شود:',
           'There are still placeholders in the letter. Fix them first:',
+          'لا تزال هناك عناصر نائبة في الرسالة. أصلحها أولا:',
         );
       case 'saved':
         return pick(
           'په ډاونلوډونو کې خوندي شو',
           'در دانلودها ذخیره شد',
           'Saved to Downloads',
+          'تم الحفظ في التنزيلات',
         );
       case 'preview':
-        return pick('کتل', 'مشاهده', 'Preview');
+        return pick('کتل', 'مشاهده', 'Preview', 'معاينة');
       case 'pdf':
-        return pick('PDF جوړول', 'ساختن PDF', 'Create PDF');
+        return pick('PDF جوړول', 'ساختن PDF', 'Create PDF', 'إنشاء PDF');
       case 'mappeFailed':
         return pick(
           'بشپړ غوښتنلیک جوړ نه شو.',
           'پوشه کامل درخواست ساخته نشد.',
           'The full application could not be created.',
+          'تعذر إنشاء ملف الطلب الكامل.',
         );
       case 'mappeNotEmbedded':
         return pick(
           'دا اسناد یوازې په ضمیمو کې نومول شوي، دننه نه دي',
           'این مدارک فقط در پیوست‌ها نام برده شده‌اند، داخل نیستند',
           'These documents are only named in the attachments, not included',
+          'هذه المستندات مذكورة في المرفقات فقط، وليست مضمنة',
         );
       case 'fitsOnePage':
-        return pick('یوه پاڼه', 'یک صفحه', 'Fits on one page');
+        return pick('یوه پاڼه', 'یک صفحه', 'Fits on one page', 'صفحة واحدة');
       case 'pagesWord':
-        return pick('پاڼې', 'صفحه', 'pages');
+        return pick('پاڼې', 'صفحه', 'pages', 'صفحات');
       case 'guardWarning':
-        return pick('ځای ناستي شته', 'جای خالی هست', 'Placeholders remain');
+        return pick('ځای ناستي شته', 'جای خالی هست', 'Placeholders remain', 'توجد عناصر نائبة');
       case 'createLetter':
-        return pick('لیک جوړول', 'ساختن نامه', 'Create letter');
+        return pick('لیک جوړول', 'ساختن نامه', 'Create letter', 'إنشاء الرسالة');
       case 'presetsLabel':
         return pick(
           'خوندي شوي شرکتونه',
           'شرکت‌های ذخیره‌شده',
           'Saved companies',
+          'الشركات المحفوظة',
         );
       case 'savePreset':
         return pick(
           'دا شرکت خوندي کول',
           'این شرکت را ذخیره کن',
           'Save this company',
+          'حفظ هذه الشركة',
         );
       case 'forAusbildung':
         return pick(
           'د زده کړې (Ausbildung) لپاره',
           'برای کارآموزی (Ausbildung)',
           'For an Ausbildung',
+          'من أجل Ausbildung',
         );
       case 'legacyNote':
         return pick(
           'دا لیک په زاړه بڼه کې جوړ شوی و. متن یې دلته نه پرانیستل کېږي.',
           'این نامه در نسخه قدیمی ساخته شده بود. متن آن اینجا باز نمی‌شود.',
           'This letter was created in the old version. Its text cannot be opened here.',
+          'تم إنشاء هذه الرسالة في الإصدار القديم. لا يمكن فتح نصها هنا.',
         );
       case 'createNewInstead':
-        return pick('نوی لیک جوړول', 'ساختن نامه جدید', 'Create a new letter');
+        return pick('نوی لیک جوړول', 'ساختن نامه جدید', 'Create a new letter', 'إنشاء رسالة جديدة');
       default:
         return key;
     }

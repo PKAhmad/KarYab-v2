@@ -44,7 +44,7 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
   late bool _voiceMode;
   bool _checking = false;
 
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
   bool get _showSpeaker => _voiceMode && _isRtl;
 
   @override
@@ -191,6 +191,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'خپل غوښتنلیک اسناد جوړ کړئ';
       case 'fa':
         return 'اسناد درخواست خود را بسازید';
+      case 'ar':
+        return 'أنشئ مستندات طلبك';
       default:
         return 'Create Application Documents';
     }
@@ -202,6 +204,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'هغه سند غوره کړئ چې غواړئ جوړ کړئ';
       case 'fa':
         return 'سندی که می‌خواهید بسازید را انتخاب کنید';
+      case 'ar':
+        return 'اختر المستند الذي تريد إنشاءه';
       default:
         return 'Choose which document you want to create';
     }
@@ -213,6 +217,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'د پوښتنلیک لیک';
       case 'fa':
         return 'نامه پوششی';
+      case 'ar':
+        return 'رسالة التغطية';
       default:
         return 'Cover Letter';
     }
@@ -224,6 +230,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'ستاسو د معلوماتو پر بنسټ اتومات جوړ شوی';
       case 'fa':
         return 'به‌طور خودکار از اطلاعات شما ساخته می‌شود';
+      case 'ar':
+        return 'تُنشأ تلقائيا من معلوماتك المحفوظة';
       default:
         return 'Auto-generated from your saved details';
     }
@@ -239,6 +247,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'د غوښتنلیک پوښ پاڼه، اتومات جوړ شوی';
       case 'fa':
         return 'برگه روی جلد درخواست، به‌طور خودکار ساخته می‌شود';
+      case 'ar':
+        return 'صفحة غلاف الطلب، تُنشأ تلقائيا';
       default:
         return 'Application cover page, auto-generated';
     }
@@ -250,6 +260,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'لومړی خپل شخصي معلومات د CV په جوړولو سره اضافه کړئ';
       case 'fa':
         return 'ابتدا با ساختن یک رزومه، اطلاعات شخصی خود را اضافه کنید';
+      case 'ar':
+        return 'أضف معلوماتك الشخصية أولا عن طريق إنشاء سيرة ذاتية';
       default:
         return 'Please create a Job CV or Ausbildung CV first to add your details';
     }
@@ -261,6 +273,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'د دندې CV';
       case 'fa':
         return 'رزومه شغلی';
+      case 'ar':
+        return 'سيرة ذاتية للوظيفة';
       default:
         return 'Job CV';
     }
@@ -272,6 +286,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'د کار موندلو لپاره';
       case 'fa':
         return 'برای پیدا کردن یک شغل';
+      case 'ar':
+        return 'للبحث عن وظيفة';
       default:
         return 'For finding a job in Germany';
     }
@@ -286,6 +302,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'د زده کړې کار لپاره غوښتنلیک';
       case 'fa':
         return 'برای درخواست کارآموزی (Ausbildung)';
+      case 'ar':
+        return 'للتقدم إلى التدريب المهني (Ausbildung)';
       default:
         return 'For applying to vocational training (Ausbildung)';
     }

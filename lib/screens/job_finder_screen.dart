@@ -99,6 +99,8 @@ class _Cat {
   final String fa;
   final String psTts;
   final String faTts;
+  final String ar;
+  final String arTts;
 
   const _Cat(
     this.key,
@@ -109,17 +111,21 @@ class _Cat {
     this.fa,
     this.psTts,
     this.faTts,
+    this.ar,
+    this.arTts,
   );
 
   String label(String lang) {
     if (lang == 'ps') return ps;
     if (lang == 'fa') return fa;
+    if (lang == 'ar') return ar;
     return en;
   }
 
   String tts(String lang) {
     if (lang == 'ps') return psTts;
     if (lang == 'fa') return faTts;
+    if (lang == 'ar') return arTts;
     return '';
   }
 }
@@ -166,6 +172,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'همه',
       'ټول کارونه',
       'همه کارها',
+      'الكل',
+      'كل الوظائف',
     ),
     _Cat(
       'Construction',
@@ -176,6 +184,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'ساختمان',
       'ساختمانی کار',
       'ساختمان',
+      'البناء',
+      'عمل البناء',
     ),
     _Cat(
       'Cleaning',
@@ -186,6 +196,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'نظافت',
       'پاک کاری',
       'نظافت',
+      'التنظيف',
+      'التنظيف',
     ),
     _Cat(
       'Kitchen',
@@ -196,6 +208,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'آشپزخانه',
       'پخلی یا اشپزی',
       'آشپزی',
+      'المطبخ',
+      'الطبخ',
     ),
     _Cat(
       'Driving',
@@ -206,6 +220,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'رانندگی',
       'موټر چلول',
       'رانندگی',
+      'القيادة',
+      'قيادة السيارة',
     ),
     _Cat(
       'Warehouse',
@@ -216,6 +232,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'انبار',
       'ګودام کار',
       'انبار',
+      'المستودع',
+      'عمل المستودع',
     ),
     _Cat(
       'Security',
@@ -226,6 +244,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'امنیت',
       'سیکیورټی یا امنیت',
       'امنیت',
+      'الأمن',
+      'الأمن',
     ),
     _Cat(
       'Packing',
@@ -236,6 +256,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'بسته‌بندی',
       'بسته بندي',
       'بسته‌بندی',
+      'التغليف',
+      'التغليف',
     ),
     _Cat(
       'DHL',
@@ -246,6 +268,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'DHL',
       'ډي ایچ ایل',
       'دی اچ ال',
+      'DHL',
+      'دي إتش إل',
     ),
     _Cat(
       'Amazon',
@@ -256,6 +280,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
       'آمازون',
       'امازون',
       'آمازون',
+      'أمازون',
+      'أمازون',
     ),
   ];
 
@@ -402,6 +428,12 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
           'اینجا کار مورد نظر خود را پیدا کنید، '
               'نام شهر را بنویسید و کار پیدا کنید',
           'fa',
+        );
+      } else if (lang == 'ar') {
+        TtsService().speak(
+          'هنا يمكنك العثور على العمل الذي تريده، '
+              'اكتب اسم المدينة وابحث عن عملك أو اختره',
+          'ar',
         );
       }
     });
@@ -615,6 +647,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'کارونه پیدا کړئ';
       case 'fa':
         return 'کار پیدا کنید';
+      case 'ar':
+        return 'ابحث عن وظائف';
       default:
         return 'Find Jobs';
     }
@@ -626,6 +660,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'دلته د ښار نوم ولیکئ';
       case 'fa':
         return 'نام شهر را بنویسید';
+      case 'ar':
+        return 'اكتب اسم المدينة هنا';
       default:
         return 'Enter city name';
     }
@@ -637,6 +673,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'ستاسو سره نږدې کارونه پلټل کیږي...';
       case 'fa':
         return 'در حال جستجوی کارهای نزدیک شما...';
+      case 'ar':
+        return 'يجري البحث عن وظائف قريبة منك...';
       default:
         return 'Finding jobs near you...';
     }
@@ -647,12 +685,15 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
     required String de,
     required String ps,
     required String fa,
+    required String ar,
   }) {
     switch (_lang) {
       case 'ps':
         return ps;
       case 'fa':
         return fa;
+      case 'ar':
+        return ar;
       case 'de':
         return de;
       default:
@@ -682,6 +723,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
           de: 'Keine Internetverbindung. Bitte prüfe deine Verbindung und versuche es erneut.',
           ps: 'انټرنیټ نشته. خپل اتصال وګورئ او بیا هڅه وکړئ.',
           fa: 'اتصال اینترنت وجود ندارد. اتصال خود را بررسی کنید و دوباره تلاش کنید.',
+          ar: 'لا يوجد اتصال بالإنترنت. تحقق من اتصالك وحاول مرة أخرى.',
         );
       case _JobsErrorKind.timeout:
         return _msg(
@@ -689,6 +731,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
           de: 'Der Server antwortet zu langsam. Bitte versuche es erneut.',
           ps: 'سرور ډېر ورو ځواب ورکوي. بیا هڅه وکړئ.',
           fa: 'سرور خیلی کند پاسخ می‌دهد. دوباره تلاش کنید.',
+          ar: 'الخادم بطيء جدا في الرد. حاول مرة أخرى.',
         );
       case _JobsErrorKind.unavailable:
         return _msg(
@@ -696,6 +739,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
           de: 'Der Jobdienst ist vorübergehend nicht erreichbar. Bitte versuche es später erneut.',
           ps: 'د کارونو خدمت اوس مهال نشته. وروسته بیا هڅه وکړئ.',
           fa: 'سرویس کاریابی موقتا در دسترس نیست. بعدا دوباره تلاش کنید.',
+          ar: 'خدمة الوظائف غير متاحة مؤقتا. حاول مرة أخرى لاحقا.',
         );
     }
   }
@@ -705,6 +749,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
     de: 'Keine Stellen gefunden',
     ps: 'کارونه ونه موندل شول',
     fa: 'کاری یافت نشد',
+    ar: 'لم يتم العثور على وظائف',
   );
 
   String get _emptySuggestion => _msg(
@@ -712,6 +757,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
     de: 'Versuche einen anderen Umkreis oder eine andere Stellenart',
     ps: 'بل واټن یا د کار ډول هڅه وکړئ',
     fa: 'فاصله یا نوع کار دیگری را امتحان کنید',
+    ar: 'حاول اختيار مسافة أو نوع عمل آخر',
   );
 
   String get _retryLabel {
@@ -720,6 +766,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'بیا هڅه وکړئ';
       case 'fa':
         return 'دوباره تلاش کنید';
+      case 'ar':
+        return 'حاول مرة أخرى';
       default:
         return 'Retry';
     }
@@ -731,6 +779,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'غوښتنلیک';
       case 'fa':
         return 'ثبت نام';
+      case 'ar':
+        return 'تقديم الطلب';
       default:
         return 'Apply';
     }
@@ -742,6 +792,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'کار ولټوئ...';
       case 'fa':
         return 'جستجوی کار...';
+      case 'ar':
+        return 'ابحث عن عمل...';
       default:
         return 'Search jobs...';
     }
@@ -769,6 +821,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'د لوکیشن خدمت غیرفعال دی. مهرباني وکړئ يې فعال کړئ.';
       case 'fa':
         return 'سرویس موقعیت‌مکانی غیرفعال است. لطفاً آن را فعال کنید.';
+      case 'ar':
+        return 'خدمة الموقع غير مفعلة. يرجى تفعيلها.';
       default:
         return 'Location services are disabled. Please enable them.';
     }
@@ -780,6 +834,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'د لوکیشن اجازه ونه درکړل شوه. مهرباني وکړئ ښار پخپله ولیکئ.';
       case 'fa':
         return 'اجازه دسترسی به موقعیت داده نشد. لطفاً شهر را دستی وارد کنید.';
+      case 'ar':
+        return 'لم يتم منح إذن الموقع. يرجى كتابة مدينتك بنفسك.';
       default:
         return 'Location permission denied. Please enter your city manually.';
     }
@@ -791,6 +847,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'ستاسو ښار ونه موندل شو. مهرباني وکړئ يې پخپله ولیکئ.';
       case 'fa':
         return 'شهر شما پیدا نشد. لطفاً آن را به‌صورت دستی وارد کنید.';
+      case 'ar':
+        return 'لم يتم العثور على مدينتك. يرجى كتابتها بنفسك.';
       default:
         return 'Could not detect your city. Please enter it manually.';
     }
@@ -895,8 +953,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
   @override
   Widget build(BuildContext context) {
     _lang = context.watch<LanguageProvider>().language;
-    final isRtl = _lang == 'ps' || _lang == 'fa';
-    final showSpeaker = _lang == 'ps' || _lang == 'fa';
+    final isRtl = _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+    final showSpeaker = _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
     return PopScope(
       canPop: true,
@@ -1075,10 +1133,12 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
                       ),
                     ),
             ),
-            if (!_editingCity && _lang == 'ps') ...[
+            if (!_editingCity && (_lang == 'ps' || _lang == 'ar')) ...[
               const SizedBox(width: 6),
               GestureDetector(
-                onTap: () => TtsService().speak('دلته د ښار نوم ولیکئ', 'ps'),
+                onTap: () => _lang == 'ar'
+                    ? TtsService().speak('اكتب اسم المدينة هنا', 'ar')
+                    : TtsService().speak('دلته د ښار نوم ولیکئ', 'ps'),
                 child: const Icon(
                   Icons.volume_up_rounded,
                   color: _green,
@@ -1343,7 +1403,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
           icon: cat.icon,
           onTap: () {
             Navigator.pop(context);
-            if (_lang == 'ps' || _lang == 'fa') {
+            if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') {
               final t = cat.tts(_lang);
               if (t.isNotEmpty) TtsService().speak(t, _lang);
             }
@@ -1411,11 +1471,12 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
                 size: 20,
               ),
             ),
-            if (_lang == 'ps') ...[
+            if (_lang == 'ps' || _lang == 'ar') ...[
               const SizedBox(width: 8),
               GestureDetector(
-                onTap: () =>
-                    TtsService().speak('دلته د خپلی خوښی کار وګورئ', 'ps'),
+                onTap: () => _lang == 'ar'
+                    ? TtsService().speak('ابحث هنا عن العمل الذي تريده', 'ar')
+                    : TtsService().speak('دلته د خپلی خوښی کار وګورئ', 'ps'),
                 child: const Icon(
                   Icons.volume_up_rounded,
                   color: _green,
@@ -1436,11 +1497,15 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         ? 'ستاسو د مهارتونو سره سم کارونه ښودل کیږي'
         : _lang == 'fa'
         ? 'مشاغل مطابق با مهارت‌های شما نمایش داده می‌شود'
+        : _lang == 'ar'
+        ? 'تظهر الوظائف التي تناسب مهاراتك'
         : 'Showing jobs matching your skills';
     final showAllLabel = _lang == 'ps'
         ? 'ټول کارونه'
         : _lang == 'fa'
         ? 'همه مشاغل'
+        : _lang == 'ar'
+        ? 'كل الوظائف'
         : 'Show All Jobs';
 
     return Padding(
@@ -1585,6 +1650,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'د کارونو د موندلو لپاره خپل ښار ولیکئ یا خپل موقعیت وکاروئ';
       case 'fa':
         return 'برای یافتن کارها، نام شهر خود را بنویسید یا از موقعیت مکانی خود استفاده کنید';
+      case 'ar':
+        return 'للعثور على الوظائف، اكتب مدينتك أو استخدم موقعك';
       default:
         return 'Enter your city or use your location to find jobs near you';
     }
@@ -1596,6 +1663,8 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
         return 'زما موقعیت وکاروئ';
       case 'fa':
         return 'استفاده از موقعیت من';
+      case 'ar':
+        return 'استخدم موقعي';
       default:
         return 'Use my location';
     }
@@ -1815,7 +1884,7 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
     final dist = _distanceLabel(job);
     final icon = _jobTypeIcon(job.title);
     final voice = widget.voiceMode;
-    final showSpeakerOnCard = voice && (_lang == 'ps' || _lang == 'fa');
+    final showSpeakerOnCard = voice && (_lang == 'ps' || _lang == 'fa' || _lang == 'ar');
 
     return KGlassCard(
       borderRadius: 18,
@@ -1987,10 +2056,15 @@ class _JobFinderScreenState extends State<JobFinderScreen> {
             if (showSpeaker) ...[
               const SizedBox(width: 10),
               GestureDetector(
-                onTap: () => TtsService().speak(
-                  'د ${job.company} شرکت کې ${job.title} دنده',
-                  'ps',
-                ),
+                onTap: () => _lang == 'ar'
+                    ? TtsService().speak(
+                        'وظيفة ${job.title} في شركة ${job.company}',
+                        'ar',
+                      )
+                    : TtsService().speak(
+                        'د ${job.company} شرکت کې ${job.title} دنده',
+                        'ps',
+                      ),
                 child: Container(
                   width: 36,
                   height: 36,
@@ -2111,6 +2185,8 @@ class _LangPill extends StatelessWidget {
         return 'PS';
       case 'fa':
         return 'FA';
+      case 'ar':
+        return 'AR';
       default:
         return 'EN';
     }
@@ -2198,6 +2274,7 @@ class _LanguagePicker extends StatelessWidget {
     final langs = [
       {'code': 'ps', 'native': 'پښتو', 'roman': 'Pashto'},
       {'code': 'fa', 'native': 'دری', 'roman': 'Dari'},
+      {'code': 'ar', 'native': 'العربية', 'roman': 'Arabic'},
       {'code': 'en', 'native': 'English', 'roman': 'English'},
     ];
     return Container(

@@ -86,7 +86,7 @@ mixin _GuideLangMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  bool get isRtl => lang == 'ps' || lang == 'fa';
+  bool get isRtl => lang == 'ps' || lang == 'fa' || lang == 'ar';
 
   TextStyle textStyle(
     double size,

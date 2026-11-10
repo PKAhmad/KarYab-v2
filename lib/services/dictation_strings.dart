@@ -7,7 +7,7 @@
 class DictationStrings {
   const DictationStrings._();
 
-  static String _s(String lang, String en, String de, String ps, String fa) {
+  static String _s(String lang, String en, String de, String ps, String fa, String ar) {
     switch (lang) {
       case 'en':
         return en;
@@ -15,6 +15,8 @@ class DictationStrings {
         return ps;
       case 'fa':
         return fa;
+      case 'ar':
+        return ar;
       case 'de':
       default:
         return de;
@@ -34,6 +36,8 @@ class DictationStrings {
             'وکړئ متن ولیکئ.',
         'در این تلفن، گفتار به این زبان در دسترس نیست. لطفا متن را '
             'تایپ کنید.',
+        'الإملاء الصوتي غير متاح لهذه اللغة على هذا '
+            'الهاتف. يرجى الكتابة بدلا من ذلك.',
       );
 
   /// Tooltip / accessibility label for the microphone button.
@@ -43,5 +47,6 @@ class DictationStrings {
         'Diktieren',
         'په غږ ولیکئ',
         'با صدا بنویسید',
+        'الكتابة بالصوت',
       );
 }

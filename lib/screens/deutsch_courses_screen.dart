@@ -30,7 +30,7 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
   String _lang = 'en';
   final _cityCtrl = TextEditingController();
 
-  bool get _isRtl       => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl       => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
   bool get _showSpeaker => widget.voiceMode && _isRtl;
 
   void _onSoundChange() { if (mounted) setState(() {}); }
@@ -103,7 +103,9 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
             ? 'لطفاً د ښار نوم ولیکئ'
             : _lang == 'fa'
                 ? 'لطفاً نام شهر را وارد کنید'
-                : 'Please enter your city name first',
+                : _lang == 'ar'
+                    ? 'يرجى كتابة اسم مدينتك أولا'
+                    : 'Please enter your city name first',
       );
       return;
     }
@@ -133,6 +135,7 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
     switch (_lang) {
       case 'ps': return 'د آلمان ژبې کورسونه';
       case 'fa': return 'دوره‌های زبان آلمانی';
+      case 'ar': return 'دورات اللغة الألمانية';
       default:   return 'German Courses';
     }
   }
@@ -145,6 +148,9 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
       case 'fa':
         return 'دوره‌های رایگان و کم‌هزینه آلمانی از طریق دوره‌های '
             'ادغام BAMF و مراکز محلی VHS در دسترس است.';
+      case 'ar':
+        return 'توجد دورات ألمانية مجانية ورخيصة من خلال دورات '
+            'الاندماج BAMF ومراكز VHS المحلية.';
       default:
         return 'Free and low-cost German courses are available through '
             'BAMF integration courses and local Volkshochschule (VHS) centers.';
@@ -155,6 +161,7 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
     switch (_lang) {
       case 'ps': return 'خپل ښار ولیکئ (د VHS لپاره)';
       case 'fa': return 'شهر خود را بنویسید (برای VHS)';
+      case 'ar': return 'اكتب مدينتك (للبحث في VHS)';
       default:   return 'Your city (for VHS search)';
     }
   }
@@ -165,6 +172,8 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
         return 'تاسو به اړتیا ولرئ چې خپل پوستي کوډ د BAMF ویب پاڼې کې ولیکئ';
       case 'fa':
         return 'شما باید کد پستی خود را در وب‌سایت BAMF وارد کنید';
+      case 'ar':
+        return 'يجب أن تكتب الرمز البريدي الخاص بك على موقع BAMF';
       default:
         return "You'll need to enter your postal code on the BAMF website";
     }
@@ -176,6 +185,8 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
         return 'تاسو به اړتیا ولرئ چې خپل ښار د VHS ویب پاڼې کې ولیکئ';
       case 'fa':
         return 'شما باید شهر خود را در وب‌سایت VHS وارد کنید';
+      case 'ar':
+        return 'يجب أن تكتب مدينتك على موقع VHS';
       default:
         return "You'll need to enter your city on the VHS website";
     }
@@ -219,18 +230,26 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
                               ? 'د BAMF ادغام کورس'
                               : _lang == 'fa'
                                   ? 'دوره ادغام BAMF'
-                                  : 'BAMF Integration Course',
+                                  : _lang == 'ar'
+                                      ? 'دورة الاندماج BAMF'
+                                      : 'BAMF Integration Course',
                           desc: _lang == 'ps'
                               ? 'رسمي آلماني + ادغام کورس، ډیری وخت وړیا'
                               : _lang == 'fa'
                                   ? 'دوره رسمی آلمانی + ادغام، اغلب رایگان'
-                                  : 'Official German + integration course, often free depending on your status',
+                                  : _lang == 'ar'
+                                      ? 'دورة ألمانية رسمية ودورة اندماج، غالبا مجانية'
+                                      : 'Official German + integration course, often free depending on your status',
                           ttsTitle: _lang == 'ps'
                               ? 'د BAMF ادغام کورس'
-                              : 'دوره ادغام BAMF',
+                              : _lang == 'ar'
+                                  ? 'دورة الاندماج BAMF'
+                                  : 'دوره ادغام BAMF',
                           ttsDesc: _lang == 'ps'
                               ? 'رسمي آلماني او ادغام کورس'
-                              : 'دوره رسمی آلمانی',
+                              : _lang == 'ar'
+                                  ? 'دورة ألمانية رسمية ودورة اندماج'
+                                  : 'دوره رسمی آلمانی',
                           onTap: _openBAMF,
                         ),
                         _buildBamfNotice(),
@@ -243,18 +262,26 @@ class _DeutschCoursesScreenState extends State<DeutschCoursesScreen> {
                               ? 'نږدې VHS کورسونه ومومئ'
                               : _lang == 'fa'
                                   ? 'دوره‌های VHS نزدیک خود را پیدا کنید'
-                                  : 'Find VHS Courses Near You',
+                                  : _lang == 'ar'
+                                      ? 'ابحث عن دورات VHS قريبة منك'
+                                      : 'Find VHS Courses Near You',
                           desc: _lang == 'ps'
                               ? 'د خپل ښار له مخې آلماني کورسونه ومومئ'
                               : _lang == 'fa'
                                   ? 'دوره‌های زبان آلمانی را بر اساس شهر جستجو کنید'
-                                  : 'Search German courses by city',
+                                  : _lang == 'ar'
+                                      ? 'ابحث عن دورات ألمانية حسب مدينتك'
+                                      : 'Search German courses by city',
                           ttsTitle: _lang == 'ps'
                               ? 'نږدې VHS کورسونه ومومئ'
-                              : 'دوره‌های VHS نزدیک خود را پیدا کنید',
+                              : _lang == 'ar'
+                                  ? 'ابحث عن دورات VHS قريبة منك'
+                                  : 'دوره‌های VHS نزدیک خود را پیدا کنید',
                           ttsDesc: _lang == 'ps'
                               ? 'د خپل ښار له مخې آلماني کورسونه ومومئ'
-                              : 'دوره‌های زبان آلمانی را جستجو کنید',
+                              : _lang == 'ar'
+                                  ? 'ابحث عن دورات ألمانية'
+                                  : 'دوره‌های زبان آلمانی را جستجو کنید',
                           onTap: _openVHS,
                         ),
                         _buildVhsNotice(),

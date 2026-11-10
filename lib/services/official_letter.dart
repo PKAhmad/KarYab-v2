@@ -572,6 +572,12 @@ String _explainIntegrationCourse(String lang, OfficialLetterData d) {
           'نامه همچنین می‌گوید که زبان آلمانی برای کار و زندگی شما در '
           'آلمان مهم است. تصمیم با اداره است. این نامه اجازه را تضمین '
           'نمی‌کند.';
+    case 'ar':
+      return 'تخبر هذه الرسالة ${d.officeName} من أنت وتطلب من المكتب '
+          'أن يعطيك تصريح المشاركة في دورة الاندماج (Integrationskurs) '
+          'حتى تتعلم اللغة الألمانية. وتقول الرسالة أيضا إن اللغة '
+          'الألمانية مهمة لعملك ولحياتك في ألمانيا. المكتب يقرر. هذه '
+          'الرسالة لا تضمن التصريح.';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'the office for the permission (Berechtigung) to take an '
@@ -597,6 +603,9 @@ String _explainPermitExtension(String lang, OfficialLetterData d) {
   final expiryNoteFa = d.permitExpiry.isNotEmpty
       ? ' اجازه اقامت شما در تاریخ ${d.permitExpiry} تمام می‌شود.'
       : '';
+  final expiryNoteAr = d.permitExpiry.isNotEmpty
+      ? ' ينتهي تصريح إقامتك في تاريخ ${d.permitExpiry}.'
+      : '';
   final expiryNoteEn = d.permitExpiry.isNotEmpty
       ? ' Your residence permit ends on ${d.permitExpiry}.'
       : '';
@@ -614,6 +623,10 @@ String _explainPermitExtension(String lang, OfficialLetterData d) {
           'و از اداره برای تمدید اجازه اقامت خود یک قرار می‌خواهد.'
           '$expiryNoteFa نامه می‌گوید که شما هر قراری را که اداره '
           'پیشنهاد کند قبول می‌کنید. تصمیم با اداره است.';
+    case 'ar':
+      return 'تخبر هذه الرسالة ${d.officeName} من أنت وتطلب من المكتب '
+          'موعدا لتمديد تصريح إقامتك.$expiryNoteAr وتقول الرسالة إنك '
+          'تقبل أي موعد يقترحه المكتب. المكتب يقرر.';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'the office for an appointment to extend your residence '
@@ -642,6 +655,11 @@ String _explainAppointmentGeneral(String lang, OfficialLetterData d) {
           'توضیح می‌دهد تا اداره بداند چه نیاز دارید. نامه می‌گوید که '
           'شما هر قراری را که اداره پیشنهاد کند قبول می‌کنید. تصمیم '
           'با اداره است.';
+    case 'ar':
+      return 'تخبر هذه الرسالة ${d.officeName} من أنت وتطلب من المكتب '
+          'موعدا. وتذكر الرسالة أيضا موضوعك في سطر واحد، حتى يعرف '
+          'المكتب ما تحتاجه. وتقول إنك تقبل أي موعد يقترحه المكتب. '
+          'المكتب يقرر.';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'the office for an appointment. It also states your concern '
@@ -665,6 +683,9 @@ String _explainAppointmentRegistration(String lang, OfficialLetterData d) {
   final addrFa = d.newAddress.isNotEmpty
       ? ' نشانی جدید شما: ${d.newAddress}.'
       : '';
+  final addrAr = d.newAddress.isNotEmpty
+      ? ' عنوانك الجديد: ${d.newAddress}.'
+      : '';
   final addrEn = d.newAddress.isNotEmpty
       ? ' Your new address: ${d.newAddress}.'
       : '';
@@ -682,6 +703,10 @@ String _explainAppointmentRegistration(String lang, OfficialLetterData d) {
           'به خانه جدید نقل مکان کرده‌اید و برای ثبت نشانی خود '
           '(Anmeldung) یک قرار می‌خواهید.$addrFa در آلمان هر کس باید '
           'نشانی خود را در اداره ثبت کند. تصمیم با اداره است.';
+    case 'ar':
+      return 'تخبر هذه الرسالة ${d.officeName} من أنت، وأنك انتقلت إلى '
+          'سكن جديد، وتطلب موعدا لتسجيل عنوانك (Anmeldung).$addrAr في '
+          'ألمانيا يجب على كل شخص تسجيل عنوانه في المكتب. المكتب يقرر.';
     case 'en':
       return 'This letter tells ${d.officeName} who you are, that you '
           'moved into a new home, and asks for an appointment to '
@@ -711,6 +736,11 @@ String _explainAppointmentJob(String lang, OfficialLetterData d) {
           'همچنین می‌گوید که می‌خواهید درباره چه چیزی صحبت کنید و '
           'شما هر قراری را که اداره پیشنهاد کند قبول می‌کنید. تصمیم '
           'با اداره است.';
+    case 'ar':
+      return 'تخبر هذه الرسالة ${d.officeName} من أنت وتطلب موعدا '
+          'للمشورة حول العمل والتدريب المهني. وتقول الرسالة أيضا عن '
+          'ماذا تريد أن تتحدث، وأنك تقبل أي موعد يقترحه المكتب. '
+          'المكتب يقرر.';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'for an appointment to talk about work and Ausbildung. It '
@@ -731,6 +761,7 @@ String _explainSubmitDocuments(String lang, OfficialLetterData d) {
   final names = officialAnlagenNames(d);
   final listPs = names.isNotEmpty ? ' سندونه: ${names.join('، ')}.' : '';
   final listFa = names.isNotEmpty ? ' مدارک: ${names.join('، ')}.' : '';
+  final listAr = names.isNotEmpty ? ' المستندات: ${names.join('، ')}.' : '';
   final listEn = names.isNotEmpty ? ' Documents: ${names.join(', ')}.' : '';
   final listDe = names.isNotEmpty ? ' Unterlagen: ${names.join(', ')}.' : '';
   switch (lang) {
@@ -744,6 +775,11 @@ String _explainSubmitDocuments(String lang, OfficialLetterData d) {
           'و این مدارک را برای اداره می‌فرستید.$listFa نامه از اداره '
           'می‌خواهد که به شما بگوید آیا مدارک رسیده‌اند و آیا مدارک '
           'دیگری لازم است. تصمیم با اداره است.';
+    case 'ar':
+      return 'تخبر هذه الرسالة ${d.officeName} من أنت وترسل هذه '
+          'المستندات إلى المكتب.$listAr وتطلب الرسالة من المكتب أن '
+          'يخبرك ما إذا وصلت المستندات وما إذا كان يحتاج إلى شيء آخر '
+          'منك. المكتب يقرر.';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and sends '
           'these documents to the office.$listEn It asks the office '
@@ -771,6 +807,11 @@ String _explainQuestion(String lang, OfficialLetterData d) {
           'نوشته‌اید به ${d.officeName} می‌فرستد. در آغاز نامه '
           'می‌گوید که شما چه کسی هستید و در پایان اطلاعات شما را '
           'برای پاسخ می‌دهد. اداره به سؤال شما جواب می‌دهد.';
+    case 'ar':
+      return 'ترسل هذه الرسالة سؤالك أو مشكلتك الخاصة إلى '
+          '${d.officeName}، بالكلمات التي كتبتها بنفسك. في البداية '
+          'تقول من أنت، وفي النهاية تعطي بياناتك حتى يستطيع المكتب '
+          'الرد عليك. المكتب يجيب على سؤالك.';
     case 'en':
       return 'This letter sends your own question or problem to '
           '${d.officeName}, in the words you wrote yourself. At the '

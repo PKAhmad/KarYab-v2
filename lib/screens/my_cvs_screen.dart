@@ -41,7 +41,7 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
   bool _loading = true;
 
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
   @override
   void initState() {
@@ -72,6 +72,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'زما CV';
           case 'fa':
             return 'رزومه‌های من';
+          case 'ar':
+            return 'سيرتي الذاتية';
           default:
             return 'My CVs';
         }
@@ -81,6 +83,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'د دندې CV';
           case 'fa':
             return 'رزومه شغلی';
+          case 'ar':
+            return 'سيرة ذاتية للعمل';
           default:
             return 'Job CV';
         }
@@ -90,6 +94,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'د زده کړې CV';
           case 'fa':
             return 'رزومه کارآموزی';
+          case 'ar':
+            return 'سيرة ذاتية Ausbildung';
           default:
             return 'Ausbildung CV';
         }
@@ -99,6 +105,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'وروستی بدلون';
           case 'fa':
             return 'آخرین تغییر';
+          case 'ar':
+            return 'آخر تحديث';
           default:
             return 'Updated';
         }
@@ -108,6 +116,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'لا بشپړ نه دی';
           case 'fa':
             return 'هنوز تمام نشده';
+          case 'ar':
+            return 'لم ينته بعد';
           default:
             return 'Not finished yet';
         }
@@ -117,6 +127,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'سمول';
           case 'fa':
             return 'ویرایش';
+          case 'ar':
+            return 'تعديل';
           default:
             return 'Edit';
         }
@@ -126,6 +138,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'کتل';
           case 'fa':
             return 'مشاهده';
+          case 'ar':
+            return 'عرض';
           default:
             return 'View';
         }
@@ -135,6 +149,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'کاپي جوړول';
           case 'fa':
             return 'کپی گرفتن';
+          case 'ar':
+            return 'عمل نسخة';
           default:
             return 'Make a copy';
         }
@@ -144,6 +160,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'نوم بدلول';
           case 'fa':
             return 'تغییر نام';
+          case 'ar':
+            return 'تغيير الاسم';
           default:
             return 'Rename';
         }
@@ -152,6 +170,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
           case 'ps':
             return 'ړنګول';
           case 'fa':
+            return 'حذف';
+          case 'ar':
             return 'حذف';
           default:
             return 'Delete';
@@ -162,6 +182,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'دا CV ړنګ شي؟ دا کړنه بیرته نه راګرځي.';
           case 'fa':
             return 'این رزومه حذف شود؟ این کار قابل بازگشت نیست.';
+          case 'ar':
+            return 'هل تريد حذف هذه السيرة الذاتية؟ لا يمكن التراجع عن هذا.';
           default:
             return 'Delete this CV? This cannot be undone.';
         }
@@ -171,6 +193,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'لغوه';
           case 'fa':
             return 'لغو';
+          case 'ar':
+            return 'إلغاء';
           default:
             return 'Cancel';
         }
@@ -180,6 +204,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'خوندي کول';
           case 'fa':
             return 'ذخیره';
+          case 'ar':
+            return 'حفظ';
           default:
             return 'Save';
         }
@@ -189,6 +215,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'نوی CV';
           case 'fa':
             return 'رزومه جدید';
+          case 'ar':
+            return 'سيرة ذاتية جديدة';
           default:
             return 'New CV';
         }
@@ -198,6 +226,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'تر اوسه CV نشته. لومړی CV جوړ کړئ.';
           case 'fa':
             return 'هنوز رزومه‌ای نیست. اولین رزومه خود را بسازید.';
+          case 'ar':
+            return 'لا توجد سيرة ذاتية بعد. اصنع أول سيرة ذاتية لك.';
           default:
             return 'No CVs yet. Create your first CV.';
         }
@@ -207,6 +237,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return 'کوم CV جوړوئ؟';
           case 'fa':
             return 'کدام رزومه را می‌سازید؟';
+          case 'ar':
+            return 'أي سيرة ذاتية تريد أن تصنع؟';
           default:
             return 'Which CV do you want to create?';
         }
@@ -216,6 +248,8 @@ class _MyCvsScreenState extends State<MyCvsScreen> {
             return ' کاپي';
           case 'fa':
             return ' کپی';
+          case 'ar':
+            return ' نسخة';
           default:
             return ' copy';
         }

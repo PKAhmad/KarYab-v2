@@ -34,7 +34,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
   static const Color _muted = KColors.textSecondary;
 
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
   List<ApplicationRecord>? _apps;
   List<CvDocumentRecord> _cvs = const [];

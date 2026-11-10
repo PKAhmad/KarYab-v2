@@ -35,6 +35,11 @@ class TtsService {
   static const Map<String, String> _voices = {
     'ps': 'ps-AF-GulNawazNeural',
     'fa': 'fa-IR-FaridNeural',
+    // Arabic (Phase 12): ar-SA Hamed, a Modern Standard Arabic voice
+    // understood across the Arab world. Azure also ships Moroccan
+    // voices (ar-MA-MounaNeural / ar-MA-JamalNeural) if a Maghrebi
+    // voice is ever wanted instead; see the Phase 12 report.
+    'ar': 'ar-SA-HamedNeural',
     'en': 'de-DE-KatjaNeural',
     'de': 'de-DE-KatjaNeural',
   };
@@ -42,6 +47,7 @@ class TtsService {
   static const Map<String, String> _langCodes = {
     'ps': 'ps-AF',
     'fa': 'fa-IR',
+    'ar': 'ar-SA',
     'en': 'de-DE',
     'de': 'de-DE',
   };

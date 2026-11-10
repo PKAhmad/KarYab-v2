@@ -21,6 +21,8 @@ String cvStyleText(String lang, String key) {
           return 'ډیزاین';
         case 'fa':
           return 'طراحی';
+        case 'ar':
+          return 'التصميم';
         default:
           return 'Design';
       }
@@ -30,6 +32,8 @@ String cvStyleText(String lang, String key) {
           return 'بدل کړئ';
         case 'fa':
           return 'تغییر';
+        case 'ar':
+          return 'تغيير';
         default:
           return 'Change';
       }
@@ -39,6 +43,8 @@ String cvStyleText(String lang, String key) {
           return 'رنګ';
         case 'fa':
           return 'رنگ';
+        case 'ar':
+          return 'اللون';
         default:
           return 'Colour';
       }
@@ -48,6 +54,8 @@ String cvStyleText(String lang, String key) {
           return 'د کینډۍ رنګ';
         case 'fa':
           return 'رنگ قالب';
+        case 'ar':
+          return 'لون القالب';
         default:
           return 'Template colour';
       }
@@ -57,6 +65,8 @@ String cvStyleText(String lang, String key) {
           return 'د لیک اندازه';
         case 'fa':
           return 'اندازه متن';
+        case 'ar':
+          return 'حجم النص';
         default:
           return 'Text size';
       }
@@ -66,6 +76,8 @@ String cvStyleText(String lang, String key) {
           return 'وړوکی';
         case 'fa':
           return 'فشرده';
+        case 'ar':
+          return 'مضغوط';
         default:
           return 'Compact';
       }
@@ -75,6 +87,8 @@ String cvStyleText(String lang, String key) {
           return 'نورمال';
         case 'fa':
           return 'معمولی';
+        case 'ar':
+          return 'عادي';
         default:
           return 'Normal';
       }
@@ -84,6 +98,8 @@ String cvStyleText(String lang, String key) {
           return 'لوی';
         case 'fa':
           return 'بزرگ';
+        case 'ar':
+          return 'كبير';
         default:
           return 'Large';
       }
@@ -93,6 +109,8 @@ String cvStyleText(String lang, String key) {
           return 'واټن';
         case 'fa':
           return 'فاصله';
+        case 'ar':
+          return 'التباعد';
         default:
           return 'Spacing';
       }
@@ -102,6 +120,8 @@ String cvStyleText(String lang, String key) {
           return 'انځور په CV کې';
         case 'fa':
           return 'عکس در رزومه';
+        case 'ar':
+          return 'الصورة في السيرة الذاتية';
         default:
           return 'Photo in the CV';
       }
@@ -111,6 +131,8 @@ String cvStyleText(String lang, String key) {
           return 'بشپړ شو';
         case 'fa':
           return 'تمام';
+        case 'ar':
+          return 'تم';
         default:
           return 'Done';
       }
@@ -171,7 +193,7 @@ class _CvStyleSheet extends StatefulWidget {
 class _CvStyleSheetState extends State<_CvStyleSheet> {
   late CvCustomisation _style = widget.initial;
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
   String t(String key) => cvStyleText(widget.language, key);
 
   void _update(CvCustomisation next) {

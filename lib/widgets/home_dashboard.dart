@@ -26,6 +26,8 @@ String homeDashText(String lang, String key, {int percent = 0}) {
           return 'ستاسو پروفایل';
         case 'fa':
           return 'پروفایل شما';
+        case 'ar':
+          return 'ملفك الشخصي';
         case 'de':
           return 'Ihr Profil';
         default:
@@ -37,6 +39,8 @@ String homeDashText(String lang, String key, {int percent = 0}) {
           return '$percent٪ بشپړ شوی';
         case 'fa':
           return '$percent٪ تکمیل شده';
+        case 'ar':
+          return '$percent% اكتمل';
         case 'de':
           return '$percent% ausgefüllt';
         default:
@@ -48,6 +52,8 @@ String homeDashText(String lang, String key, {int percent = 0}) {
           return 'CV ته دوام ورکړئ';
         case 'fa':
           return 'ادامه CV';
+        case 'ar':
+          return 'متابعة السيرة الذاتية';
         case 'de':
           return 'Lebenslauf fortsetzen';
         default:
@@ -59,6 +65,8 @@ String homeDashText(String lang, String key, {int percent = 0}) {
           return 'تاسو ته نږدې Minijob کارونه';
         case 'fa':
           return 'کارهای Minijob نزدیک شما';
+        case 'ar':
+          return 'وظائف Minijob قريبة منك';
         case 'de':
           return 'Minijobs in Ihrer Nähe';
         default:
@@ -70,6 +78,8 @@ String homeDashText(String lang, String key, {int percent = 0}) {
           return 'د Minijob فلټر سره کارونه وګورئ';
         case 'fa':
           return 'جستجو با فیلتر Minijob';
+        case 'ar':
+          return 'ابحث مع تفعيل فلتر Minijob';
         case 'de':
           return 'Suche mit Minijob-Filter';
         default:
@@ -81,6 +91,8 @@ String homeDashText(String lang, String key, {int percent = 0}) {
           return 'د ورځې لارښوونه';
         case 'fa':
           return 'نکته روز';
+        case 'ar':
+          return 'نصيحة اليوم';
         case 'de':
           return 'Tipp des Tages';
         default:
@@ -93,48 +105,55 @@ String homeDashText(String lang, String key, {int percent = 0}) {
 
 /// Application tips, one per day (rotated by day of year). Authored for
 /// Phase 5 in all four app languages.
-const List<({String en, String de, String ps, String fa})> kHomeTips = [
+const List<({String en, String de, String ps, String fa, String ar})> kHomeTips = [
   (
     en: 'Send your CV as a PDF, never as a photo of a paper CV.',
     de: 'Senden Sie Ihren Lebenslauf als PDF, nie als Foto eines Papier-Lebenslaufs.',
     ps: 'خپل CV د PDF په بڼه واستوئ، هیڅکله د کاغذي CV عکس مه استوئ.',
     fa: 'CV خود را به صورت PDF بفرستید، هرگز عکس CV کاغذی نفرستید.',
+    ar: 'أرسل سيرتك الذاتية كملف PDF. لا ترسل أبدا صورة لسيرة ذاتية ورقية.',
   ),
   (
     en: 'A German CV is one or two pages. Short and clear wins.',
     de: 'Ein deutscher Lebenslauf hat ein bis zwei Seiten. Kurz und klar gewinnt.',
     ps: 'الماني CV یو یا دوه مخونه وي. لنډ او روښانه غوره دی.',
     fa: 'CV آلمانی یک یا دو صفحه است. کوتاه و روشن بهتر است.',
+    ar: 'السيرة الذاتية في ألمانيا تكون صفحة واحدة أو صفحتين. القصير والواضح أفضل.',
   ),
   (
     en: 'Name your PDF file with your name, for example Lebenslauf_Ahmad.pdf.',
     de: 'Nennen Sie Ihre PDF-Datei mit Ihrem Namen, zum Beispiel Lebenslauf_Ahmad.pdf.',
     ps: 'د PDF فایل نوم مو خپل نوم کېږدئ، لکه Lebenslauf_Ahmad.pdf.',
     fa: 'نام فایل PDF را با نام خود بگذارید، مثلاً Lebenslauf_Ahmad.pdf.',
+    ar: 'سم ملف PDF باسمك، مثلا Lebenslauf_Ahmad.pdf.',
   ),
   (
     en: 'Minijobs are part-time jobs with simple rules. Many employers look for Minijob workers.',
     de: 'Minijobs sind Teilzeitjobs mit einfachen Regeln. Viele Arbeitgeber suchen Minijob-Kräfte.',
     ps: 'Minijob ساده قواعد لري او ډېر کارورکوونکي يې لټوي.',
     fa: 'Minijob قوانین ساده دارد و بسیاری از کارفرمایان دنبال آن هستند.',
+    ar: 'وظائف Minijob هي وظائف بدوام جزئي ولها قواعد بسيطة. كثير من أصحاب العمل يبحثون عن عمال Minijob.',
   ),
   (
     en: 'Write one cover letter for the exact job, not one letter for all jobs.',
     de: 'Schreiben Sie das Anschreiben immer für die genaue Stelle, nicht ein Schreiben für alle Stellen.',
     ps: 'د هرې دندې لپاره جلا پوښلیک ولیکئ، نه یو لیک د ټولو لپاره.',
     fa: 'برای هر شغل یک نامه جداگانه بنویسید، نه یک نامه برای همه.',
+    ar: 'اكتب رسالة تغطية خاصة بكل وظيفة. لا تستخدم رسالة واحدة لكل الوظائف.',
   ),
   (
     en: 'Bring your CV and your certificates to every interview.',
     de: 'Bringen Sie Ihren Lebenslauf und Ihre Zeugnisse zu jedem Vorstellungsgespräch mit.',
     ps: 'هرې مرکې ته خپل CV او سندونه له ځان سره واخلئ.',
     fa: 'به هر مصاحبه CV و مدارک خود را ببرید.',
+    ar: 'خذ سيرتك الذاتية وشهاداتك معك إلى كل مقابلة.',
   ),
   (
     en: 'Check new jobs in the morning. Good Minijobs go fast.',
     de: 'Prüfen Sie neue Stellen am Morgen. Gute Minijobs sind schnell weg.',
     ps: 'نوي کارونه سهار وګورئ. ښه Minijob کارونه ژر خلاصیږي.',
     fa: 'کارهای جدید را صبح بررسی کنید. Minijobهای خوب زود پر می‌شوند.',
+    ar: 'ابحث عن الوظائف الجديدة في الصباح. وظائف Minijob الجيدة تنتهي بسرعة.',
   ),
 ];
 
@@ -146,6 +165,8 @@ String homeTipFor(String lang, DateTime day) {
       return tip.ps;
     case 'fa':
       return tip.fa;
+    case 'ar':
+      return tip.ar;
     case 'de':
       return tip.de;
     default:
@@ -232,7 +253,7 @@ class HomeDashboard extends StatelessWidget {
     this.onTracker,
   });
 
-  bool get _isRtl => language == 'ps' || language == 'fa';
+  bool get _isRtl => language == 'ps' || language == 'fa' || language == 'ar';
 
   TextStyle _style(double size, FontWeight weight, Color color) {
     return TextStyle(

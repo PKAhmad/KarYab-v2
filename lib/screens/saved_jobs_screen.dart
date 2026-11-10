@@ -38,7 +38,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   static const Color _muted = KColors.textSecondary;
 
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
   int _tab = 0;
   List<SavedJobRecord>? _jobs;
@@ -491,7 +491,7 @@ class _SavedSearchResultsScreenState extends State<SavedSearchResultsScreen> {
   static const Color _muted = KColors.textSecondary;
 
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
   final JobSearchService _service = JobSearchService();
   late Future<_ResultsState> _future;

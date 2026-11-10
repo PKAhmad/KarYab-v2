@@ -65,7 +65,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   final _countryOtherCtrl = TextEditingController();
   String? _photoPath;
 
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
   bool get _showSpeaker => _voiceMode && _isRtl;
 
   @override
@@ -214,6 +214,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'شخصي معلومات';
       case 'fa': return 'اطلاعات شخصی';
+      case 'ar': return 'المعلومات الشخصية';
       default:   return 'Personal Information';
     }
   }
@@ -222,6 +223,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'دا معلومات یوځل ډک کړئ، بیا به هره ځل کارول کیږي';
       case 'fa': return 'این اطلاعات را یک بار پر کنید، هر بار استفاده می‌شود';
+      case 'ar': return 'املأ هذه المعلومات مرة واحدة، وستستخدم في كل مرة';
       default:   return 'Fill this in once - it will be reused every time';
     }
   }
@@ -230,6 +232,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'مهرباني وکړئ ټول تش ځایونه ډک کړئ';
       case 'fa': return 'لطفاً همه فیلدهای ضروری را پر کنید';
+      case 'ar': return 'املأ جميع الحقول المطلوبة من فضلك';
       default:   return 'Please fill in all required fields';
     }
   }
@@ -238,6 +241,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'خپل بشپړ نوم ولیکئ';
       case 'fa': return 'نام کامل خود را بنویسید';
+      case 'ar': return 'اكتب اسمك الكامل';
       default:   return 'Enter your full name';
     }
   }
@@ -246,6 +250,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'کوڅه، کور شمیره، ښار او پوسټل کوډ';
       case 'fa': return 'خیابان، شماره، شهر و کد پستی';
+      case 'ar': return 'الشارع، الرقم، المدينة والرمز البريدي';
       default:   return 'e.g. Musterstraße 12, 37073 Göttingen';
     }
   }
@@ -254,6 +259,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'دوام →';
       case 'fa': return 'ادامه →';
+      case 'ar': return 'متابعة →';
       default:   return 'Continue →';
     }
   }
@@ -287,6 +293,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                           _QCard(
                             question: _lang == 'ps' ? '۱. ستاسو بشپړ نوم څه دی؟'
                                 : _lang == 'fa' ? '۱. نام کامل شما چیست؟'
+                                : _lang == 'ar' ? '١. ما اسمك الكامل؟'
                                 : '1. What is your full name?',
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
@@ -298,11 +305,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                           _QCard(
                             question: _lang == 'ps' ? '۲. ستاسو د پیداکیدو نیټه؟'
                                 : _lang == 'fa' ? '۲. تاریخ تولد شما؟'
+                                : _lang == 'ar' ? '٢. ما تاريخ ميلادك؟'
                                 : '2. Date of birth?',
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             onSpeak: () => _speak(_lang == 'ps'
                                 ? 'ستاسو د پیدایښت نیټه'
+                                : _lang == 'ar'
+                                ? 'ما تاريخ ميلادك؟'
                                 : 'تاریخ تولد شما چیست؟'),
                             child: _DobRow(
                               day: _dobDay,
@@ -320,11 +330,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                           _QCard(
                             question: _lang == 'ps' ? '۳. تاسو له کوم هیواده یاست؟'
                                 : _lang == 'fa' ? '۳. از کدام کشور هستید؟'
+                                : _lang == 'ar' ? '٣. من أي بلد أنت؟'
                                 : '3. Which country are you from?',
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             onSpeak: () => _speak(_lang == 'ps'
                                 ? 'تاسو د کوم هیواد یاست؟'
+                                : _lang == 'ar'
+                                ? 'من أي بلد أنت؟'
                                 : 'از کدام کشور هستید؟'),
                             child: _countryPicker(),
                           ),
@@ -332,11 +345,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                           _QCard(
                             question: _lang == 'ps' ? '۴. ستاسو د تیلیفون شمیره'
                                 : _lang == 'fa' ? '۴. شماره تلفن شما'
+                                : _lang == 'ar' ? '٤. رقم هاتفك'
                                 : '4. Your phone number',
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             onSpeak: () => _speak(_lang == 'ps'
                                 ? 'ستاسو د تیلیفون شمیره'
+                                : _lang == 'ar'
+                                ? 'رقم هاتفك'
                                 : 'شماره تلفن شما'),
                             child: _TxtField(
                               controller: _phoneCtrl,
@@ -348,11 +364,12 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                           _QCard(
                             question: _lang == 'ps' ? '۵. ستاسو ایمیل'
                                 : _lang == 'fa' ? '۵. ایمیل شما'
+                                : _lang == 'ar' ? '٥. بريدك الإلكتروني'
                                 : '5. Your email address',
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             onSpeak: () =>
-                                _speak(_lang == 'ps' ? 'ستاسو ایمیل' : 'ایمیل شما'),
+                                _speak(_lang == 'ps' ? 'ستاسو ایمیل' : _lang == 'ar' ? 'بريدك الإلكتروني' : 'ایمیل شما'),
                             child: _TxtField(
                               controller: _emailCtrl,
                               hint: 'name@email.com',
@@ -363,11 +380,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                           _QCard(
                             question: _lang == 'ps' ? '۶. ستاسو پته په جرمني کې'
                                 : _lang == 'fa' ? '۶. آدرس شما در آلمان'
+                                : _lang == 'ar' ? '٦. عنوانك في ألمانيا'
                                 : '6. Your address in Germany',
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             onSpeak: () => _speak(_lang == 'ps'
                                 ? 'ستاسو پته په جرمني کې'
+                                : _lang == 'ar'
+                                ? 'عنوانك في ألمانيا'
                                 : 'آدرس شما در آلمان'),
                             child: _TxtField(
                                 controller: _addressCtrl, hint: _addressHint),
@@ -377,11 +397,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                             question: _lang == 'ps'
                                 ? '۷. خپله انځور اضافه کړئ (اختیاري)'
                                 : _lang == 'fa' ? '۷. عکس خود را اضافه کنید (اختیاری)'
+                                : _lang == 'ar' ? '٧. أضف صورتك (اختياري)'
                                 : '7. Add your photo (optional)',
                             isRtl: _isRtl,
                             showSpeaker: _showSpeaker,
                             onSpeak: () => _speak(_lang == 'ps'
                                 ? 'خپله انځور انتخاب کړئ'
+                                : _lang == 'ar'
+                                ? 'أضف صورتك'
                                 : 'عکس خود را اضافه کنید'),
                             child: _photoPickerContent(),
                           ),
@@ -480,13 +503,13 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
 
   Widget _countryPicker() {
     const countries = [
-      ['af', 'Afghanistan', 'افغانستان', 'افغانستان'],
-      ['pk', 'Pakistan',    'پاکستان',   'پاکستان'],
-      ['ir', 'Iran',        'ایران',      'ایران'],
-      ['iq', 'Iraq',        'عراق',       'عراق'],
-      ['sy', 'Syria',       'سوریه',     'سوریه'],
-      ['so', 'Somalia',     'سومالیا',   'سومالیا'],
-      ['er', 'Eritrea',     'اریتریا',   'اریتریا'],
+      ['af', 'Afghanistan', 'افغانستان', 'افغانستان', 'أفغانستان'],
+      ['pk', 'Pakistan',    'پاکستان',   'پاکستان',   'باكستان'],
+      ['ir', 'Iran',        'ایران',      'ایران',      'إيران'],
+      ['iq', 'Iraq',        'عراق',       'عراق',       'العراق'],
+      ['sy', 'Syria',       'سوریه',     'سوریه',     'سوريا'],
+      ['so', 'Somalia',     'سومالیا',   'سومالیا',   'الصومال'],
+      ['er', 'Eritrea',     'اریتریا',   'اریتریا',   'إريتريا'],
     ];
     final presetCodes = countries.map((c) => c[1]).toSet();
     final isCustom = _country != null && !presetCodes.contains(_country);
@@ -498,7 +521,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           spacing: 8,
           runSpacing: 8,
           children: countries.map((c) {
-            final lbl = _lang == 'ps' ? c[2] : _lang == 'fa' ? c[3] : c[1];
+            final lbl = _lang == 'ps' ? c[2] : _lang == 'fa' ? c[3] : _lang == 'ar' ? c[4] : c[1];
             final sel = _country == c[1];
             return GestureDetector(
               onTap: () => setState(() {
@@ -557,6 +580,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'نور (پخپله ولیکئ)';
       case 'fa': return 'دیگر (خودتان بنویسید)';
+      case 'ar': return 'أخرى (اكتب بنفسك)';
       default:   return 'Other / type your own';
     }
   }
@@ -565,6 +589,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     switch (_lang) {
       case 'ps': return 'دلته ولیکئ...';
       case 'fa': return 'اینجا بنویسید...';
+      case 'ar': return 'اكتب هنا...';
       default:   return 'Type your answer...';
     }
   }
@@ -654,9 +679,11 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 ? 'کیمره اجازه ورکړئ - ترتیباتو ته لاړ شئ'
                 : _lang == 'fa'
                     ? 'دسترسی دوربین را مجاز کنید'
+                    : _lang == 'ar'
+                    ? 'اسمح بالوصول إلى الكاميرا في الإعدادات من فضلك'
                     : 'Please allow camera access in Settings'),
             action: SnackBarAction(
-              label: _lang == 'ps' ? 'ترتیبات' : 'Settings',
+              label: _lang == 'ps' ? 'ترتیبات' : _lang == 'ar' ? 'الإعدادات' : 'Settings',
               onPressed: () => openAppSettings(),
             ),
             backgroundColor: Colors.red,
@@ -744,13 +771,13 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           children: [
             _photoBtn(
               icon: Icons.camera_alt_rounded,
-              label: _lang == 'ps' ? 'کیمره' : _lang == 'fa' ? 'کیمره' : 'Camera',
+              label: _lang == 'ps' ? 'کیمره' : _lang == 'fa' ? 'کیمره' : _lang == 'ar' ? 'الكاميرا' : 'Camera',
               onTap: () => _pickPhoto(ImageSource.camera),
             ),
             const SizedBox(width: 12),
             _photoBtn(
               icon: Icons.photo_library_rounded,
-              label: _lang == 'ps' ? 'ګالري' : _lang == 'fa' ? 'گالری' : 'Gallery',
+              label: _lang == 'ps' ? 'ګالري' : _lang == 'fa' ? 'گالری' : _lang == 'ar' ? 'المعرض' : 'Gallery',
               onTap: () => _pickPhoto(ImageSource.gallery),
             ),
           ],
@@ -759,7 +786,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         GestureDetector(
           onTap: () => setState(() => _photoPath = null),
           child: Text(
-            _lang == 'ps' ? 'اوس پریږدئ' : _lang == 'fa' ? 'فعلاً رد کنید' : 'Skip for now',
+            _lang == 'ps' ? 'اوس پریږدئ' : _lang == 'fa' ? 'فعلاً رد کنید' : _lang == 'ar' ? 'تخط الآن' : 'Skip for now',
             style: const TextStyle(
               color: _muted,
               fontSize: 13,
@@ -948,7 +975,7 @@ class _DobRow extends StatelessWidget {
       children: [
         Expanded(
           child: _Drop(
-            hint: lang == 'ps' ? 'ورځ' : lang == 'fa' ? 'روز' : 'Day',
+            hint: lang == 'ps' ? 'ورځ' : lang == 'fa' ? 'روز' : lang == 'ar' ? 'يوم' : 'Day',
             value: day?.toString(),
             items: List.generate(31, (i) => '${i + 1}'),
             onChanged: (v) => onChanged(int.tryParse(v ?? ''), month, year),
@@ -957,7 +984,7 @@ class _DobRow extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: _Drop(
-            hint: lang == 'ps' ? 'میاشت' : lang == 'fa' ? 'ماه' : 'Month',
+            hint: lang == 'ps' ? 'میاشت' : lang == 'fa' ? 'ماه' : lang == 'ar' ? 'شهر' : 'Month',
             value: month?.toString(),
             items: List.generate(12, (i) => '${i + 1}'),
             onChanged: (v) => onChanged(day, int.tryParse(v ?? ''), year),
@@ -967,7 +994,7 @@ class _DobRow extends StatelessWidget {
         Expanded(
           flex: 2,
           child: _Drop(
-            hint: lang == 'ps' ? 'کال' : lang == 'fa' ? 'سال' : 'Year',
+            hint: lang == 'ps' ? 'کال' : lang == 'fa' ? 'سال' : lang == 'ar' ? 'سنة' : 'Year',
             value: year?.toString(),
             items: List.generate(60, (i) => '${2006 - i}'),
             onChanged: (v) => onChanged(day, month, int.tryParse(v ?? '')),

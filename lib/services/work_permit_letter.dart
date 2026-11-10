@@ -171,6 +171,13 @@ String workPermitExplanation(String lang, WorkPermitData d) {
           'که اداره می‌تواند از شما مدارک بیشتری بخواهد، و شماره تلفن '
           'و ایمیل شما را برای پرسش‌ها می‌دهد. تصمیم با اداره است. '
           'این نامه اجازه را تضمین نمی‌کند.';
+    case 'ar':
+      return 'تخبر هذه الرسالة ${d.authorityName} من أنت، وأن شركة '
+          '${d.company} تريد أن توظفك بصفة ${d.jobTitle} اعتبارا من '
+          '${d.startDate}، وتطلب من المكتب أن يعطيك تصريح بدء العمل. '
+          'وتقول الرسالة أيضا إن المكتب يمكن أن يطلب منك مستندات '
+          'إضافية، وتعطي رقم هاتفك وبريدك الإلكتروني للأسئلة. المكتب '
+          'يقرر. هذه الرسالة لا تضمن التصريح.';
     case 'en':
       return 'This letter tells ${d.authorityName} who you are, that '
           'the company ${d.company} wants to employ you as '

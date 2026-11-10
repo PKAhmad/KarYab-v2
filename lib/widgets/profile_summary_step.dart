@@ -60,7 +60,7 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
   String _lastComposed = '';
   bool _staleSelection = false;
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
 
   @override
   void initState() {
@@ -128,6 +128,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
         return 'خپل قوي ټکي وټاکئ. له دې څخه به ستاسو د CV لپاره یو لنډ جرمني متن جوړ شي. متن وروسته سمولی شئ.';
       case 'fa':
         return 'نقاط قوت خود را انتخاب کنید. از آن یک متن کوتاه آلمانی برای رزومه شما ساخته می‌شود. متن را می‌توانید بعداً ویرایش کنید.';
+      case 'ar':
+        return 'اختر نقاط قوتك. سيتم إنشاء نص ألماني قصير لسيرتك الذاتية منها. يمكنك تعديل النص لاحقا.';
       default:
         return 'Choose your strengths. A short German text for your CV is created from them. You can edit the text afterwards.';
     }
@@ -139,6 +141,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
         return 'په کومو برخو کې تجربه لرئ؟';
       case 'fa':
         return 'در کدام بخش‌ها تجربه دارید؟';
+      case 'ar':
+        return 'في أي مجالات لديك خبرة؟';
       default:
         return 'Where do you have experience?';
     }
@@ -150,6 +154,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
         return 'ستاسو قوي ټکي';
       case 'fa':
         return 'نقاط قوت شما';
+      case 'ar':
+        return 'نقاط قوتك';
       default:
         return 'Your strengths';
     }
@@ -161,6 +167,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
         return 'ستاسو متن (جرمني)';
       case 'fa':
         return 'متن شما (آلمانی)';
+      case 'ar':
+        return 'نصك (بالألمانية)';
       default:
         return 'Your text (German)';
     }
@@ -172,6 +180,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
         return 'متن د ټاکنو سره تازه کړئ';
       case 'fa':
         return 'متن را با انتخاب‌ها به‌روز کنید';
+      case 'ar':
+        return 'تحديث النص حسب الاختيارات';
       default:
         return 'Update text from my selection';
     }
@@ -185,6 +195,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'ګودام / لوژستیک';
           case 'fa':
             return 'انبار / لجستیک';
+          case 'ar':
+            return 'المستودع / الخدمات اللوجستية';
           default:
             return 'Warehouse / Logistics';
         }
@@ -194,6 +206,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'پاملرنه / نرسنګ';
           case 'fa':
             return 'مراقبت / پرستاری';
+          case 'ar':
+            return 'الرعاية / التمريض';
           default:
             return 'Care / Nursing';
         }
@@ -203,6 +217,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'آشپزخانه / رستورانت';
           case 'fa':
             return 'آشپزخانه / رستوران';
+          case 'ar':
+            return 'المطبخ / المطعم';
           default:
             return 'Kitchen / Restaurant';
         }
@@ -212,6 +228,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'پلورنځی / سوداګري';
           case 'fa':
             return 'فروشگاه / تجارت';
+          case 'ar':
+            return 'المتاجر / المبيعات';
           default:
             return 'Retail / Sales';
         }
@@ -221,6 +239,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'پاکوالی';
           case 'fa':
             return 'نظافت';
+          case 'ar':
+            return 'التنظيف';
           default:
             return 'Cleaning';
         }
@@ -230,6 +250,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'ودانۍ / ساختمان';
           case 'fa':
             return 'ساختمان';
+          case 'ar':
+            return 'البناء';
           default:
             return 'Construction';
         }
@@ -239,6 +261,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'موټر چلول / لېږد';
           case 'fa':
             return 'رانندگی / حمل‌ونقل';
+          case 'ar':
+            return 'القيادة / النقل';
           default:
             return 'Driving / Transport';
         }
@@ -248,6 +272,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'دفتر / کمپیوټر';
           case 'fa':
             return 'دفتر / کامپیوتر';
+          case 'ar':
+            return 'المكتب / الحاسوب';
           default:
             return 'Office / Computer';
         }
@@ -264,6 +290,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'د باور وړ';
           case 'fa':
             return 'قابل اعتماد';
+          case 'ar':
+            return 'موثوق به';
           default:
             return 'Reliable';
         }
@@ -273,6 +301,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'په احتیاط کار کوونکی';
           case 'fa':
             return 'دقیق و محتاط';
+          case 'ar':
+            return 'دقيق وحريص';
           default:
             return 'Careful and exact';
         }
@@ -282,6 +312,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'ډله ییز کار';
           case 'fa':
             return 'کار تیمی';
+          case 'ar':
+            return 'العمل ضمن فريق';
           default:
             return 'Team player';
         }
@@ -291,6 +323,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'خپلواک کار';
           case 'fa':
             return 'کار مستقل';
+          case 'ar':
+            return 'العمل بشكل مستقل';
           default:
             return 'Works independently';
         }
@@ -300,6 +334,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'ژر زده کوونکی';
           case 'fa':
             return 'سریع یاد می‌گیرم';
+          case 'ar':
+            return 'يتعلم بسرعة';
           default:
             return 'Learns quickly';
         }
@@ -309,6 +345,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'فزیکي کار کولی شم';
           case 'fa':
             return 'کار فیزیکی می‌توانم';
+          case 'ar':
+            return 'قادر على العمل البدني';
           default:
             return 'Physically fit';
         }
@@ -318,6 +356,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'انعطاف منونکی';
           case 'fa':
             return 'انعطاف‌پذیر';
+          case 'ar':
+            return 'مرن';
           default:
             return 'Flexible hours';
         }
@@ -327,6 +367,8 @@ class _ProfileSummaryStepState extends State<ProfileSummaryStep> {
             return 'دوستانه چلند';
           case 'fa':
             return 'برخورد دوستانه';
+          case 'ar':
+            return 'ودود مع الزبائن';
           default:
             return 'Friendly with customers';
         }

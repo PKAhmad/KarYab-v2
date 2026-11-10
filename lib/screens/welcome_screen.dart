@@ -7,7 +7,7 @@ import '../services/analytics_service.dart';
 import '../services/tts_service.dart';
 import '../utils/navigation_helpers.dart';
 
-enum AppLanguage { pashto, dari, english }
+enum AppLanguage { pashto, dari, arabic, english }
 
 class LanguageOption {
   final AppLanguage id;
@@ -50,6 +50,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       hasVoice: true,
     ),
     LanguageOption(
+      id: AppLanguage.arabic,
+      title: 'Arabic',
+      nativeTitle: 'العربية',
+      hasVoice: true,
+    ),
+    LanguageOption(
       id: AppLanguage.english,
       title: 'English',
       nativeTitle: null,
@@ -71,6 +77,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         break;
       case AppLanguage.dari:
         langCode = 'fa';
+        break;
+      case AppLanguage.arabic:
+        langCode = 'ar';
         break;
       case AppLanguage.english:
         langCode = 'en';

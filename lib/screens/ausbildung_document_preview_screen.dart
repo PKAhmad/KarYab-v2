@@ -287,6 +287,7 @@ class _AusbildungDocumentPreviewScreenState
     switch (_lang) {
       case 'ps': return 'د زده کړې کار اسناد';
       case 'fa': return 'اسناد کارآموزی';
+      case 'ar': return 'مستندات Ausbildung';
       default:   return 'Ausbildung Documents';
     }
   }
@@ -295,6 +296,7 @@ class _AusbildungDocumentPreviewScreenState
     switch (_lang) {
       case 'ps': return 'CV';
       case 'fa': return 'CV';
+      case 'ar': return 'CV';
       default:   return 'CV';
     }
   }
@@ -303,6 +305,7 @@ class _AusbildungDocumentPreviewScreenState
     switch (_lang) {
       case 'ps': return 'کینډۍ وټاکئ';
       case 'fa': return 'انتخاب قالب';
+      case 'ar': return 'اختيار القالب';
       default:   return 'Choose Template';
     }
   }
@@ -311,6 +314,7 @@ class _AusbildungDocumentPreviewScreenState
     switch (_lang) {
       case 'ps': return 'ډاونلوډ کړئ';
       case 'fa': return 'دانلود';
+      case 'ar': return 'تنزيل';
       default:   return 'Download CV (PDF)';
     }
   }
@@ -319,6 +323,7 @@ class _AusbildungDocumentPreviewScreenState
     switch (_lang) {
       case 'ps': return 'CV په ډاونلوډ کې خوندي شو';
       case 'fa': return 'CV در دانلودها ذخیره شد';
+      case 'ar': return 'تم حفظ السيرة الذاتية في التنزيلات';
       default:   return 'CV saved to Downloads';
     }
   }
@@ -327,6 +332,7 @@ class _AusbildungDocumentPreviewScreenState
     switch (_lang) {
       case 'ps': return 'ځوابونه سمول';
       case 'fa': return 'ویرایش پاسخ‌ها';
+      case 'ar': return 'تعديل الإجابات';
       default:   return 'Edit answers';
     }
   }
@@ -335,6 +341,7 @@ class _AusbildungDocumentPreviewScreenState
     switch (_lang) {
       case 'ps': return 'د زده کړې دندې وګورئ';
       case 'fa': return 'مشاهده آگهی‌های کارآموزی';
+      case 'ar': return 'عرض إعلانات Ausbildung';
       default:   return 'Ausbildung Postings';
     }
   }
@@ -530,7 +537,7 @@ class _AusbildungDocumentPreviewScreenState
               KPrimaryCta(
                 icon: Icons.download_rounded,
                 label: _downloadLabel,
-                isRtl: (_lang == 'ps' || _lang == 'fa'),
+                isRtl: (_lang == 'ps' || _lang == 'fa' || _lang == 'ar'),
                 isSelected: false,
                 onTap: () {
                 if (!_saving) _download();
@@ -538,7 +545,7 @@ class _AusbildungDocumentPreviewScreenState
               ),
               if (_saving)
                 Positioned.directional(
-                  textDirection: (_lang == 'ps' || _lang == 'fa') ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') ? TextDirection.rtl : TextDirection.ltr,
                   start: 8,
                   top: 13,
                   child: Container(

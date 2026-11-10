@@ -40,10 +40,12 @@ class _EducationScreenState extends State<EducationScreen> {
 
     if (!_hasAutoPlayed &&
         TtsService().soundEnabled &&
-        (widget.language == 'ps' || widget.language == 'fa')) {
+        (widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar')) {
       _hasAutoPlayed = true;
       final text = widget.language == 'ps'
           ? 'ایا تاسو لوستل او لیکل کولی شئ؟'
+          : widget.language == 'ar'
+          ? 'هل تستطيع القراءة والكتابة؟'
           : 'آیا می‌توانید بخوانید و بنویسید؟';
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) TtsService().speak(text, widget.language);
@@ -59,12 +61,13 @@ class _EducationScreenState extends State<EducationScreen> {
     super.dispose();
   }
 
-  bool get _isRtl       => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl       => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
 
   String get _question {
     switch (_lang) {
       case 'ps': return 'ایا تاسو لوستل او لیکل کولی شئ؟';
       case 'fa': return 'آیا می‌توانید بخوانید و بنویسید؟';
+      case 'ar': return 'هل تستطيع القراءة والكتابة؟';
       default:   return 'Can you read and write?';
     }
   }
@@ -73,6 +76,7 @@ class _EducationScreenState extends State<EducationScreen> {
     switch (_lang) {
       case 'ps': return 'دا مونږ سره مرسته کوي چې ستاسو لپاره مخکی پروسه اسانه کړو';
       case 'fa': return 'این به ما کمک می‌کند بهترین روش کمک را پیدا کنیم';
+      case 'ar': return 'هذا يساعدنا أن نجد أفضل طريقة لمساعدتك';
       default:   return 'This helps us find the best way to assist you';
     }
   }
@@ -81,6 +85,7 @@ class _EducationScreenState extends State<EducationScreen> {
     switch (_lang) {
       case 'ps': return 'مخکی لاړ شی';
       case 'fa': return 'ادامه';
+      case 'ar': return 'متابعة';
       default:   return 'Continue';
     }
   }
@@ -89,6 +94,7 @@ class _EducationScreenState extends State<EducationScreen> {
     switch (_lang) {
       case 'ps': return 'ستاسو ځواب مونږ سره ستاسی د تجربې ښه کولو کې مرسته کوي';
       case 'fa': return 'پاسخ شما به ما کمک می‌کند تجربه را شخصی‌سازی کنیم';
+      case 'ar': return 'إجابتك تساعدنا أن نجعل تجربتك أفضل';
       default:   return 'Your answer helps us personalize your experience';
     }
   }
@@ -277,6 +283,11 @@ class _EducationScreenState extends State<EducationScreen> {
                                           'نه، نمی‌توانم بخوانم یا بنویسم',
                                           'fa',
                                         );
+                                      } else if (_lang == 'ar') {
+                                        TtsService().speak(
+                                          'لا، لا أستطيع القراءة أو الكتابة',
+                                          'ar',
+                                        );
                                       }
                                     },
                                   ),
@@ -397,19 +408,21 @@ class _OptionCard extends StatelessWidget {
     required this.onTap,
   });
 
-  bool get _isRtl => lang == 'ps' || lang == 'fa';
+  bool get _isRtl => lang == 'ps' || lang == 'fa' || lang == 'ar';
 
   String get _title {
     if (isYes) {
       switch (lang) {
         case 'ps': return 'هو، زه لوستل او لیکل کولی شم';
         case 'fa': return 'بله، می‌توانم بخوانم و بنویسم';
+        case 'ar': return 'نعم، أستطيع القراءة والكتابة';
         default:   return 'Yes, I can read & write';
       }
     } else {
       switch (lang) {
         case 'ps': return  ' نه، زه لوستل او لیکل نشم کولی';
         case 'fa': return 'نه، نمی‌توانم بخوانم یا بنویسم';
+        case 'ar': return 'لا، لا أستطيع القراءة أو الكتابة';
         default:   return 'No, I cannot read or write';
       }
     }
@@ -420,12 +433,14 @@ class _OptionCard extends StatelessWidget {
       switch (lang) {
         case 'ps': return 'تعلیم بافته';
         case 'fa': return 'تحصیلاتی دارم';
+        case 'ar': return 'أستطيع القراءة والكتابة بنفسي';
         default:   return 'I have some education';
       }
     } else {
       switch (lang) {
         case 'ps': return 'زه د غږ کومک یا لارښوونې ته اړتیا لرم';
         case 'fa': return 'به راهنمایی صوتی نیاز دارم';
+        case 'ar': return 'أحتاج إلى إرشاد صوتي';
         default:   return 'I need voice guidance';
       }
     }

@@ -154,6 +154,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
     required String de,
     required String ps,
     required String fa,
+    required String ar,
   }) {
     switch (lang) {
       case 'de':
@@ -162,6 +163,8 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         return ps;
       case 'fa':
         return fa;
+      case 'ar':
+        return ar;
       default:
         return en;
     }
@@ -174,6 +177,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Diese E-Mail-Adresse ist nicht gültig. Bitte prüfe sie und versuche es erneut.',
         ps: 'دا برېښنالیک سم نه دی. مهرباني وکړئ وګورئ او بیا هڅه وکړئ.',
         fa: 'این ایمیل درست نیست. لطفا بررسی کنید و دوباره تلاش کنید.',
+        ar: 'هذا البريد الإلكتروني غير صحيح. من فضلك راجعه وحاول مرة أخرى.',
       );
     case AuthErrorKind.weakPassword:
       return msg(
@@ -181,6 +185,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Das Passwort ist zu schwach. Bitte verwende mindestens 6 Zeichen.',
         ps: 'پټنوم ډېر کمزوری دی. لږ تر لږه 6 توري وکاروئ.',
         fa: 'رمز عبور خیلی ضعیف است. حداقل 6 حرف استفاده کنید.',
+        ar: 'كلمة المرور ضعيفة جدا. من فضلك استخدم 6 أحرف على الأقل.',
       );
     case AuthErrorKind.emailAlreadyInUse:
       return msg(
@@ -188,6 +193,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Mit dieser E-Mail gibt es schon ein Konto. Bitte melde dich stattdessen an.',
         ps: 'دې برېښنالیک سره حساب پخوا جوړ شوی دی. مهرباني وکړئ ننوځئ.',
         fa: 'با این ایمیل قبلا حساب ساخته شده است. لطفا وارد شوید.',
+        ar: 'يوجد حساب بهذا البريد الإلكتروني من قبل. من فضلك سجل الدخول.',
       );
     case AuthErrorKind.wrongCredentials:
       return msg(
@@ -195,6 +201,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'E-Mail oder Passwort ist nicht richtig.',
         ps: 'برېښنالیک یا پټنوم سم نه دی.',
         fa: 'ایمیل یا رمز عبور درست نیست.',
+        ar: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
       );
     case AuthErrorKind.userDisabled:
       return msg(
@@ -202,6 +209,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Dieses Konto wurde deaktiviert.',
         ps: 'دا حساب بند شوی دی.',
         fa: 'این حساب غیرفعال شده است.',
+        ar: 'تم تعطيل هذا الحساب.',
       );
     case AuthErrorKind.network:
       return msg(
@@ -209,6 +217,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Keine Internetverbindung. Bitte prüfe deine Verbindung und versuche es erneut.',
         ps: 'انټرنیټ نشته. خپل اتصال وګورئ او بیا هڅه وکړئ.',
         fa: 'اتصال اینترنت وجود ندارد. اتصال خود را بررسی کنید و دوباره تلاش کنید.',
+        ar: 'لا يوجد اتصال بالإنترنت. من فضلك راجع اتصالك وحاول مرة أخرى.',
       );
     case AuthErrorKind.tooManyRequests:
       return msg(
@@ -216,6 +225,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Zu viele Versuche. Bitte warte etwas und versuche es erneut.',
         ps: 'ډېرې هڅې وشوې. لږ وخت وروسته بیا هڅه وکړئ.',
         fa: 'تلاش‌های زیادی انجام شد. کمی صبر کنید و دوباره تلاش کنید.',
+        ar: 'تمت محاولات كثيرة. من فضلك انتظر قليلا وحاول مرة أخرى.',
       );
     case AuthErrorKind.googleCancelled:
       return msg(
@@ -223,6 +233,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Die Google-Anmeldung wurde abgebrochen.',
         ps: 'د Google ننوتل لغوه شو.',
         fa: 'ورود با Google لغو شد.',
+        ar: 'تم إلغاء تسجيل الدخول بواسطة Google.',
       );
     case AuthErrorKind.googleNotConfigured:
       return msg(
@@ -230,6 +241,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Google-Anmeldung ist noch nicht verfügbar. Bitte nutze E-Mail oder fahre ohne Konto fort.',
         ps: 'د Google ننوتل لا شتون نه لري. مهرباني وکړئ برېښنالیک وکاروئ یا بې حسابه دوام ورکړئ.',
         fa: 'ورود با Google هنوز در دسترس نیست. لطفا از ایمیل استفاده کنید یا بدون حساب ادامه دهید.',
+        ar: 'تسجيل الدخول بواسطة Google غير متاح بعد. من فضلك استخدم البريد الإلكتروني أو تابع بدون حساب.',
       );
     case AuthErrorKind.requiresRecentLogin:
       return msg(
@@ -237,6 +249,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Zur Sicherheit: Bitte melde dich ab, wieder an und versuche es dann erneut.',
         ps: 'د خوندیتوب لپاره، لومړی ووځئ او بیا ننوځئ، بیا هڅه وکړئ.',
         fa: 'برای امنیت، اول خارج شوید و دوباره وارد شوید، بعد تلاش کنید.',
+        ar: 'من أجل الأمان، من فضلك سجل الخروج ثم سجل الدخول مرة أخرى، ثم حاول مرة أخرى.',
       );
     case AuthErrorKind.unknown:
       return msg(
@@ -244,6 +257,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         de: 'Etwas ist schiefgegangen. Bitte versuche es erneut.',
         ps: 'یو څه سم نه شو. بیا هڅه وکړئ.',
         fa: 'مشکلی پیش آمد. دوباره تلاش کنید.',
+        ar: 'حدث خطأ ما. من فضلك حاول مرة أخرى.',
       );
   }
 }

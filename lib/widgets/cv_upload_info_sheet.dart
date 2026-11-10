@@ -32,7 +32,7 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
   final _phoneCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
 
   @override
   void initState() {
@@ -59,6 +59,8 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
         return 'د کور لیک لپاره یو څو معلومات';
       case 'fa':
         return 'چند جزئیات برای نامه پوششی';
+      case 'ar':
+        return 'بعض التفاصيل لرسالة التغطية';
       default:
         return 'A few details for your cover letter';
     }
@@ -70,6 +72,8 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
         return 'بشپړ نوم';
       case 'fa':
         return 'نام کامل';
+      case 'ar':
+        return 'الاسم الكامل';
       default:
         return 'Full Name';
     }
@@ -81,6 +85,8 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
         return 'تیلیفون';
       case 'fa':
         return 'تلفن';
+      case 'ar':
+        return 'الهاتف';
       default:
         return 'Phone';
     }
@@ -92,6 +98,8 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
         return 'ایمیل';
       case 'fa':
         return 'ایمیل';
+      case 'ar':
+        return 'البريد الإلكتروني';
       default:
         return 'Email';
     }
@@ -103,6 +111,8 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
         return 'خوندي کړئ او دوام ورکړئ';
       case 'fa':
         return 'ذخیره و ادامه';
+      case 'ar':
+        return 'حفظ ومتابعة';
       default:
         return 'Save & Continue';
     }
@@ -114,6 +124,8 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
         return 'لغوه کړئ';
       case 'fa':
         return 'لغو';
+      case 'ar':
+        return 'إلغاء';
       default:
         return 'Cancel';
     }
@@ -130,7 +142,9 @@ class _CvUploadInfoSheetState extends State<CvUploadInfoSheet> {
               ? 'نوم او تیلیفون ډک کړئ'
               : widget.language == 'fa'
                   ? 'نام و تلفن را وارد کنید'
-                  : 'Please enter your name and phone number',
+                  : widget.language == 'ar'
+                      ? 'يرجى إدخال الاسم ورقم الهاتف'
+                      : 'Please enter your name and phone number',
         ),
         backgroundColor: _navy,
       ));

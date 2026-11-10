@@ -36,7 +36,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   bool _locationGranted = false;
   bool _continuing      = false;
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
 
   @override
   void initState() {
@@ -101,6 +101,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'د اپلیکیشن اجازې';
       case 'fa': return 'مجوزهای برنامه';
+      case 'ar': return 'أذونات التطبيق';
       default:   return 'App Permissions';
     }
   }
@@ -109,6 +110,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'KarYab ته د سم کار لپاره یو څو اجازو ته اړتیا ده';
       case 'fa': return 'KarYab برای کار درست به چند مجوز نیاز دارد';
+      case 'ar': return 'يحتاج KarYab إلى بعض الأذونات ليعمل بشكل صحيح';
       default:   return 'KarYab needs a few permissions to work properly';
     }
   }
@@ -117,6 +119,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'د کیمرې لاسرسی';
       case 'fa': return 'دسترسی به دوربین';
+      case 'ar': return 'الوصول إلى الكاميرا';
       default:   return 'Camera Access';
     }
   }
@@ -125,6 +128,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'ستاسو د CV لپاره د عکس اخیستلو لپاره';
       case 'fa': return 'برای گرفتن عکس برای CV شما';
+      case 'ar': return 'لالتقاط صورة لسيرتك الذاتية';
       default:   return 'To take a photo for your CV';
     }
   }
@@ -133,6 +137,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'د موقعیت لاسرسی';
       case 'fa': return 'دسترسی به موقعیت مکانی';
+      case 'ar': return 'الوصول إلى الموقع';
       default:   return 'Location Access';
     }
   }
@@ -141,6 +146,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'ستاسو نژدې کارونو او کورسونو موندلو لپاره';
       case 'fa': return 'برای یافتن کارها و دوره‌های نزدیک شما';
+      case 'ar': return 'للعثور على وظائف ودورات قريبة منك';
       default:   return 'To find jobs and courses near you';
     }
   }
@@ -149,6 +155,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'دوام';
       case 'fa': return 'ادامه';
+      case 'ar': return 'متابعة';
       default:   return 'Continue';
     }
   }
@@ -157,6 +164,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'اجازه';
       case 'fa': return 'اجازه';
+      case 'ar': return 'سماح';
       default:   return 'Allow';
     }
   }
@@ -169,6 +177,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'دا تڼۍ کیمرې ته اجازه ورکوي';
       case 'fa': return 'این دکمه اجازه دوربین را می‌دهد';
+      case 'ar': return 'هذا الزر يعطي إذن الكاميرا';
       default:   return _cameraTitle;
     }
   }
@@ -177,6 +186,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (widget.language) {
       case 'ps': return 'دا تڼۍ ستاسو موقعیت ته اجازه ورکوي';
       case 'fa': return 'این دکمه اجازه موقعیت مکانی را می‌دهد';
+      case 'ar': return 'هذا الزر يعطي إذن الموقع';
       default:   return _locationTitle;
     }
   }

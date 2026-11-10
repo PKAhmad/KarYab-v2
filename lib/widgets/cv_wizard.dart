@@ -21,6 +21,8 @@ String wizardText(String lang, String key,
           return 'ګام $step د $total';
         case 'fa':
           return 'مرحله $step از $total';
+        case 'ar':
+          return 'الخطوة $step من $total';
         default:
           return 'Step $step of $total';
       }
@@ -30,6 +32,8 @@ String wizardText(String lang, String key,
           return 'شاته';
         case 'fa':
           return 'بازگشت';
+        case 'ar':
+          return 'رجوع';
         default:
           return 'Back';
       }
@@ -39,6 +43,8 @@ String wizardText(String lang, String key,
           return 'مخکې لاړ شئ';
         case 'fa':
           return 'ادامه';
+        case 'ar':
+          return 'متابعة';
         default:
           return 'Continue';
       }
@@ -48,6 +54,8 @@ String wizardText(String lang, String key,
           return 'پرېږدئ';
         case 'fa':
           return 'رد کردن';
+        case 'ar':
+          return 'تخطي';
         default:
           return 'Skip';
       }
@@ -57,6 +65,8 @@ String wizardText(String lang, String key,
           return 'مخکتنه';
         case 'fa':
           return 'پیش‌نمایش';
+        case 'ar':
+          return 'معاينة';
         default:
           return 'Preview';
       }
@@ -66,6 +76,8 @@ String wizardText(String lang, String key,
           return '$percent٪ ډک شوی';
         case 'fa':
           return '$percent٪ تکمیل شده';
+        case 'ar':
+          return '$percent% اكتمل';
         default:
           return '$percent% done';
       }
@@ -83,6 +95,8 @@ String wizardSectionTitle(String lang, String section) {
           return 'زده کړې';
         case 'fa':
           return 'تحصیلات';
+        case 'ar':
+          return 'التعليم';
         default:
           return 'Education';
       }
@@ -93,6 +107,8 @@ String wizardSectionTitle(String lang, String section) {
           return 'مهارتونه';
         case 'fa':
           return 'مهارت‌ها';
+        case 'ar':
+          return 'المهارات';
         default:
           return section == 'esco' ? 'Skills (ESCO)' : 'Skills';
       }
@@ -102,6 +118,8 @@ String wizardSectionTitle(String lang, String section) {
           return 'کاري تجربه';
         case 'fa':
           return 'تجربه کاری';
+        case 'ar':
+          return 'الخبرة العملية';
         default:
           return 'Work experience';
       }
@@ -111,6 +129,8 @@ String wizardSectionTitle(String lang, String section) {
           return 'وسایل او کمپیوټر';
         case 'fa':
           return 'ابزار و کامپیوتر';
+        case 'ar':
+          return 'الأدوات والحاسوب';
         default:
           return 'Tools and IT';
       }
@@ -120,6 +140,8 @@ String wizardSectionTitle(String lang, String section) {
           return 'ژبې';
         case 'fa':
           return 'زبان‌ها';
+        case 'ar':
+          return 'اللغات';
         default:
           return 'Languages';
       }
@@ -129,6 +151,8 @@ String wizardSectionTitle(String lang, String section) {
           return 'چمتووالی';
         case 'fa':
           return 'آمادگی';
+        case 'ar':
+          return 'الجاهزية';
         default:
           return 'Availability';
       }
@@ -138,6 +162,8 @@ String wizardSectionTitle(String lang, String section) {
           return 'لنډ معرفي';
         case 'fa':
           return 'معرفی کوتاه';
+        case 'ar':
+          return 'نبذة قصيرة';
         default:
           return 'Profile summary';
       }
@@ -184,7 +210,7 @@ class WizardStepHeader extends StatelessWidget {
     required this.onPreview,
   });
 
-  bool get _isRtl => language == 'ps' || language == 'fa';
+  bool get _isRtl => language == 'ps' || language == 'fa' || language == 'ar';
 
   @override
   Widget build(BuildContext context) {
@@ -332,7 +358,7 @@ class WizardBottomBar extends StatelessWidget {
             child: KPrimaryCta(
               icon: Icons.arrow_forward_rounded,
               label: wizardText(language, 'continue'),
-              isRtl: language == 'ps' || language == 'fa',
+              isRtl: language == 'ps' || language == 'fa' || language == 'ar',
               isSelected: false,
               onTap: onContinue ?? () {},
             ),

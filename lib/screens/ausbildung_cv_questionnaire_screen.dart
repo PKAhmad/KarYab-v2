@@ -91,16 +91,17 @@ class _AusbildungCvQuestionnaireScreenState
 
   static const List<String> _kCefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-  // key, German display name, Pashto label, Dari label - same set and same
+  // key, German display name, Pashto label, Dari label, Arabic label -
+  // same set and same
   // proficiency-map key convention (German name) as questionnaire_screen.dart
   // so data saved here is directly compatible with the main CV flow.
   static const List<List<String>> _kLangs = [
-    ['pashto',  'Paschtu',    'پښتو',      'پشتو'],
-    ['dari',    'Dari/Farsi', 'دري/فارسي', 'دری/فارسی'],
-    ['urdu',    'Urdu',       'اردو',      'اردو'],
-    ['arabic',  'Arabisch',   'عربي',      'عربی'],
-    ['english', 'Englisch',   'انګليسي',   'انگلیسی'],
-    ['german',  'Deutsch',    'جرمني',     'آلمانی'],
+    ['pashto',  'Paschtu',    'پښتو',      'پشتو', 'البشتو'],
+    ['dari',    'Dari/Farsi', 'دري/فارسي', 'دری/فارسی', 'الدارية'],
+    ['urdu',    'Urdu',       'اردو',      'اردو', 'الأردية'],
+    ['arabic',  'Arabisch',   'عربي',      'عربی', 'العربية'],
+    ['english', 'Englisch',   'انګليسي',   'انگلیسی', 'الإنجليزية'],
+    ['german',  'Deutsch',    'جرمني',     'آلمانی', 'الألمانية'],
   ];
 
   late String _lang;
@@ -157,7 +158,7 @@ class _AusbildungCvQuestionnaireScreenState
   bool _escoPrefilled = false;
 
   bool get _isEducated  => !_voiceMode;
-  bool get _isRtl       => _lang == 'ps' || _lang == 'fa';
+  bool get _isRtl       => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
   bool get _showSpeaker => !_isEducated && _isRtl;
 
   @override
@@ -731,6 +732,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'د زده کړې لیوالتیا لیک';
       case 'fa': return 'رزومه کارآموزی';
+      case 'ar': return 'سيرة Ausbildung الذاتية';
       default:   return 'Ausbildungs-Lebenslauf';
     }
   }
@@ -740,6 +742,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'خپلې تیرې دندې یا کارورزۍ اضافه کړئ (تر ۵ پورې)';
       case 'fa': return 'سوابق کاری یا کارآموزی خود را اضافه کنید (حداکثر ۵)';
+      case 'ar': return 'أضف وظائفك السابقة أو تدريباتك (حتى 5)';
       default:   return 'Add your previous jobs or internships (up to 5)';
     }
   }
@@ -748,6 +751,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'دا معلومات ستاسو د بلې CV څخه راغلي، تاسو یې سمولی شئ';
       case 'fa': return 'این از رزومه دیگر شما بارگذاری شده، می‌توانید ویرایش کنید';
+      case 'ar': return 'جاءت هذه المعلومات من CV آخر لك. يمكنك تغييرها';
       default:   return 'Loaded from your other CV, edit if needed';
     }
   }
@@ -756,6 +760,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'دا معلومات ستاسو د بلې CV څخه راغلي، تاسو یې سمولی شئ';
       case 'fa': return 'این از رزومه دیگر شما بارگذاری شده، می‌توانید ویرایش کنید';
+      case 'ar': return 'جاءت هذه المعلومات من CV آخر لك. يمكنك تغييرها';
       default:   return 'Loaded from your other CV, edit if needed';
     }
   }
@@ -767,6 +772,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'دا معلومات ستاسو د پخوانیو ځوابونو څخه راغلي، تاسو یې سمولی شئ';
       case 'fa': return 'این از پاسخ‌های قبلی شما بارگذاری شده، می‌توانید ویرایش کنید';
+      case 'ar': return 'جاءت هذه المعلومات من إجاباتك السابقة. يمكنك تغييرها';
       default:   return 'Loaded from your previous answers, edit if needed';
     }
   }
@@ -775,6 +781,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'د شرکت نوم';
       case 'fa': return 'نام شرکت';
+      case 'ar': return 'اسم الشركة';
       default:   return 'Company name';
     }
   }
@@ -783,6 +790,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'دنده / موقف';
       case 'fa': return 'سمت / موقعیت شغلی';
+      case 'ar': return 'الوظيفة / المنصب';
       default:   return 'Role / position';
     }
   }
@@ -793,6 +801,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'ځای (ښار)';
       case 'fa': return 'محل (شهر)';
+      case 'ar': return 'المكان (المدينة)';
       default:   return 'Ort (place/location)';
     }
   }
@@ -801,6 +810,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return '+ بله دنده اضافه کړئ';
       case 'fa': return '+ افزودن شغل دیگر';
+      case 'ar': return '+ أضف وظيفة أخرى';
       default:   return '+ Add another position';
     }
   }
@@ -810,6 +820,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'خپلې زده کړې اضافه کړئ (تر ۵ پورې)';
       case 'fa': return 'سوابق تحصیلی خود را اضافه کنید (حداکثر ۵)';
+      case 'ar': return 'أضف تعليمك (حتى 5)';
       default:   return 'Add your education history (up to 5)';
     }
   }
@@ -818,6 +829,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'د ښوونځي نوم';
       case 'fa': return 'نام موسسه';
+      case 'ar': return 'اسم المؤسسة';
       default:   return 'Institution name';
     }
   }
@@ -826,6 +838,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'د زده کړې ډول وټاکئ';
       case 'fa': return 'نوع مدرسه را انتخاب کنید';
+      case 'ar': return 'اختر نوع المدرسة أو التعليم';
       default:   return 'Select school/education type';
     }
   }
@@ -834,6 +847,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'د سند ډول (لکه Abschluss)';
       case 'fa': return 'نوع مدرک (Abschluss)';
+      case 'ar': return 'نوع الشهادة (مثل Abschluss)';
       default:   return 'Qualification / Abschluss type';
     }
   }
@@ -842,6 +856,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return '+ بله زده کړه اضافه کړئ';
       case 'fa': return '+ افزودن مدرک دیگر';
+      case 'ar': return '+ أضف شهادة أخرى';
       default:   return '+ Add another qualification';
     }
   }
@@ -850,6 +865,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'Noten hinzufügen (نمرې اضافه کړئ)';
       case 'fa': return 'Noten hinzufügen (افزودن نمرات)';
+      case 'ar': return 'Noten hinzufügen (إضافة الدرجات)';
       default:   return 'Noten hinzufügen (add grades)';
     }
   }
@@ -858,6 +874,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'خپلې نمرې دلته ولیکئ';
       case 'fa': return 'نمرات خود را اینجا بنویسید';
+      case 'ar': return 'اكتب درجاتك هنا';
       default:   return 'Enter your grades';
     }
   }
@@ -867,6 +884,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'خپلې ژبې او د هرې ژبې کچه وټاکئ';
       case 'fa': return 'زبان‌ها و سطح خود را برای هر زبان انتخاب کنید';
+      case 'ar': return 'اختر لغاتك ومستواك في كل لغة';
       default:   return 'Select the languages you speak and your level for each';
     }
   }
@@ -875,6 +893,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'دا معلومات ستاسو د پروفایل څخه راغلي، تاسو یې سمولی شئ';
       case 'fa': return 'این اطلاعات از پروفایل شما بارگذاری شده، می‌توانید ویرایش کنید';
+      case 'ar': return 'جاءت هذه المعلومات من ملفك. يمكنك تغييرها';
       default:   return 'Loaded from your saved profile, edit if needed';
     }
   }
@@ -883,6 +902,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'مورنۍ ژبه';
       case 'fa': return 'زبان مادری';
+      case 'ar': return 'اللغة الأم';
       default:   return 'Muttersprache';
     }
   }
@@ -891,6 +911,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'نور (پخپله ولیکئ)';
       case 'fa': return 'دیگر (خودتان بنویسید)';
+      case 'ar': return 'أخرى (اكتب بنفسك)';
       default:   return 'Other / type your own';
     }
   }
@@ -900,6 +921,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'هغه مهارتونه وټاکئ چې تاسو یې لری';
       case 'fa': return 'مهارت‌هایی که دارید را انتخاب کنید';
+      case 'ar': return 'اختر المهارات التي عندك';
       default:   return 'Select the skills you have';
     }
   }
@@ -908,6 +930,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'نور IT مهارتونه، په کوما سره جلا کړئ';
       case 'fa': return 'مهارت‌های IT دیگر، با کاما جدا کنید';
+      case 'ar': return 'مهارات IT أخرى، افصل بينها بفاصلة';
       default:   return 'Other IT skills, separated by commas';
     }
   }
@@ -917,6 +940,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'خپل موخه یی مسلک ولیکئ او لټون وکړئ';
       case 'fa': return 'شغل هدف خود را بنویسید و جستجو کنید';
+      case 'ar': return 'اكتب وظيفتك المطلوبة وابحث عنها';
       default:   return 'Type your target job (Beruf) and search';
     }
   }
@@ -925,6 +949,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'لکه Elektroniker, Verkäufer...';
       case 'fa': return 'مثلاً Elektroniker, Verkäufer...';
+      case 'ar': return 'مثل Elektroniker, Verkäufer...';
       default:   return 'e.g. Elektroniker, Verkäufer...';
     }
   }
@@ -933,6 +958,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'پایله ونه موندل شوه';
       case 'fa': return 'نتیجه‌ای یافت نشد';
+      case 'ar': return 'لم يتم العثور على نتائج';
       default:   return 'No results found';
     }
   }
@@ -945,6 +971,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'خپل مهارت ولیکئ او اضافه یې کړئ';
       case 'fa': return 'مهارت خود را بنویسید و اضافه کنید';
+      case 'ar': return 'اكتب مهارتك وأضفها';
       default:   return 'Type a custom skill and add it';
     }
   }
@@ -954,6 +981,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'تاسو د ۵ څخه زیات نشئ اضافه کولی';
       case 'fa': return 'شما نمی‌توانید بیشتر از ۵ مورد اضافه کنید';
+      case 'ar': return 'لا يمكنك إضافة أكثر من 5';
       default:   return "You can't add more than 5";
     }
   }
@@ -964,6 +992,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return '۵ ټاکل شوي - اعظمي';
       case 'fa': return '۵ انتخاب شد - حداکثر';
+      case 'ar': return 'تم اختيار 5، الحد الأقصى';
       default:   return '5 selected - maximum reached';
     }
   }
@@ -1000,6 +1029,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'اوس مهال';
       case 'fa': return 'اکنون';
+      case 'ar': return 'حاليا';
       default:   return 'Present';
     }
   }
@@ -1008,6 +1038,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'له کال';
       case 'fa': return 'از سال';
+      case 'ar': return 'من سنة';
       default:   return 'From year';
     }
   }
@@ -1016,6 +1047,7 @@ class _AusbildungCvQuestionnaireScreenState
     switch (_lang) {
       case 'ps': return 'تر کاله';
       case 'fa': return 'تا سال';
+      case 'ar': return 'حتى سنة';
       default:   return 'Until year';
     }
   }
@@ -1499,7 +1531,7 @@ class _AusbildungCvQuestionnaireScreenState
             children: _kLangs.map((l) {
               final key = l[0];
               final germanName = l[1];
-              final lbl = _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : l[1];
+              final lbl = _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[4] : l[1];
               final sel = _languages.contains(key);
               return GestureDetector(
                 onTap: () => setState(() {
@@ -1562,7 +1594,7 @@ class _AusbildungCvQuestionnaireScreenState
             const SizedBox(height: 12),
             for (final l in _kLangs)
               if (_languages.contains(l[0]))
-                levelRow(l[0], l[1], _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : l[1]),
+                levelRow(l[0], l[1], _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[4] : l[1]),
             for (final custom in _languages
                 .where((l) => !_kLangs.any((preset) => preset[0] == l)))
               levelRow(custom, custom, custom),

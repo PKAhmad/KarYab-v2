@@ -421,6 +421,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     switch (lang) {
       case 'ps': return 'ځوابونه سمول';
       case 'fa': return 'ویرایش پاسخ‌ها';
+      case 'ar': return 'تعديل الإجابات';
       default:   return 'Edit answers';
     }
   }
@@ -464,7 +465,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     final lang        = context.watch<LanguageProvider>().language;
-    final showSpeaker = lang == 'ps' || lang == 'fa';
+    final showSpeaker = lang == 'ps' || lang == 'fa' || lang == 'ar';
     final body = SafeArea(
       top: !widget.embedded,
       child: Column(
@@ -553,6 +554,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   Widget _buildHeader(String lang) {
     final title = lang == 'ps' ? ' CV ستاسو'
         : lang == 'fa' ? 'CV شما'
+        : lang == 'ar' ? 'سيرتك الذاتية'
         : 'Your CV';
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -665,9 +667,11 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   Widget _buildBottomButtons(String lang, bool showSpeaker) {
     final downloadLabel = lang == 'ps' ? 'ډاونلوډ کړئ CV '
         : lang == 'fa' ? 'دانلود CV'
+        : lang == 'ar' ? 'تنزيل CV'
         : 'Download CV (PDF)';
     final jobsLabel = lang == 'ps' ? 'نژدی کارونه وګورئ'
         : lang == 'fa' ? 'کارها را پیدا کنید'
+        : lang == 'ar' ? 'ابحث عن وظائف قريبة'
         : 'Find Jobs Now';
 
     return Container(
@@ -762,7 +766,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                           onTap: () => TtsService().speak(
                             lang == 'ps'
                                 ? 'نژدی کارونه وګورئ'
-                                : 'کارها را پیدا کنید',
+                                : lang == 'ar'
+                                    ? 'ابحث عن وظائف قريبة'
+                                    : 'کارها را پیدا کنید',
                             lang,
                           ),
                           child: const Icon(Icons.volume_up_rounded,

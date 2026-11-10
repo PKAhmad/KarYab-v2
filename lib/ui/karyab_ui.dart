@@ -764,19 +764,26 @@ class KLiquid {
   static const double radiusPill = 20;
 }
 
-/// Font family for a language code: Pashto/Dari render in the bundled
-/// Noto Naskh Arabic, everything else in Roboto. Wired app-wide through
-/// the MaterialApp theme (main.dart) and explicitly by the Phase 5
-/// widgets (dock, dashboard) whose hosts build their own text styles.
-String karyabFontFamily(String language) =>
-    (language == 'ps' || language == 'fa') ? 'NotoNaskhArabic' : 'Roboto';
+/// True for the app's right-to-left UI languages: Pashto, Dari and
+/// Arabic (Phase 12). This is the one place the RTL set is defined;
+/// screens that still carry their own `ps || fa || ar` chains predate
+/// the helper and behave identically.
+bool karyabIsRtl(String language) =>
+    language == 'ps' || language == 'fa' || language == 'ar';
 
-/// Fallback chain behind [karyabFontFamily]: Arabic first for ps/fa
+/// Font family for a language code: Pashto/Dari/Arabic render in the
+/// bundled Noto Naskh Arabic, everything else in Roboto. Wired
+/// app-wide through the MaterialApp theme (main.dart) and explicitly
+/// by the Phase 5 widgets (dock, dashboard) whose hosts build their
+/// own text styles.
+String karyabFontFamily(String language) =>
+    karyabIsRtl(language) ? 'NotoNaskhArabic' : 'Roboto';
+
+/// Fallback chain behind [karyabFontFamily]: Arabic first for ps/fa/ar
 /// (Latin digits/glyphs fall back to Roboto), Roboto first otherwise.
-List<String> karyabFontFallback(String language) =>
-    (language == 'ps' || language == 'fa')
-        ? const ['Roboto']
-        : const ['NotoNaskhArabic'];
+List<String> karyabFontFallback(String language) => karyabIsRtl(language)
+    ? const ['Roboto']
+    : const ['NotoNaskhArabic'];
 
 // ── Device tier ──────────────────────────────────────────────────────────────
 
