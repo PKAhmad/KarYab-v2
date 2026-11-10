@@ -353,6 +353,23 @@ class JobCache extends Table {
   Set<Column> get primaryKey => {cacheKey};
 }
 
+/// Guide step check-offs (Phase 11). One row per finished guide
+/// step; [stepKey] is '<trackId>:<stepId>' from the guides content
+/// model (lib/services/guides). A step with no row (or done = false)
+/// is open. Rows are never deleted on un-check so the history of the
+/// toggle survives; the repository reads only done = true rows.
+class GuideProgressEntries extends Table {
+  @override
+  String get tableName => 'guide_progress';
+
+  TextColumn get stepKey => text().named('step_key')();
+  BoolColumn get done => boolean()();
+  DateTimeColumn get updatedAt => dateTime().named('updated_at')();
+
+  @override
+  Set<Column> get primaryKey => {stepKey};
+}
+
 @DriftDatabase(
   tables: [
     ProfileEntries,
@@ -364,6 +381,7 @@ class JobCache extends Table {
     SavedSearches,
     Applications,
     JobCache,
+    GuideProgressEntries,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -381,7 +399,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -397,6 +415,11 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(savedSearches);
             await m.createTable(applications);
             await m.createTable(jobCache);
+          }
+          // v2 -> v3 (Phase 11): the guides progress table, purely
+          // additive like the Phase 7 step.
+          if (from < 3) {
+            await m.createTable(guideProgressEntries);
           }
         },
       );

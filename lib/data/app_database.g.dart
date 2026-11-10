@@ -5830,6 +5830,278 @@ class JobCacheCompanion extends UpdateCompanion<JobCacheData> {
   }
 }
 
+class $GuideProgressEntriesTable extends GuideProgressEntries
+    with TableInfo<$GuideProgressEntriesTable, GuideProgressEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GuideProgressEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _stepKeyMeta = const VerificationMeta(
+    'stepKey',
+  );
+  @override
+  late final GeneratedColumn<String> stepKey = GeneratedColumn<String>(
+    'step_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _doneMeta = const VerificationMeta('done');
+  @override
+  late final GeneratedColumn<bool> done = GeneratedColumn<bool>(
+    'done',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("done" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [stepKey, done, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'guide_progress';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GuideProgressEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('step_key')) {
+      context.handle(
+        _stepKeyMeta,
+        stepKey.isAcceptableOrUnknown(data['step_key']!, _stepKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stepKeyMeta);
+    }
+    if (data.containsKey('done')) {
+      context.handle(
+        _doneMeta,
+        done.isAcceptableOrUnknown(data['done']!, _doneMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_doneMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {stepKey};
+  @override
+  GuideProgressEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GuideProgressEntry(
+      stepKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}step_key'],
+      )!,
+      done: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}done'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $GuideProgressEntriesTable createAlias(String alias) {
+    return $GuideProgressEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class GuideProgressEntry extends DataClass
+    implements Insertable<GuideProgressEntry> {
+  final String stepKey;
+  final bool done;
+  final DateTime updatedAt;
+  const GuideProgressEntry({
+    required this.stepKey,
+    required this.done,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['step_key'] = Variable<String>(stepKey);
+    map['done'] = Variable<bool>(done);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  GuideProgressEntriesCompanion toCompanion(bool nullToAbsent) {
+    return GuideProgressEntriesCompanion(
+      stepKey: Value(stepKey),
+      done: Value(done),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory GuideProgressEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GuideProgressEntry(
+      stepKey: serializer.fromJson<String>(json['stepKey']),
+      done: serializer.fromJson<bool>(json['done']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'stepKey': serializer.toJson<String>(stepKey),
+      'done': serializer.toJson<bool>(done),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  GuideProgressEntry copyWith({
+    String? stepKey,
+    bool? done,
+    DateTime? updatedAt,
+  }) => GuideProgressEntry(
+    stepKey: stepKey ?? this.stepKey,
+    done: done ?? this.done,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  GuideProgressEntry copyWithCompanion(GuideProgressEntriesCompanion data) {
+    return GuideProgressEntry(
+      stepKey: data.stepKey.present ? data.stepKey.value : this.stepKey,
+      done: data.done.present ? data.done.value : this.done,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideProgressEntry(')
+          ..write('stepKey: $stepKey, ')
+          ..write('done: $done, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(stepKey, done, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GuideProgressEntry &&
+          other.stepKey == this.stepKey &&
+          other.done == this.done &&
+          other.updatedAt == this.updatedAt);
+}
+
+class GuideProgressEntriesCompanion
+    extends UpdateCompanion<GuideProgressEntry> {
+  final Value<String> stepKey;
+  final Value<bool> done;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const GuideProgressEntriesCompanion({
+    this.stepKey = const Value.absent(),
+    this.done = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GuideProgressEntriesCompanion.insert({
+    required String stepKey,
+    required bool done,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : stepKey = Value(stepKey),
+       done = Value(done),
+       updatedAt = Value(updatedAt);
+  static Insertable<GuideProgressEntry> custom({
+    Expression<String>? stepKey,
+    Expression<bool>? done,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (stepKey != null) 'step_key': stepKey,
+      if (done != null) 'done': done,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GuideProgressEntriesCompanion copyWith({
+    Value<String>? stepKey,
+    Value<bool>? done,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return GuideProgressEntriesCompanion(
+      stepKey: stepKey ?? this.stepKey,
+      done: done ?? this.done,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (stepKey.present) {
+      map['step_key'] = Variable<String>(stepKey.value);
+    }
+    if (done.present) {
+      map['done'] = Variable<bool>(done.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideProgressEntriesCompanion(')
+          ..write('stepKey: $stepKey, ')
+          ..write('done: $done, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -5844,6 +6116,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SavedSearchesTable savedSearches = $SavedSearchesTable(this);
   late final $ApplicationsTable applications = $ApplicationsTable(this);
   late final $JobCacheTable jobCache = $JobCacheTable(this);
+  late final $GuideProgressEntriesTable guideProgressEntries =
+      $GuideProgressEntriesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5858,6 +6132,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     savedSearches,
     applications,
     jobCache,
+    guideProgressEntries,
   ];
 }
 
@@ -8674,6 +8949,195 @@ typedef $$JobCacheTableProcessedTableManager =
       JobCacheData,
       PrefetchHooks Function()
     >;
+typedef $$GuideProgressEntriesTableCreateCompanionBuilder =
+    GuideProgressEntriesCompanion Function({
+      required String stepKey,
+      required bool done,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$GuideProgressEntriesTableUpdateCompanionBuilder =
+    GuideProgressEntriesCompanion Function({
+      Value<String> stepKey,
+      Value<bool> done,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$GuideProgressEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $GuideProgressEntriesTable> {
+  $$GuideProgressEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get stepKey => $composableBuilder(
+    column: $table.stepKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GuideProgressEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GuideProgressEntriesTable> {
+  $$GuideProgressEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get stepKey => $composableBuilder(
+    column: $table.stepKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GuideProgressEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GuideProgressEntriesTable> {
+  $$GuideProgressEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get stepKey =>
+      $composableBuilder(column: $table.stepKey, builder: (column) => column);
+
+  GeneratedColumn<bool> get done =>
+      $composableBuilder(column: $table.done, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$GuideProgressEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GuideProgressEntriesTable,
+          GuideProgressEntry,
+          $$GuideProgressEntriesTableFilterComposer,
+          $$GuideProgressEntriesTableOrderingComposer,
+          $$GuideProgressEntriesTableAnnotationComposer,
+          $$GuideProgressEntriesTableCreateCompanionBuilder,
+          $$GuideProgressEntriesTableUpdateCompanionBuilder,
+          (
+            GuideProgressEntry,
+            BaseReferences<
+              _$AppDatabase,
+              $GuideProgressEntriesTable,
+              GuideProgressEntry
+            >,
+          ),
+          GuideProgressEntry,
+          PrefetchHooks Function()
+        > {
+  $$GuideProgressEntriesTableTableManager(
+    _$AppDatabase db,
+    $GuideProgressEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GuideProgressEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GuideProgressEntriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$GuideProgressEntriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> stepKey = const Value.absent(),
+                Value<bool> done = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuideProgressEntriesCompanion(
+                stepKey: stepKey,
+                done: done,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String stepKey,
+                required bool done,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => GuideProgressEntriesCompanion.insert(
+                stepKey: stepKey,
+                done: done,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GuideProgressEntriesTable, GuideProgressEntry>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $GuideProgressEntriesTable,
+                    GuideProgressEntry
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GuideProgressEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GuideProgressEntriesTable,
+      GuideProgressEntry,
+      $$GuideProgressEntriesTableFilterComposer,
+      $$GuideProgressEntriesTableOrderingComposer,
+      $$GuideProgressEntriesTableAnnotationComposer,
+      $$GuideProgressEntriesTableCreateCompanionBuilder,
+      $$GuideProgressEntriesTableUpdateCompanionBuilder,
+      (
+        GuideProgressEntry,
+        BaseReferences<
+          _$AppDatabase,
+          $GuideProgressEntriesTable,
+          GuideProgressEntry
+        >,
+      ),
+      GuideProgressEntry,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -8696,4 +9160,6 @@ class $AppDatabaseManager {
       $$ApplicationsTableTableManager(_db, _db.applications);
   $$JobCacheTableTableManager get jobCache =>
       $$JobCacheTableTableManager(_db, _db.jobCache);
+  $$GuideProgressEntriesTableTableManager get guideProgressEntries =>
+      $$GuideProgressEntriesTableTableManager(_db, _db.guideProgressEntries);
 }

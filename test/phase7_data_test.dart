@@ -37,7 +37,9 @@ void main() {
       );
 
       final db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 2);
+      // Validates to the CURRENT schema version (v3 since Phase 11;
+      // the v1 -> v2 step this group is about runs inside it).
+      await verifier.migrateAndValidate(db, 3);
 
       // v1 data survived the migration.
       final profile = await db.select(db.profileEntries).getSingle();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../services/guides/guides.dart';
 import '../services/jobs_strings.dart';
 import '../services/official_letter_strings.dart';
 import '../ui/karyab_ui.dart';
@@ -201,6 +202,10 @@ class HomeDashboard extends StatelessWidget {
   // Optional so older call sites keep working; rendered when set.
   final VoidCallback? onOfficialLetters;
 
+  // Phase 11: entry card into the step-by-step guides, directly
+  // under the official-letters card. Optional, same contract.
+  final VoidCallback? onGuides;
+
   // Phase 7: real saved-jobs / tracker summary counts. All optional;
   // the summary row renders only for a count whose tap target exists.
   final int? savedJobsCount;
@@ -219,6 +224,7 @@ class HomeDashboard extends StatelessWidget {
     this.onContinue,
     this.day,
     this.onOfficialLetters,
+    this.onGuides,
     this.savedJobsCount,
     this.onSavedJobs,
     this.applicationsCount,
@@ -443,6 +449,66 @@ class HomeDashboard extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 OfficialLetterStrings.homeCardSub(language),
+                                style: _style(
+                                  11.5,
+                                  FontWeight.w600,
+                                  KLiquid.textOnDarkSoft,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          _isRtl
+                              ? Icons.arrow_back_ios_new_rounded
+                              : Icons.arrow_forward_ios_rounded,
+                          color: Colors.white54,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                // Phase 11: guides entry card, directly under the
+                // official-letters card, same prominent treatment.
+                if (onGuides != null) ...[
+                  const SizedBox(height: 14),
+                  KGlassPanel(
+                    level: KGlassLevel.l2,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                    onTap: onGuides,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: KColors.green.withValues(alpha: 0.22),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.menu_book_rounded,
+                            color: KColors.green,
+                            size: 23,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                GuideStrings.title(language),
+                                style: _style(
+                                  15,
+                                  FontWeight.w800,
+                                  Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                GuideStrings.homeCardSub(language),
                                 style: _style(
                                   11.5,
                                   FontWeight.w600,

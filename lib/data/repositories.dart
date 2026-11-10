@@ -708,3 +708,54 @@ class JobsRepository {
     );
   }
 }
+
+// ── Phase 11 guides progress ─────────────────────────────────────────────
+
+/// Guide step check-offs (see [GuideProgressEntries]). Keys are
+/// '<trackId>:<stepId>' from the guides content model; the repository
+/// treats them as opaque strings so a content update never needs a
+/// data migration.
+class GuidesRepository {
+  GuidesRepository(this._db);
+
+  final AppDatabase _db;
+
+  /// The storage key for one step of one track.
+  static String stepKey(String trackId, String stepId) => '$trackId:$stepId';
+
+  /// All step keys currently marked done.
+  Future<Set<String>> loadDoneStepKeys() async {
+    final rows = await (_db.select(_db.guideProgressEntries)
+          ..where((t) => t.done.equals(true)))
+        .get();
+    return {for (final r in rows) r.stepKey};
+  }
+
+  /// Whether one step is marked done.
+  Future<bool> isStepDone(String trackId, String stepId) async {
+    final row = await (_db.select(_db.guideProgressEntries)
+          ..where((t) => t.stepKey.equals(stepKey(trackId, stepId))))
+        .getSingleOrNull();
+    return row?.done ?? false;
+  }
+
+  /// Marks or un-marks one step. The row is kept on un-mark (done =
+  /// false) so toggling is a single upsert either way.
+  Future<void> setStepDone(String trackId, String stepId, bool done) {
+    return _db.into(_db.guideProgressEntries).insertOnConflictUpdate(
+          GuideProgressEntriesCompanion.insert(
+            stepKey: stepKey(trackId, stepId),
+            done: done,
+            updatedAt: DateTime.now(),
+          ),
+        );
+  }
+
+  /// How many steps of [trackId] are done, counting only step ids
+  /// that exist in the current content (stale keys from older content
+  /// never inflate the progress).
+  Future<int> doneCount(String trackId, List<String> stepIds) async {
+    final done = await loadDoneStepKeys();
+    return stepIds.where((id) => done.contains(stepKey(trackId, id))).length;
+  }
+}

@@ -20,6 +20,7 @@ abstract final class KaryabData {
   static AppDatabase? _database;
   static DocumentRepository? _documents;
   static JobsRepository? _jobs;
+  static GuidesRepository? _guides;
   static bool _initialised = false;
 
   /// Profile + document-domain key/value access. Always safe to call.
@@ -35,6 +36,10 @@ abstract final class KaryabData {
   /// Phase 7 job-side storage (saved jobs/searches, tracker, job
   /// cache). Null until [init], same contract as [documents].
   static JobsRepository? get jobs => _jobs;
+
+  /// Phase 11 guide step check-offs. Null until [init], same
+  /// contract as [documents].
+  static GuidesRepository? get guides => _guides;
 
   static AppDatabase? get database => _database;
 
@@ -58,12 +63,14 @@ abstract final class KaryabData {
       _database = db;
       _documents = DocumentRepository(db);
       _jobs = JobsRepository(db);
+      _guides = GuidesRepository(db);
       _store = DriftProfileStore(db);
     } catch (_) {
       // Degraded mode: _store stays the v1 SharedPreferences backend.
       _database = null;
       _documents = null;
       _jobs = null;
+      _guides = null;
     }
   }
 
@@ -75,11 +82,13 @@ abstract final class KaryabData {
     AppDatabase? database,
     DocumentRepository? documents,
     JobsRepository? jobs,
+    GuidesRepository? guides,
   }) {
     _store = store;
     _database = database;
     _documents = documents;
     _jobs = jobs;
+    _guides = guides;
     _initialised = true;
   }
 
@@ -88,6 +97,7 @@ abstract final class KaryabData {
     _database = null;
     _documents = null;
     _jobs = null;
+    _guides = null;
     _initialised = false;
   }
 }

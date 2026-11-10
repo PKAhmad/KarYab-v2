@@ -19,12 +19,14 @@ import '../utils/navigation_helpers.dart';
 import '../widgets/cv_upload_info_sheet.dart';
 import '../widgets/home_dashboard.dart';
 import '../services/account_strings.dart';
+import '../services/guides/guides.dart';
 import '../services/jobs_strings.dart';
 import '../services/official_letter_strings.dart';
 import '../widgets/feedback_sheet.dart';
 import 'account_screen.dart';
 import 'ausbildung_document_preview_screen.dart';
 import 'cv_preview_screen.dart';
+import 'guides_screen.dart';
 import 'my_cvs_screen.dart';
 import 'my_letters_screen.dart';
 import 'official_letters_screen.dart';
@@ -618,6 +620,15 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     );
   }
 
+  void _openGuides() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GuidesScreen(language: _lang, voiceMode: _voiceMode),
+      ),
+    );
+  }
+
   void _openMinijobs() {
     Navigator.pushNamed(
       context,
@@ -790,6 +801,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                     _openOfficialLetters();
                   },
                 ),
+                entry(Icons.menu_book_rounded, GuideStrings.title(_lang), () {
+                  _openGuides();
+                }),
                 entry(Icons.mail_rounded, _myLettersLabel, () {
                   Navigator.push(
                     context,
@@ -961,6 +975,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                       : null,
                                   onMinijobs: _openMinijobs,
                                   onOfficialLetters: _openOfficialLetters,
+                                  onGuides: _openGuides,
                                   savedJobsCount: _dashSavedJobsCount,
                                   onSavedJobs: _openSavedJobs,
                                   applicationsCount: _dashApplicationsCount,
@@ -1027,6 +1042,83 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                                 OfficialLetterStrings.homeCardSub(
                                                   _lang,
                                                 ),
+                                                style: TextStyle(
+                                                  fontFamily: karyabFontFamily(
+                                                    _lang,
+                                                  ),
+                                                  color: KColors.textSecondary,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(
+                                          _isRtl
+                                              ? Icons.arrow_back_ios_new_rounded
+                                              : Icons.arrow_forward_ios_rounded,
+                                          color: KColors.textSecondary,
+                                          size: 16,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                              ],
+
+                              // ── Phase 11: guides card, same standalone
+                              // treatment as official letters above ──
+                              if (!_dashHasData) ...[
+                                KGlassSurface(
+                                  borderRadius: 24,
+                                  padding: const EdgeInsets.fromLTRB(
+                                    18,
+                                    16,
+                                    18,
+                                    16,
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: _openGuides,
+                                    behavior: HitTestBehavior.opaque,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            color: green.withValues(
+                                              alpha: 0.16,
+                                            ),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.menu_book_rounded,
+                                            color: green,
+                                            size: 23,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                GuideStrings.title(_lang),
+                                                style: TextStyle(
+                                                  fontFamily: karyabFontFamily(
+                                                    _lang,
+                                                  ),
+                                                  color: navy,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                GuideStrings.homeCardSub(_lang),
                                                 style: TextStyle(
                                                   fontFamily: karyabFontFamily(
                                                     _lang,
