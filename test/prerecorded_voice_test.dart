@@ -8,14 +8,21 @@ import 'package:karyab/services/prerecorded_voice.dart';
 // recorded texts in ps/fa/ar.
 void main() {
   group('prerecorded voice assets', () {
-    test('manifest covers 11 entries per language, 33 in total', () {
+    test('manifest covers pilot 11 per language + full Pashto pack', () {
       expect(kPrerecordedVoice.keys, containsAll(<String>['ps', 'fa', 'ar']));
+      // Pilot: 11 clips in each of ps/fa/ar. Full pack: +224 Pashto
+      // clips (workspace/karyab/voice/full/ps-list.json).
+      expect(kPrerecordedVoice['ps']!.length, 235,
+          reason: 'ps should have 11 pilot + 224 full-pack clips');
+      expect(kPrerecordedVoice['fa']!.length, 11,
+          reason: 'fa should have 11 clips');
+      expect(kPrerecordedVoice['ar']!.length, 11,
+          reason: 'ar should have 11 clips');
       var total = 0;
       kPrerecordedVoice.forEach((lang, byText) {
-        expect(byText.length, 11, reason: '$lang should have 11 clips');
         total += byText.length;
       });
-      expect(total, 33);
+      expect(total, 257);
     });
 
     test('every entry has its asset file present and larger than 1 KB', () {
@@ -53,6 +60,30 @@ void main() {
       expect(
         prerecordedVoiceAsset('ar', 'هل تستطيع القراءة والكتابة؟'),
         'audio/ar/question.mp3',
+      );
+    });
+
+    test('hits for full-pack Pashto texts (permissions, questionnaire, '
+        'guides)', () {
+      expect(
+        prerecordedVoiceAsset('ps', 'دا تڼۍ کیمرې ته اجازه ورکوي'),
+        'audio/ps/ps_permissions_camera.mp3',
+      );
+      expect(
+        prerecordedVoiceAsset('ps', 'تاسو کوم مهارتونه لری؟'),
+        'audio/ps/ps_questionnaire_q8_skills.mp3',
+      );
+      expect(
+        prerecordedVoiceAsset('ps', "McDonald's"),
+        'audio/ps/ps_questionnaire_employer_mcdonald_s.mp3',
+      );
+      expect(
+        prerecordedVoiceAsset(
+            'ps',
+            'دا لارښودونه تاسو ته رسمي لار ښيي، ګام پر ګام. یو ګام پس له '
+            'بله وکړئ، او کله چې یو ګام خلاص کړئ نو نښه یې کړئ. تاسو هر '
+            'ګام اورېدلی شئ.'),
+        'audio/ps/ps_guides_intro.mp3',
       );
     });
 
