@@ -578,6 +578,13 @@ String _explainIntegrationCourse(String lang, OfficialLetterData d) {
           'حتى تتعلم اللغة الألمانية. وتقول الرسالة أيضا إن اللغة '
           'الألمانية مهمة لعملك ولحياتك في ألمانيا. المكتب يقرر. هذه '
           'الرسالة لا تضمن التصريح.';
+    case 'ur':
+      return 'یہ خط ${d.officeName} کو بتاتا ہے کہ آپ کون ہیں اور دفتر '
+          'سے درخواست کرتا ہے کہ وہ آپ کو انضمام کورس (Integrationskurs) '
+          'میں شرکت کی اجازت دے، تاکہ آپ جرمن زبان سیکھ سکیں۔ خط یہ بھی '
+          'کہتا ہے کہ جرمن زبان آپ کے کام اور جرمنی میں آپ کی زندگی کے '
+          'لیے اہم ہے۔ فیصلہ دفتر کرتا ہے۔ یہ خط اجازت کی ضمانت نہیں '
+          'دیتا۔';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'the office for the permission (Berechtigung) to take an '
@@ -606,6 +613,9 @@ String _explainPermitExtension(String lang, OfficialLetterData d) {
   final expiryNoteAr = d.permitExpiry.isNotEmpty
       ? ' ينتهي تصريح إقامتك في تاريخ ${d.permitExpiry}.'
       : '';
+  final expiryNoteUr = d.permitExpiry.isNotEmpty
+      ? ' آپ کی رہائش کی اجازت ${d.permitExpiry} کو ختم ہوتی ہے۔'
+      : '';
   final expiryNoteEn = d.permitExpiry.isNotEmpty
       ? ' Your residence permit ends on ${d.permitExpiry}.'
       : '';
@@ -627,6 +637,11 @@ String _explainPermitExtension(String lang, OfficialLetterData d) {
       return 'تخبر هذه الرسالة ${d.officeName} من أنت وتطلب من المكتب '
           'موعدا لتمديد تصريح إقامتك.$expiryNoteAr وتقول الرسالة إنك '
           'تقبل أي موعد يقترحه المكتب. المكتب يقرر.';
+    case 'ur':
+      return 'یہ خط ${d.officeName} کو بتاتا ہے کہ آپ کون ہیں اور دفتر '
+          'سے آپ کی رہائش کی اجازت میں توسیع کے لیے ملاقات کا وقت مانگتا '
+          'ہے۔$expiryNoteUr یہ خط کہتا ہے کہ آپ دفتر کی تجویز کردہ ہر '
+          'ملاقات قبول کرتے ہیں۔ فیصلہ دفتر کرتا ہے۔';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'the office for an appointment to extend your residence '
@@ -660,6 +675,12 @@ String _explainAppointmentGeneral(String lang, OfficialLetterData d) {
           'موعدا. وتذكر الرسالة أيضا موضوعك في سطر واحد، حتى يعرف '
           'المكتب ما تحتاجه. وتقول إنك تقبل أي موعد يقترحه المكتب. '
           'المكتب يقرر.';
+    case 'ur':
+      return 'یہ خط ${d.officeName} کو بتاتا ہے کہ آپ کون ہیں اور دفتر '
+          'سے ملاقات کا وقت مانگتا ہے۔ یہ خط آپ کے موضوع کو بھی ایک سطر '
+          'میں بیان کرتا ہے، تاکہ دفتر کو معلوم ہو کہ آپ کو کیا چاہیے۔ '
+          'یہ کہتا ہے کہ آپ دفتر کی تجویز کردہ ہر ملاقات قبول کرتے ہیں۔ '
+          'فیصلہ دفتر کرتا ہے۔';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'the office for an appointment. It also states your concern '
@@ -686,6 +707,9 @@ String _explainAppointmentRegistration(String lang, OfficialLetterData d) {
   final addrAr = d.newAddress.isNotEmpty
       ? ' عنوانك الجديد: ${d.newAddress}.'
       : '';
+  final addrUr = d.newAddress.isNotEmpty
+      ? ' آپ کا نیا پتہ: ${d.newAddress}۔'
+      : '';
   final addrEn = d.newAddress.isNotEmpty
       ? ' Your new address: ${d.newAddress}.'
       : '';
@@ -707,6 +731,12 @@ String _explainAppointmentRegistration(String lang, OfficialLetterData d) {
       return 'تخبر هذه الرسالة ${d.officeName} من أنت، وأنك انتقلت إلى '
           'سكن جديد، وتطلب موعدا لتسجيل عنوانك (Anmeldung).$addrAr في '
           'ألمانيا يجب على كل شخص تسجيل عنوانه في المكتب. المكتب يقرر.';
+    case 'ur':
+      return 'یہ خط ${d.officeName} کو بتاتا ہے کہ آپ کون ہیں، کہ آپ '
+          'نئے گھر میں منتقل ہو گئے ہیں، اور آپ کے پتے کے اندراج '
+          '(Anmeldung) کے لیے ملاقات کا وقت مانگتا ہے۔$addrUr جرمنی میں '
+          'ہر شخص کو اپنا پتہ دفتر میں درج کرانا ہوتا ہے۔ فیصلہ دفتر '
+          'کرتا ہے۔';
     case 'en':
       return 'This letter tells ${d.officeName} who you are, that you '
           'moved into a new home, and asks for an appointment to '
@@ -741,6 +771,12 @@ String _explainAppointmentJob(String lang, OfficialLetterData d) {
           'للمشورة حول العمل والتدريب المهني. وتقول الرسالة أيضا عن '
           'ماذا تريد أن تتحدث، وأنك تقبل أي موعد يقترحه المكتب. '
           'المكتب يقرر.';
+    case 'ur':
+      return 'یہ خط ${d.officeName} کو بتاتا ہے کہ آپ کون ہیں اور کام '
+          'اور Ausbildung کے بارے میں مشورے کے لیے ملاقات کا وقت مانگتا '
+          'ہے۔ یہ خط یہ بھی بتاتا ہے کہ آپ کس بارے میں بات کرنا چاہتے '
+          'ہیں، اور یہ کہ آپ دفتر کی تجویز کردہ ہر ملاقات قبول کرتے '
+          'ہیں۔ فیصلہ دفتر کرتا ہے۔';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and asks '
           'for an appointment to talk about work and Ausbildung. It '
@@ -762,6 +798,7 @@ String _explainSubmitDocuments(String lang, OfficialLetterData d) {
   final listPs = names.isNotEmpty ? ' سندونه: ${names.join('، ')}.' : '';
   final listFa = names.isNotEmpty ? ' مدارک: ${names.join('، ')}.' : '';
   final listAr = names.isNotEmpty ? ' المستندات: ${names.join('، ')}.' : '';
+  final listUr = names.isNotEmpty ? ' دستاویزات: ${names.join('، ')}۔' : '';
   final listEn = names.isNotEmpty ? ' Documents: ${names.join(', ')}.' : '';
   final listDe = names.isNotEmpty ? ' Unterlagen: ${names.join(', ')}.' : '';
   switch (lang) {
@@ -780,6 +817,11 @@ String _explainSubmitDocuments(String lang, OfficialLetterData d) {
           'المستندات إلى المكتب.$listAr وتطلب الرسالة من المكتب أن '
           'يخبرك ما إذا وصلت المستندات وما إذا كان يحتاج إلى شيء آخر '
           'منك. المكتب يقرر.';
+    case 'ur':
+      return 'یہ خط ${d.officeName} کو بتاتا ہے کہ آپ کون ہیں اور یہ '
+          'دستاویزات دفتر کو بھیجتا ہے۔$listUr یہ خط دفتر سے کہتا ہے کہ '
+          'وہ آپ کو بتائے کہ آیا دستاویزات پہنچ گئیں اور آیا اسے آپ سے '
+          'مزید کچھ چاہیے۔ فیصلہ دفتر کرتا ہے۔';
     case 'en':
       return 'This letter tells ${d.officeName} who you are and sends '
           'these documents to the office.$listEn It asks the office '
@@ -812,6 +854,12 @@ String _explainQuestion(String lang, OfficialLetterData d) {
           '${d.officeName}، بالكلمات التي كتبتها بنفسك. في البداية '
           'تقول من أنت، وفي النهاية تعطي بياناتك حتى يستطيع المكتب '
           'الرد عليك. المكتب يجيب على سؤالك.';
+    case 'ur':
+      return 'یہ خط آپ کا اپنا سوال یا آپ کی اپنی پریشانی '
+          '${d.officeName} کو بھیجتا ہے، انہی الفاظ میں جو آپ نے خود '
+          'لکھے ہیں۔ آغاز میں یہ بتاتا ہے کہ آپ کون ہیں اور آخر میں یہ '
+          'آپ کی معلومات دیتا ہے، تاکہ دفتر آپ کو جواب دے سکے۔ دفتر آپ '
+          'کے سوال کا جواب دیتا ہے۔';
     case 'en':
       return 'This letter sends your own question or problem to '
           '${d.officeName}, in the words you wrote yourself. At the '

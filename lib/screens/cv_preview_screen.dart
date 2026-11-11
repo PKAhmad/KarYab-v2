@@ -422,6 +422,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
       case 'ps': return 'ځوابونه سمول';
       case 'fa': return 'ویرایش پاسخ‌ها';
       case 'ar': return 'تعديل الإجابات';
+      case 'ur': return 'جوابات کی ترمیم کریں';
       default:   return 'Edit answers';
     }
   }
@@ -465,7 +466,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     final lang        = context.watch<LanguageProvider>().language;
-    final showSpeaker = lang == 'ps' || lang == 'fa' || lang == 'ar';
+    final showSpeaker = lang == 'ps' || lang == 'fa' || lang == 'ar' || lang == 'ur';
     final body = SafeArea(
       top: !widget.embedded,
       child: Column(
@@ -555,6 +556,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     final title = lang == 'ps' ? ' CV ستاسو'
         : lang == 'fa' ? 'CV شما'
         : lang == 'ar' ? 'سيرتك الذاتية'
+        : lang == 'ur' ? 'آپ کا CV'
         : 'Your CV';
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -668,10 +670,12 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     final downloadLabel = lang == 'ps' ? 'ډاونلوډ کړئ CV '
         : lang == 'fa' ? 'دانلود CV'
         : lang == 'ar' ? 'تنزيل CV'
+        : lang == 'ur' ? 'CV ڈاؤن لوڈ کریں'
         : 'Download CV (PDF)';
     final jobsLabel = lang == 'ps' ? 'نژدی کارونه وګورئ'
         : lang == 'fa' ? 'کارها را پیدا کنید'
         : lang == 'ar' ? 'ابحث عن وظائف قريبة'
+        : lang == 'ur' ? 'قریبی نوکریاں تلاش کریں'
         : 'Find Jobs Now';
 
     return Container(
@@ -768,7 +772,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                                 ? 'نژدی کارونه وګورئ'
                                 : lang == 'ar'
                                     ? 'ابحث عن وظائف قريبة'
-                                    : 'کارها را پیدا کنید',
+                                    : lang == 'ur'
+                                        ? 'قریبی نوکریاں تلاش کریں'
+                                        : 'کارها را پیدا کنید',
                             lang,
                           ),
                           child: const Icon(Icons.volume_up_rounded,

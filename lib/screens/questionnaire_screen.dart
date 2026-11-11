@@ -166,7 +166,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   bool get _isEducated  => !_voiceMode;
-  bool get _isRtl       => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _isRtl       => _lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur';
   bool get _showSpeaker => !_isEducated && _isRtl;
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -451,6 +451,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'مهرباني وکړئ ټول تش ځایونه ډک کړئ';
       case 'fa': return 'لطفاً همه فیلدهای ضروری را پر کنید';
       case 'ar': return 'يرجى ملء جميع الحقول المطلوبة';
+      case 'ur': return 'براہ کرم تمام ضروری خانے بھریں';
       default:   return 'Please fill in all required fields';
     }
   }
@@ -462,6 +463,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'تاسو د ۵ څخه زیات نشئ اضافه کولی';
       case 'fa': return 'شما نمی‌توانید بیشتر از ۵ مورد اضافه کنید';
       case 'ar': return 'لا يمكنك إضافة أكثر من 5 عناصر';
+      case 'ur': return 'آپ 5 سے زیادہ شامل نہیں کر سکتے';
       default:   return "You can't add more than 5";
     }
   }
@@ -710,6 +712,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 ['ps', 'پښتو',    'Pashto'],
                 ['fa', 'دری',     'Dari'],
                 ['ar', 'العربية', 'Arabic'],
+                ['ur', 'اردو', 'Urdu'],
                 ['en', 'English', 'English'],
               ])
                 GestureDetector(
@@ -806,6 +809,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               _lang == 'ps' ? 'کار او مهارتونه'
                   : _lang == 'fa' ? 'کار و مهارت‌ها'
                   : _lang == 'ar' ? 'العمل والمهارات'
+                  : _lang == 'ur' ? 'کام اور مہارتیں'
                   : 'Work & Skills',
               textAlign: TextAlign.center,
               style: const TextStyle(
@@ -895,10 +899,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     final title = _lang == 'ps' ? 'ستاسی کار او مهارتونه '
         : _lang == 'fa' ? 'کار و مهارت‌ها'
         : _lang == 'ar' ? 'عملك ومهاراتك'
+        : _lang == 'ur' ? 'آپ کا کام اور آپ کی مہارتیں'
         : 'Work & Skills';
     final subtitle = _lang == 'ps' ? 'لاندې خپل معلومات ډک کړئ'
         : _lang == 'fa' ? 'جزئیات خود را در زیر پر کنید'
         : _lang == 'ar' ? 'املأ بياناتك في الأسفل'
+        : _lang == 'ur' ? 'نیچے اپنی تفصیلات بھریں'
         : 'Fill in your details below';
 
     // Phase 3 wizard: progress header + Preview on every step, one
@@ -993,10 +999,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۸. تاسو کوم مهارتونه لری؟'
               : _lang == 'fa' ? '۸. چه مهارت‌هایی دارید؟'
               : _lang == 'ar' ? '8. ما هي المهارات التي لديك؟'
+              : _lang == 'ur' ? '8. آپ کے پاس کون سی مہارتیں ہیں؟'
               : '8. What skills do you have?',
           isRtl: _isRtl, showSpeaker: _showSpeaker,
           onSpeak: () => _snackSpeak(
-              _lang == 'ps' ? 'تاسو کوم مهارتونه لری؟' : _lang == 'ar' ? 'ما هي المهارات التي لديك؟' : 'چه مهارت‌هایی دارید؟'),
+              _lang == 'ps' ? 'تاسو کوم مهارتونه لری؟' : _lang == 'ar' ? 'ما هي المهارات التي لديك؟' : _lang == 'ur' ? 'آپ کے پاس کون سی مہارتیں ہیں؟' : 'چه مهارت‌هایی دارید؟'),
           child: _skillGrid(),
         ),
         const SizedBox(height: 12),
@@ -1008,10 +1015,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۹. ایا مخکې مو چیرت کار کړی دی؟'
               : _lang == 'fa' ? '۹. آیا قبلاً کار کرده‌اید؟'
               : _lang == 'ar' ? '9. هل عملت من قبل؟'
+              : _lang == 'ur' ? '9. کیا آپ نے پہلے کام کیا ہے؟'
               : '9. Have you worked before?',
           isRtl: _isRtl, showSpeaker: _showSpeaker,
           onSpeak: () => _snackSpeak(
-              _lang == 'ps' ? 'ایا مخکې مو چیرته کار کړی دی؟' : _lang == 'ar' ? 'هل عملت من قبل؟' : 'آیا قبلاً کار کرده‌اید؟'),
+              _lang == 'ps' ? 'ایا مخکې مو چیرته کار کړی دی؟' : _lang == 'ar' ? 'هل عملت من قبل؟' : _lang == 'ur' ? 'کیا آپ نے پہلے کام کیا ہے؟' : 'آیا قبلاً کار کرده‌اید؟'),
           child: _bigChoices(
             _workExpOptions(),
             _workExperience,
@@ -1029,10 +1037,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             question: _lang == 'ps' ? 'کوم ډول کار مو مخکی کړی دی؟'
                 : _lang == 'fa' ? 'چه نوع کاری قبلاً کرده‌اید؟'
                 : _lang == 'ar' ? 'ما نوع العمل الذي عملته من قبل؟'
+                : _lang == 'ur' ? 'آپ نے پہلے کس قسم کا کام کیا ہے؟'
                 : 'What type of work?',
             isRtl: _isRtl, showSpeaker: _showSpeaker,
             onSpeak: () => _snackSpeak(
-                _lang == 'ps' ? 'کوم ډول کار مو مخکی کړی دی؟' : _lang == 'ar' ? 'ما نوع العمل؟' : 'چه نوع کاری؟'),
+                _lang == 'ps' ? 'کوم ډول کار مو مخکی کړی دی؟' : _lang == 'ar' ? 'ما نوع العمل؟' : _lang == 'ur' ? 'کس قسم کا کام؟' : 'چه نوع کاری؟'),
             child: _bigChoices(
               _workTypeOptions(),
               _workType,
@@ -1048,10 +1057,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             question: _lang == 'ps' ? 'تاسو مخکې چیرته کار کړی دی؟'
                 : _lang == 'fa' ? 'قبلاً کجا کار کرده‌اید؟'
                 : _lang == 'ar' ? 'أين عملت من قبل؟'
+                : _lang == 'ur' ? 'آپ نے پہلے کہاں کام کیا ہے؟'
                 : 'Where have you worked before?',
             isRtl: _isRtl, showSpeaker: _showSpeaker,
             onSpeak: () => _snackSpeak(
-                _lang == 'ps' ? 'تاسو مخکې چیرته کار کړی دی؟' : _lang == 'ar' ? 'أين عملت من قبل؟' : 'قبلاً کجا کار کرده‌اید؟'),
+                _lang == 'ps' ? 'تاسو مخکې چیرته کار کړی دی؟' : _lang == 'ar' ? 'أين عملت من قبل؟' : _lang == 'ur' ? 'آپ نے پہلے کہاں کام کیا ہے؟' : 'قبلاً کجا کار کرده‌اید؟'),
             child: _jobEntriesUneducated(),
           ),
           const SizedBox(height: 12),
@@ -1064,10 +1074,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۰. تاسو کوم ډول سامان یا ماشینونو سره کار کولی شی؟'
               : _lang == 'fa' ? '۱۰. آیا می‌توانید با ابزار کار کنید؟'
               : _lang == 'ar' ? '10. هل تستطيع العمل بالأدوات أو الآلات؟'
+              : _lang == 'ur' ? '10. کیا آپ اوزار یا مشینوں سے کام کر سکتے ہیں؟'
               : '10. Can you use tools or machines?',
           isRtl: _isRtl, showSpeaker: _showSpeaker,
           onSpeak: () => _snackSpeak(
-              _lang == 'ps' ? 'تاسو کوم ډول سامان یا ماشینونو سره کار کولی شی؟' : _lang == 'ar' ? 'هل تستطيع العمل بالأدوات أو الآلات؟' : 'آیا می‌توانید با ابزار کار کنید؟'),
+              _lang == 'ps' ? 'تاسو کوم ډول سامان یا ماشینونو سره کار کولی شی؟' : _lang == 'ar' ? 'هل تستطيع العمل بالأدوات أو الآلات؟' : _lang == 'ur' ? 'کیا آپ اوزار یا مشینوں سے کام کر سکتے ہیں؟' : 'آیا می‌توانید با ابزار کار کنید؟'),
           child: _bigChoices(_toolsOptions(), _tools,
               (v) => setState(() => _tools = v)),
         ),
@@ -1087,10 +1098,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۱. ایا د موټر چلولو لیسنس لری؟'
               : _lang == 'fa' ? '۱۱. آیا گواهینامه رانندگی دارید؟'
               : _lang == 'ar' ? '11. هل لديك رخصة قيادة؟'
+              : _lang == 'ur' ? '11. کیا آپ کے پاس ڈرائیونگ لائسنس ہے؟'
               : '11. Do you have a driving license?',
           isRtl: _isRtl, showSpeaker: _showSpeaker,
           onSpeak: () => _snackSpeak(
-              _lang == 'ps' ? 'ایا د موټر چلولو لیسنس لری؟' : _lang == 'ar' ? 'هل لديك رخصة قيادة؟' : 'آیا گواهینامه رانندگی دارید؟'),
+              _lang == 'ps' ? 'ایا د موټر چلولو لیسنس لری؟' : _lang == 'ar' ? 'هل لديك رخصة قيادة؟' : _lang == 'ur' ? 'کیا آپ کے پاس ڈرائیونگ لائسنس ہے؟' : 'آیا گواهینامه رانندگی دارید؟'),
           child: _bigChoices(_licenseOptions(), _drivingLicense,
               (v) => setState(() => _drivingLicense = v)),
         ),
@@ -1103,10 +1115,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۲. تاسو په کومو ژبو خبري کولی شئ؟'
               : _lang == 'fa' ? '۱۲. چه زبان‌هایی صحبت می‌کنید؟'
               : _lang == 'ar' ? '12. ما هي اللغات التي تتحدثها؟'
+              : _lang == 'ur' ? '12. آپ کون سی زبانیں بولتے ہیں؟'
               : '12. Which languages do you speak?',
           isRtl: _isRtl, showSpeaker: _showSpeaker,
           onSpeak: () => _snackSpeak(
-              _lang == 'ps' ? 'تاسو په کومو ژبو خبري کولی شئ؟' : _lang == 'ar' ? 'ما هي اللغات التي تتحدثها؟' : 'چه زبان‌هایی صحبت می‌کنید؟'),
+              _lang == 'ps' ? 'تاسو په کومو ژبو خبري کولی شئ؟' : _lang == 'ar' ? 'ما هي اللغات التي تتحدثها؟' : _lang == 'ur' ? 'آپ کون سی زبانیں بولتے ہیں؟' : 'چه زبان‌هایی صحبت می‌کنید؟'),
           child: _languageProficiencyUneducated(),
         ),
         const SizedBox(height: 12),
@@ -1118,10 +1131,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۳. څرنګه کار غواړی پیدا کړي؟'
               : _lang == 'fa' ? '۱۳. چه زمانی می‌توانید کار کنید؟'
               : _lang == 'ar' ? '13. متى تستطيع أن تعمل؟'
+              : _lang == 'ur' ? '13. آپ کب کام کر سکتے ہیں؟'
               : '13. When can you work?',
           isRtl: _isRtl, showSpeaker: _showSpeaker,
           onSpeak: () => _snackSpeak(
-              _lang == 'ps' ? 'څرنګه کار غواړی پیدا کړي؟' : _lang == 'ar' ? 'متى تستطيع أن تعمل؟' : 'چه زمانی می‌توانید کار کنید؟'),
+              _lang == 'ps' ? 'څرنګه کار غواړی پیدا کړي؟' : _lang == 'ar' ? 'متى تستطيع أن تعمل؟' : _lang == 'ur' ? 'آپ کب کام کر سکتے ہیں؟' : 'چه زمانی می‌توانید کار کنید؟'),
           child: _bigChoices(_availOptions(), _availability,
               (v) => setState(() => _availability = v)),
         ),
@@ -1135,10 +1149,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۴. کله نوی کار شروع کولی شئ؟'
               : _lang == 'fa' ? '۱۴. چه زمانی می‌توانید شروع کنید؟'
               : _lang == 'ar' ? '14. متى تستطيع أن تبدأ؟'
+              : _lang == 'ur' ? '14. آپ کب شروع کر سکتے ہیں؟'
               : '14. When can you start?',
           isRtl: _isRtl, showSpeaker: _showSpeaker,
           onSpeak: () => _snackSpeak(
-              _lang == 'ps' ? 'کله نوی کار شروع کولی شئ؟' : _lang == 'ar' ? 'متى تستطيع أن تبدأ؟' : 'چه زمانی می‌توانید شروع کنید؟'),
+              _lang == 'ps' ? 'کله نوی کار شروع کولی شئ؟' : _lang == 'ar' ? 'متى تستطيع أن تبدأ؟' : _lang == 'ur' ? 'آپ کب شروع کر سکتے ہیں؟' : 'چه زمانی می‌توانید شروع کنید؟'),
           child: _bigChoices(_startOptions(), _startDate,
               (v) => setState(() => _startDate = v)),
         ),
@@ -1161,6 +1176,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? 'ستاسو لوړه زده کړه'
               : _lang == 'fa' ? 'بالاترین سطح تحصیلات شما'
               : _lang == 'ar' ? 'أعلى مستوى تعليمي لديك'
+              : _lang == 'ur' ? 'آپ کی سب سے اعلی تعلیمی سطح'
               : 'Your highest education level',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _educationPicker(),
@@ -1216,6 +1232,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۹. تاسو کوم مهارتونه لري؟'
               : _lang == 'fa' ? '۹. مهارت‌های شما'
               : _lang == 'ar' ? '9. مهاراتك'
+              : _lang == 'ur' ? '9. آپ کی مہارتیں'
               : '9. Your skills',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _skillsEducated(),
@@ -1229,6 +1246,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۰. تاسو څومره کاری تجربه لری؟'
               : _lang == 'fa' ? '۱۰. تجربه کاری'
               : _lang == 'ar' ? '10. الخبرة العملية'
+              : _lang == 'ur' ? '10. کام کا تجربہ'
               : '10. Work experience',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: Column(
@@ -1261,6 +1279,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             question: _lang == 'ps' ? 'کوم ډول کاری تجربه لری؟'
                 : _lang == 'fa' ? 'نوع کار قبلاً انجام شده'
                 : _lang == 'ar' ? 'نوع العمل الذي عملته من قبل'
+                : _lang == 'ur' ? 'پہلے کیے گئے کام کی قسم'
                 : 'Type of work',
             isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
             child: Column(
@@ -1291,6 +1310,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             question: _lang == 'ps' ? 'تاسو مخکې چیرته کار کړی دی؟'
                 : _lang == 'fa' ? 'قبلاً کجا کار کرده‌اید؟'
                 : _lang == 'ar' ? 'أين عملت من قبل؟'
+                : _lang == 'ur' ? 'آپ نے پہلے کہاں کام کیا ہے؟'
                 : 'Where have you worked before?',
             isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
             child: _jobEntriesEducated(),
@@ -1304,6 +1324,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۱. تاسو کوم ډول سامان یا ماشینونو سره کار کولی شی؟'
               : _lang == 'fa' ? '۱۱. کار با ابزار'
               : _lang == 'ar' ? '11. العمل بالأدوات'
+              : _lang == 'ur' ? '11. اوزار سے کام'
               : '11. Tool experience',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: Column(
@@ -1340,6 +1361,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۲. د موټر جواز'
               : _lang == 'fa' ? '۱۲. گواهینامه رانندگی'
               : _lang == 'ar' ? '12. رخصة القيادة'
+              : _lang == 'ur' ? '12. ڈرائیونگ لائسنس'
               : '12. Driving license',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _chipChoices(_licenseOptions(), _drivingLicense,
@@ -1353,6 +1375,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۳. ژبې'
               : _lang == 'fa' ? '۱۳. زبان‌ها'
               : _lang == 'ar' ? '13. اللغات'
+              : _lang == 'ur' ? '13. زبانیں'
               : '13. Languages',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _languageProficiencyEducated(),
@@ -1365,6 +1388,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۴. څرنګه کار غواړی پیدا کړي؟'
               : _lang == 'fa' ? '۱۴. چی رقم کار می‌خواهید؟'
               : _lang == 'ar' ? '14. ما نوع العمل الذي تريده؟'
+              : _lang == 'ur' ? '14. آپ کس قسم کا کام چاہتے ہیں؟'
               : '14. Availability',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _chipChoices(_availOptions(), _availability,
@@ -1376,6 +1400,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           question: _lang == 'ps' ? '۱۵. کله نوی کار شروع کولی شئ؟'
               : _lang == 'fa' ? '۱۵. چه وقت کار نو می‌خواهید شروع کنید؟'
               : _lang == 'ar' ? '15. متى تريد أن تبدأ العمل الجديد؟'
+              : _lang == 'ur' ? '15. آپ نیا کام کب شروع کرنا چاہتے ہیں؟'
               : '15. Start date',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _chipChoices(_startOptions(), _startDate,
@@ -1387,6 +1412,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
            question: _lang == 'ps' ? '۱۵. ایا څوک شته چی ستاسي مخکی کار تایید کړي؟'
               : _lang == 'fa' ? '۱۵. آیا کسی هست که کار شما را تأیید کند؟'
               : _lang == 'ar' ? '15. هل يوجد شخص يستطيع تأكيد عملك السابق؟'
+              : _lang == 'ur' ? '15. کیا کوئی شخص ہے جو آپ کے پچھلے کام کی تصدیق کر سکے؟'
               : '16. Reference contact From Previous Job',
           isRtl: _isRtl, showSpeaker: false, onSpeak: () {},
           child: _referenceSection(),
@@ -1402,62 +1428,62 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   List<_Opt> _workExpOptions() => [
     _Opt('more2', Icons.workspace_premium_rounded,
-        _lang == 'ps' ? 'هو، ۲+ کاله'        : _lang == 'fa' ? 'بله، ۲+ سال' : _lang == 'ar' ? 'نعم، 2+ سنة' : 'Yes, 2+ years',
-        'هو، دوه کاله یا زیات کاری تجربه', 'نعم، خبرة عملية سنتين أو أكثر'),
+        _lang == 'ps' ? 'هو، ۲+ کاله'        : _lang == 'fa' ? 'بله، ۲+ سال' : _lang == 'ar' ? 'نعم، 2+ سنة' : _lang == 'ur' ? 'جی ہاں، 2+ سال' : 'Yes, 2+ years',
+        'هو، دوه کاله یا زیات کاری تجربه', 'نعم، خبرة عملية سنتين أو أكثر', 'جی ہاں، دو سال یا زیادہ کام کا تجربہ'),
     _Opt('less2', Icons.work_rounded,
-        _lang == 'ps' ? 'هو، لږ له ۲ کاله'   : _lang == 'fa' ? 'بله، کمتر از ۲ سال' : _lang == 'ar' ? 'نعم، أقل من 2 سنة' : 'Yes, less than 2 years',
-        'هو، یو کال یا زیات کاری تجربه', 'نعم، خبرة عملية سنة واحدة أو أكثر'),
+        _lang == 'ps' ? 'هو، لږ له ۲ کاله'   : _lang == 'fa' ? 'بله، کمتر از ۲ سال' : _lang == 'ar' ? 'نعم، أقل من 2 سنة' : _lang == 'ur' ? 'جی ہاں، 2 سال سے کم' : 'Yes, less than 2 years',
+        'هو، یو کال یا زیات کاری تجربه', 'نعم، خبرة عملية سنة واحدة أو أكثر', 'جی ہاں، ایک سال یا زیادہ کام کا تجربہ'),
     _Opt('small', Icons.handyman_rounded,
-        _lang == 'ps' ? 'یوازې وړوکي کارونه' : _lang == 'fa' ? 'فقط کارهای کوچک' : _lang == 'ar' ? 'أعمال صغيرة فقط' : 'Small jobs only',
-        'یوازې وړې دندې', 'أعمال صغيرة فقط'),
+        _lang == 'ps' ? 'یوازې وړوکي کارونه' : _lang == 'fa' ? 'فقط کارهای کوچک' : _lang == 'ar' ? 'أعمال صغيرة فقط' : _lang == 'ur' ? 'صرف چھوٹے کام' : 'Small jobs only',
+        'یوازې وړې دندې', 'أعمال صغيرة فقط', 'صرف چھوٹے کام'),
     _Opt('never', Icons.block_rounded,
-        _lang == 'ps' ? 'هیڅکله نه دی'       : _lang == 'fa' ? 'هرگز کار نکرده‌ام' : _lang == 'ar' ? 'لم أعمل أبدا' : 'Never worked',
-        'هیڅکله کار نه دی کړی', 'لم أعمل أبدا'),
+        _lang == 'ps' ? 'هیڅکله نه دی'       : _lang == 'fa' ? 'هرگز کار نکرده‌ام' : _lang == 'ar' ? 'لم أعمل أبدا' : _lang == 'ur' ? 'کبھی کام نہیں کیا' : 'Never worked',
+        'هیڅکله کار نه دی کړی', 'لم أعمل أبدا', 'کبھی کام نہیں کیا'),
   ];
 
   List<_Opt> _workTypeOptions() => [
     _Opt('construction', Icons.construction_rounded,
-        _lang == 'ps' ? 'جوړونه'    : _lang == 'fa' ? 'ساخت‌وساز' : _lang == 'ar' ? 'البناء' : 'Construction',
-        'ساختمانی کار', 'عمل البناء'),
+        _lang == 'ps' ? 'جوړونه'    : _lang == 'fa' ? 'ساخت‌وساز' : _lang == 'ar' ? 'البناء' : _lang == 'ur' ? 'تعمیرات' : 'Construction',
+        'ساختمانی کار', 'عمل البناء', 'تعمیراتی کام'),
     _Opt('cleaning',     Icons.cleaning_services_rounded,
-        _lang == 'ps' ? 'پاکوالی'   : _lang == 'fa' ? 'نظافت' : _lang == 'ar' ? 'التنظيف' : 'Cleaning',
-        'پاک کاری', 'عمل التنظيف'),
+        _lang == 'ps' ? 'پاکوالی'   : _lang == 'fa' ? 'نظافت' : _lang == 'ar' ? 'التنظيف' : _lang == 'ur' ? 'صفائی' : 'Cleaning',
+        'پاک کاری', 'عمل التنظيف', 'صفائی کا کام'),
     _Opt('kitchen',      Icons.restaurant_rounded,
-        _lang == 'ps' ? 'آشپزخانه'  : _lang == 'fa' ? 'آشپزخانه' : _lang == 'ar' ? 'المطبخ' : 'Kitchen',
-        'پخلی یا اشپزی', 'الطبخ'),
+        _lang == 'ps' ? 'آشپزخانه'  : _lang == 'fa' ? 'آشپزخانه' : _lang == 'ar' ? 'المطبخ' : _lang == 'ur' ? 'باورچی خانہ' : 'Kitchen',
+        'پخلی یا اشپزی', 'الطبخ', 'کھانا پکانا'),
     _Opt('driving',      Icons.drive_eta_rounded,
-        _lang == 'ps' ? 'چلولو'     : _lang == 'fa' ? 'رانندگی' : _lang == 'ar' ? 'القيادة' : 'Driving',
-        'موټر چلول', 'قيادة السيارة'),
+        _lang == 'ps' ? 'چلولو'     : _lang == 'fa' ? 'رانندگی' : _lang == 'ar' ? 'القيادة' : _lang == 'ur' ? 'ڈرائیونگ' : 'Driving',
+        'موټر چلول', 'قيادة السيارة', 'گاڑی چلانا'),
   ];
 
   List<_Opt> _toolsOptions() => [
     _Opt('power_tools',   Icons.electrical_services_rounded,
-        _lang == 'ps' ? 'بریښنایي وسایل'     : _lang == 'fa' ? 'ابزار برقی' : _lang == 'ar' ? 'أدوات كهربائية' : 'Power tools',
-        'بریښنایي یا برقي سامان آلات', 'أدوات كهربائية'),
+        _lang == 'ps' ? 'بریښنایي وسایل'     : _lang == 'fa' ? 'ابزار برقی' : _lang == 'ar' ? 'أدوات كهربائية' : _lang == 'ur' ? 'بجلی کے اوزار' : 'Power tools',
+        'بریښنایي یا برقي سامان آلات', 'أدوات كهربائية', 'بجلی کے اوزار'),
     _Opt('kitchen_equip', Icons.blender_rounded,
-        _lang == 'ps' ? 'د آشپزخانې وسایل'   : _lang == 'fa' ? 'لوازم آشپزخانه' : _lang == 'ar' ? 'أدوات المطبخ' : 'Kitchen equipment',
-        'د اشپزخانی سامان آلات', 'أدوات المطبخ'),
+        _lang == 'ps' ? 'د آشپزخانې وسایل'   : _lang == 'fa' ? 'لوازم آشپزخانه' : _lang == 'ar' ? 'أدوات المطبخ' : _lang == 'ur' ? 'باورچی خانے کے اوزار' : 'Kitchen equipment',
+        'د اشپزخانی سامان آلات', 'أدوات المطبخ', 'باورچی خانے کے اوزار'),
     _Opt('tractor',       Icons.agriculture_rounded,
-        _lang == 'ps' ? 'ټراکټر / وسایط'     : _lang == 'fa' ? 'تراکتور / وسیله‌نقلیه' : _lang == 'ar' ? 'جرار / مركبات' : 'Tractor/vehicles',
-        'موټر یا ماشین', 'سيارة أو آلة'),
+        _lang == 'ps' ? 'ټراکټر / وسایط'     : _lang == 'fa' ? 'تراکتور / وسیله‌نقلیه' : _lang == 'ar' ? 'جرار / مركبات' : _lang == 'ur' ? 'ٹریکٹر / گاڑیاں' : 'Tractor/vehicles',
+        'موټر یا ماشین', 'سيارة أو آلة', 'گاڑی یا مشین'),
     _Opt('no_tools',      Icons.do_not_disturb_rounded,
-        _lang == 'ps' ? 'هیڅ وسیله نه'       : _lang == 'fa' ? 'بدون ابزار' : _lang == 'ar' ? 'بدون أدوات' : 'No tools',
-        'نه، وسیلې نه کاروم', 'لا، لا أستخدم أدوات'),
+        _lang == 'ps' ? 'هیڅ وسیله نه'       : _lang == 'fa' ? 'بدون ابزار' : _lang == 'ar' ? 'بدون أدوات' : _lang == 'ur' ? 'کوئی اوزار نہیں' : 'No tools',
+        'نه، وسیلې نه کاروم', 'لا، لا أستخدم أدوات', 'نہیں، میں اوزار استعمال نہیں کرتا'),
   ];
 
   List<_Opt> _licenseOptions() => [
     _Opt('german_license',  Icons.directions_car_rounded,
-        _lang == 'ps' ? 'جرمني جواز'         : _lang == 'fa' ? 'گواهینامه آلمان' : _lang == 'ar' ? 'رخصة ألمانية' : 'German license',
-        'د جرمني لیسنس', 'رخصة القيادة الألمانية'),
+        _lang == 'ps' ? 'جرمني جواز'         : _lang == 'fa' ? 'گواهینامه آلمان' : _lang == 'ar' ? 'رخصة ألمانية' : _lang == 'ur' ? 'جرمن لائسنس' : 'German license',
+        'د جرمني لیسنس', 'رخصة القيادة الألمانية', 'جرمن ڈرائیونگ لائسنس'),
     _Opt('foreign_license', Icons.drive_eta_rounded,
-        _lang == 'ps' ? 'بهرني جواز'         : _lang == 'fa' ? 'گواهینامه خارجی' : _lang == 'ar' ? 'رخصة أجنبية' : 'Foreign license',
-        'بهرنی لیسنس', 'رخصة قيادة أجنبية'),
+        _lang == 'ps' ? 'بهرني جواز'         : _lang == 'fa' ? 'گواهینامه خارجی' : _lang == 'ar' ? 'رخصة أجنبية' : _lang == 'ur' ? 'غیر ملکی لائسنس' : 'Foreign license',
+        'بهرنی لیسنس', 'رخصة قيادة أجنبية', 'غیر ملکی ڈرائیونگ لائسنس'),
     _Opt('want_license',    Icons.school_rounded,
-        _lang == 'ps' ? 'نه، خو غواړم زده کړم': _lang == 'fa' ? 'نه، می‌خواهم یاد بگیرم' : _lang == 'ar' ? 'لا، أريد أن أتعلم' : 'No, want to learn',
-        'نه، خو زده کول غواړم', 'لا، لكن أريد أن أتعلم'),
+        _lang == 'ps' ? 'نه، خو غواړم زده کړم': _lang == 'fa' ? 'نه، می‌خواهم یاد بگیرم' : _lang == 'ar' ? 'لا، أريد أن أتعلم' : _lang == 'ur' ? 'نہیں، میں سیکھنا چاہتا ہوں' : 'No, want to learn',
+        'نه، خو زده کول غواړم', 'لا، لكن أريد أن أتعلم', 'نہیں، لیکن میں سیکھنا چاہتا ہوں'),
     _Opt('no_license',      Icons.block_rounded,
-        _lang == 'ps' ? 'نه لرم'             : _lang == 'fa' ? 'ندارم' : _lang == 'ar' ? 'ليس لدي' : 'No license',
-        'نه', 'لا'),
+        _lang == 'ps' ? 'نه لرم'             : _lang == 'fa' ? 'ندارم' : _lang == 'ar' ? 'ليس لدي' : _lang == 'ur' ? 'میرے پاس نہیں ہے' : 'No license',
+        'نه', 'لا', 'نہیں'),
   ];
 
   // Q13/Q14 (availability) — PS/FA text is intentionally the German term
@@ -1474,60 +1500,68 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         _lang == 'ps' ? 'فول سایټ یعنی څلوېښت ساعته'
             : _lang == 'fa' ? 'فول تایم یعنی ۴۰ ساعت در ماه'
             : _lang == 'ar' ? 'دوام كامل يعني 40 ساعة'
+            : _lang == 'ur' ? 'فل ٹائم یعنی 40 گھنٹے'
             : 'Full time',
         _lang == 'ps' ? 'فول سایټ یعنی څلوېښت ساعته' : null,
-        _lang == 'ar' ? 'دوام كامل يعني 40 ساعة' : null),
+        _lang == 'ar' ? 'دوام كامل يعني 40 ساعة' : null,
+        _lang == 'ur' ? 'فل ٹائم یعنی 40 گھنٹے' : null),
     _Opt('parttime', Icons.access_time_rounded,
         _lang == 'ps' ? 'تایل سایټ یعنی له څلوېښت ساعتونو کم '
             : _lang == 'fa' ? 'تایل تایم یعنی کمتر از ۴۰ ساعت'
             : _lang == 'ar' ? 'دوام جزئي يعني أقل من 40 ساعة'
+            : _lang == 'ur' ? 'پارٹ ٹائم یعنی 40 گھنٹے سے کم'
             : 'Part time',
         _lang == 'ps' ? 'تایل سایټ یعنی له څلوېښت ساعتونو کم ' : null,
-        _lang == 'ar' ? 'دوام جزئي يعني أقل من 40 ساعة' : null),
+        _lang == 'ar' ? 'دوام جزئي يعني أقل من 40 ساعة' : null,
+        _lang == 'ur' ? 'پارٹ ٹائم یعنی 40 گھنٹے سے کم' : null),
     _Opt('flexible', Icons.tune_rounded,
         _lang == 'ps' ? 'مینی جوب یعنی لږ ساعته کار'
             : _lang == 'fa' ? 'مینی جاب یعنی کار با ساعت کم'
             : _lang == 'ar' ? 'Minijob يعني عمل بساعات قليلة'
+            : _lang == 'ur' ? 'Minijob یعنی چند گھنٹوں کا کام'
             : 'Minijob',
         _lang == 'ps' ? 'مینی جوب یعنی لږ ساعته کار' : null,
-        _lang == 'ar' ? 'Minijob يعني عمل بساعات قليلة' : null),
+        _lang == 'ar' ? 'Minijob يعني عمل بساعات قليلة' : null,
+        _lang == 'ur' ? 'Minijob یعنی چند گھنٹوں کا کام' : null),
     _Opt('weekends', Icons.weekend_rounded,
         _lang == 'ps' ? 'زمستاګ او زونتاګ یعنی د اونۍ پای (شنبه او یکشنبه)'
             : _lang == 'fa' ? 'زمستاگ او زونتاگ یعنی آخر هفته (شنبه و یکشنبه)'
             : _lang == 'ar' ? 'Samstag و Sonntag يعني نهاية الأسبوع (السبت والأحد)'
+            : _lang == 'ur' ? 'Samstag اور Sonntag یعنی ہفتے کا اختتام (ہفتہ اور اتوار)'
             : 'Weekends',
         _lang == 'ps' ? 'زمستاګ او زونتاګ یعنی د اونۍ پای (شنبه او یکشنبه)' : null,
-        _lang == 'ar' ? 'Samstag و Sonntag يعني نهاية الأسبوع (السبت والأحد)' : null),
+        _lang == 'ar' ? 'Samstag و Sonntag يعني نهاية الأسبوع (السبت والأحد)' : null,
+        _lang == 'ur' ? 'Samstag اور Sonntag یعنی ہفتے کا اختتام (ہفتہ اور اتوار)' : null),
   ];
 
   List<_Opt> _startOptions() => [
     _Opt('immediately', Icons.bolt_rounded,
-        _lang == 'ps' ? 'سمدلاسه'    : _lang == 'fa' ? 'فوری' : _lang == 'ar' ? 'فورا' : 'Immediately',
-        'کولی شم کار شروع کړم سمدستي', 'أستطيع أن أبدأ العمل فورا'),
+        _lang == 'ps' ? 'سمدلاسه'    : _lang == 'fa' ? 'فوری' : _lang == 'ar' ? 'فورا' : _lang == 'ur' ? 'فورا' : 'Immediately',
+        'کولی شم کار شروع کړم سمدستي', 'أستطيع أن أبدأ العمل فورا', 'میں فورا کام شروع کر سکتا ہوں'),
     _Opt('two_weeks',   Icons.event_rounded,
-        _lang == 'ps' ? '۲ اونۍ کې'  : _lang == 'fa' ? 'در ۲ هفته' : _lang == 'ar' ? 'خلال أسبوعين' : 'In 2 weeks',
-        'دوه اونۍ وروسته کولی شم کار شروع کړم', 'أستطيع أن أبدأ العمل بعد أسبوعين'),
+        _lang == 'ps' ? '۲ اونۍ کې'  : _lang == 'fa' ? 'در ۲ هفته' : _lang == 'ar' ? 'خلال أسبوعين' : _lang == 'ur' ? '2 ہفتوں میں' : 'In 2 weeks',
+        'دوه اونۍ وروسته کولی شم کار شروع کړم', 'أستطيع أن أبدأ العمل بعد أسبوعين', 'میں دو ہفتوں کے بعد کام شروع کر سکتا ہوں'),
     _Opt('one_month',   Icons.calendar_month_rounded,
-        _lang == 'ps' ? '۱ میاشت کې' : _lang == 'fa' ? 'در ۱ ماه' : _lang == 'ar' ? 'خلال شهر واحد' : 'In 1 month',
-        'یو میاشت وروسته کولی شم کار شروع کړم', 'أستطيع أن أبدأ العمل بعد شهر واحد'),
+        _lang == 'ps' ? '۱ میاشت کې' : _lang == 'fa' ? 'در ۱ ماه' : _lang == 'ar' ? 'خلال شهر واحد' : _lang == 'ur' ? '1 مہینے میں' : 'In 1 month',
+        'یو میاشت وروسته کولی شم کار شروع کړم', 'أستطيع أن أبدأ العمل بعد شهر واحد', 'میں ایک مہینے کے بعد کام شروع کر سکتا ہوں'),
     _Opt('unsure',      Icons.help_outline_rounded,
-        _lang == 'ps' ? 'ټاکلي نه دی': _lang == 'fa' ? 'مطمئن نیستم' : _lang == 'ar' ? 'لست متأكدا بعد' : 'Not sure yet',
-        'ډاډه نه یم', 'لست متأكدا'),
+        _lang == 'ps' ? 'ټاکلي نه دی': _lang == 'fa' ? 'مطمئن نیستم' : _lang == 'ar' ? 'لست متأكدا بعد' : _lang == 'ur' ? 'ابھی یقین نہیں ہے' : 'Not sure yet',
+        'ډاډه نه یم', 'لست متأكدا', 'مجھے یقین نہیں ہے'),
   ];
 
   List<_Opt> _refOptions() => [
     _Opt('employer', Icons.business_rounded,
-        _lang == 'ps' ? 'پخواني کارفرما' : _lang == 'fa' ? 'کارفرمای سابق' : _lang == 'ar' ? 'صاحب العمل السابق' : 'Former employer',
-        'پخوانی کار مشر نوم', 'اسم مدير عملي السابق'),
+        _lang == 'ps' ? 'پخواني کارفرما' : _lang == 'fa' ? 'کارفرمای سابق' : _lang == 'ar' ? 'صاحب العمل السابق' : _lang == 'ur' ? 'پچھلا آجر' : 'Former employer',
+        'پخوانی کار مشر نوم', 'اسم مدير عملي السابق', 'میرے پچھلے کام کے منتظم کا نام'),
     _Opt('leader',   Icons.record_voice_over_rounded,
-        _lang == 'ps' ? 'ملا / مشر'      : _lang == 'fa' ? 'رهبر / امام' : _lang == 'ar' ? 'قائد المجتمع / إمام' : 'Community leader/Imam',
-        'نوم ټولنیز مشر', 'اسم قائد المجتمع'),
+        _lang == 'ps' ? 'ملا / مشر'      : _lang == 'fa' ? 'رهبر / امام' : _lang == 'ar' ? 'قائد المجتمع / إمام' : _lang == 'ur' ? 'برادری کے رہنما / امام' : 'Community leader/Imam',
+        'نوم ټولنیز مشر', 'اسم قائد المجتمع', 'برادری کے رہنما کا نام'),
     _Opt('neighbor', Icons.people_rounded,
-        _lang == 'ps' ? 'ګاونډی / دوست' : _lang == 'fa' ? 'همسایه / دوست' : _lang == 'ar' ? 'جار / صديق' : 'Neighbor/friend',
-        'ګاونډی یا ملګری', 'جار أو صديق'),
+        _lang == 'ps' ? 'ګاونډی / دوست' : _lang == 'fa' ? 'همسایه / دوست' : _lang == 'ar' ? 'جار / صديق' : _lang == 'ur' ? 'پڑوسی / دوست' : 'Neighbor/friend',
+        'ګاونډی یا ملګری', 'جار أو صديق', 'پڑوسی یا دوست'),
     _Opt('no_ref',   Icons.person_off_rounded,
-        _lang == 'ps' ? 'مرجع نه لرم'   : _lang == 'fa' ? 'مرجعی ندارم' : _lang == 'ar' ? 'ليس لدي مرجع' : 'No reference',
-        'په تیر کار کی هیڅوک نه پیژنم', 'لا أعرف أحدا من عملي السابق'),
+        _lang == 'ps' ? 'مرجع نه لرم'   : _lang == 'fa' ? 'مرجعی ندارم' : _lang == 'ar' ? 'ليس لدي مرجع' : _lang == 'ur' ? 'میرے پاس کوئی حوالہ نہیں ہے' : 'No reference',
+        'په تیر کار کی هیڅوک نه پیژنم', 'لا أعرف أحدا من عملي السابق', 'میں اپنے پچھلے کام سے کسی کو نہیں جانتا'),
   ];
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -1546,6 +1580,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'نور (پخپله ولیکئ)';
       case 'fa': return 'دیگر (خودتان بنویسید)';
       case 'ar': return 'أخرى (اكتب بنفسك)';
+      case 'ur': return 'دیگر (خود لکھیں)';
       default:   return 'Other / type your own';
     }
   }
@@ -1555,6 +1590,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'دلته ولیکئ...';
       case 'fa': return 'اینجا بنویسید...';
       case 'ar': return 'اكتب هنا...';
+      case 'ur': return 'یہاں لکھیں...';
       default:   return 'Type your answer...';
     }
   }
@@ -1646,6 +1682,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'د ښوونځي ځای (ښار)';
       case 'fa': return 'محل مدرسه (شهر)';
       case 'ar': return 'مكان المدرسة (المدينة)';
+      case 'ur': return 'اسکول کا مقام (شہر)';
       default:   return 'School location (Ort der Schule)';
     }
   }
@@ -1655,6 +1692,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'د ښار نوم ولیکئ';
       case 'fa': return 'نام شهر را بنویسید';
       case 'ar': return 'اكتب اسم المدينة';
+      case 'ur': return 'شہر کا نام لکھیں';
       default:   return 'Enter city name';
     }
   }
@@ -1664,18 +1702,19 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'د زده کړې موده (له - تر)';
       case 'fa': return 'دوره تحصیل (از - تا)';
       case 'ar': return 'مدة الدراسة (من - إلى)';
+      case 'ur': return 'تعلیم کی مدت (سے - تک)';
       default:   return 'Years attended (Zeitraum)';
     }
   }
 
   Widget _educationPicker() {
     const opts = [
-      ['primary',    'Primary school',         'ابتدایي',      'ابتدایی', 'الابتدائية'],
-      ['secondary',  'Secondary school',       'منځنۍ یا متوسط',        'راهنمایی', 'المتوسطة'],
-      ['highschool', 'High school (Abitur)',   'لیسه',         'دبیرستان', 'الثانوية'],
-      ['vocational', 'Vocational training',    'مسلکي روزنه یا اوسبلدونګ',  'آموزش حرفه‌ای', 'التدريب المهني أو Ausbildung'],
-      ['university', 'University degree',      'پوهنتون',      'دانشگاه', 'الجامعة'],
-      ['masters',    'Master / PhD',           'ماستري',       'کارشناسی ارشد', 'الماجستير'],
+      ['primary',    'Primary school',         'ابتدایي',      'ابتدایی', 'الابتدائية', 'پرائمری اسکول'],
+      ['secondary',  'Secondary school',       'منځنۍ یا متوسط',        'راهنمایی', 'المتوسطة', 'مڈل اسکول'],
+      ['highschool', 'High school (Abitur)',   'لیسه',         'دبیرستان', 'الثانوية', 'ہائی اسکول (Abitur)'],
+      ['vocational', 'Vocational training',    'مسلکي روزنه یا اوسبلدونګ',  'آموزش حرفه‌ای', 'التدريب المهني أو Ausbildung', 'پیشہ ورانہ تربیت یا Ausbildung'],
+      ['university', 'University degree',      'پوهنتون',      'دانشگاه', 'الجامعة', 'یونیورسٹی'],
+      ['masters',    'Master / PhD',           'ماستري',       'کارشناسی ارشد', 'الماجستير', 'ماسٹر / PhD'],
     ];
     final presetCodes = opts.map((o) => o[0]).toSet();
     final isCustom = _educationLevel != null && !presetCodes.contains(_educationLevel);
@@ -1686,7 +1725,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       spacing: 8,
       runSpacing: 8,
       children: opts.map((o) {
-        final lbl = _lang == 'ps' ? o[2] : _lang == 'fa' ? o[3] : _lang == 'ar' ? o[4] : o[1];
+        final lbl = _lang == 'ps' ? o[2] : _lang == 'fa' ? o[3] : _lang == 'ar' ? o[4] : _lang == 'ur' ? o[5] : o[1];
         final sel = _educationLevel == o[0];
         return GestureDetector(
           onTap: () => setState(() {
@@ -1755,6 +1794,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'دا له مخکینیو ډکو معلوماتو څخه راغلي، تاسو یې سمولی شئ';
       case 'fa': return 'این از اطلاعات قبلی شما بارگذاری شده، می‌توانید ویرایش کنید';
       case 'ar': return 'تم تحميل هذا من معلوماتك السابقة، يمكنك تعديله';
+      case 'ur': return 'یہ آپ کی پچھلی معلومات سے لیا گیا ہے، آپ اسے بدل سکتے ہیں';
       default:   return 'Loaded from your other CV, edit if needed';
     }
   }
@@ -1764,6 +1804,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'نور IT مهارتونه، په کوما سره جلا کړئ';
       case 'fa': return 'مهارت‌های IT دیگر، با کاما جدا کنید';
       case 'ar': return 'مهارات IT أخرى، افصل بينها بفاصلة';
+      case 'ur': return 'دیگر IT مہارتیں، کوما سے الگ کریں';
       default:   return 'Other IT skills, separated by commas';
     }
   }
@@ -1857,21 +1898,21 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   Widget _skillGrid() {
     const skills = [
-      ('lifting',        Icons.fitness_center,         ['Heavy lifting',   'درانه شیان',       'حمل بار', 'حمل الأشياء الثقيلة'],     'درانه شیان'),
-      ('cooking',        Icons.restaurant,             ['Cooking',         'پخلي',              'آشپزی', 'الطبخ'],       'پخلی یا اشپزی'),
-      ('driving',        Icons.drive_eta,              ['Driving',         'چلولو',             'رانندگی', 'القيادة'],     'موټر چلول'),
-      ('cleaning',       Icons.cleaning_services,      ['Cleaning',        'پاکوالی',           'نظافت', 'التنظيف'],       'پاک کاری'),
-      ('fixing',         Icons.build,                  ['Repair',          'سمون',              'تعمیر', 'الإصلاح'],       'سمون'),
-      ('packing',        Icons.inventory_2,            ['Packing',         'بسته کول',          'بسته‌بندی', 'التغليف'],   'بسته بندي یا پیکینګ'),
-      ('security',       Icons.security,               ['Security',        'امنیت',             'امنیت', 'الأمن'],       'سیکیورټی یا امنیت'),
-      ('forklift',       Icons.forklift,               ['Forklift',        'فورکلیفت',          'لیفتراک', 'الرافعة الشوكية'],     'فورکلیفت'),
-      ('farming',        Icons.grass,                  ['Farming',         'کرنه',              'کشاورزی', 'الزراعة'],     'باغوانی'),
-      ('sales',          Icons.store,                  ['Sales',           'پلور',              'فروش', 'المبيعات'],        'پلور'),
-      ('sewing',         Icons.content_cut,            ['Sewing',          'ګنډل',              'خیاطی', 'الخياطة'],       'ګنډل'),
-      ('construction',   Icons.construction,           ['Construction',    'جوړونه',            'ساخت‌وساز', 'البناء'],   'ساختمانی کار'),
-      ('mobile_repair',  Icons.phone_android,          ['Mobile repair',   'موبایل سمول',       'تعمیر موبایل', 'إصلاح الهاتف'],'موبایل سمول'),
-      ('amazon_packing', Icons.local_shipping,         ['Warehouse/Amazon','ګدام',              'انبارداری', 'المستودع'],   'ګودام کار یا لاګه لوجستیک'),
-      ('dhl',            Icons.delivery_dining,        ['Delivery/DHL',    'ډلیوري',            'تحویل بسته', 'توصيل الطرود'], 'ډلیوري'),
+      ('lifting',        Icons.fitness_center,         ['Heavy lifting',   'درانه شیان',       'حمل بار', 'حمل الأشياء الثقيلة', 'بھاری چیزیں اٹھانا'],     'درانه شیان'),
+      ('cooking',        Icons.restaurant,             ['Cooking',         'پخلي',              'آشپزی', 'الطبخ', 'کھانا پکانا'],       'پخلی یا اشپزی'),
+      ('driving',        Icons.drive_eta,              ['Driving',         'چلولو',             'رانندگی', 'القيادة', 'ڈرائیونگ'],     'موټر چلول'),
+      ('cleaning',       Icons.cleaning_services,      ['Cleaning',        'پاکوالی',           'نظافت', 'التنظيف', 'صفائی'],       'پاک کاری'),
+      ('fixing',         Icons.build,                  ['Repair',          'سمون',              'تعمیر', 'الإصلاح', 'مرمت'],       'سمون'),
+      ('packing',        Icons.inventory_2,            ['Packing',         'بسته کول',          'بسته‌بندی', 'التغليف', 'پیکنگ'],   'بسته بندي یا پیکینګ'),
+      ('security',       Icons.security,               ['Security',        'امنیت',             'امنیت', 'الأمن', 'سیکیورٹی'],       'سیکیورټی یا امنیت'),
+      ('forklift',       Icons.forklift,               ['Forklift',        'فورکلیفت',          'لیفتراک', 'الرافعة الشوكية', 'فورک لفٹ'],     'فورکلیفت'),
+      ('farming',        Icons.grass,                  ['Farming',         'کرنه',              'کشاورزی', 'الزراعة', 'کھیتی باڑی'],     'باغوانی'),
+      ('sales',          Icons.store,                  ['Sales',           'پلور',              'فروش', 'المبيعات', 'فروخت'],        'پلور'),
+      ('sewing',         Icons.content_cut,            ['Sewing',          'ګنډل',              'خیاطی', 'الخياطة', 'سلائی'],       'ګنډل'),
+      ('construction',   Icons.construction,           ['Construction',    'جوړونه',            'ساخت‌وساز', 'البناء', 'تعمیرات'],   'ساختمانی کار'),
+      ('mobile_repair',  Icons.phone_android,          ['Mobile repair',   'موبایل سمول',       'تعمیر موبایل', 'إصلاح الهاتف', 'موبائل کی مرمت'],'موبایل سمول'),
+      ('amazon_packing', Icons.local_shipping,         ['Warehouse/Amazon','ګدام',              'انبارداری', 'المستودع', 'گودام'],   'ګودام کار یا لاګه لوجستیک'),
+      ('dhl',            Icons.delivery_dining,        ['Delivery/DHL',    'ډلیوري',            'تحویل بسته', 'توصيل الطرود', 'ڈیلیوری'], 'ډلیوري'),
     ];
     return GridView.count(
       crossAxisCount: 2,
@@ -1881,7 +1922,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       mainAxisSpacing: 8,
       childAspectRatio: 2.6,
       children: skills.map((s) {
-        final lbl = _lang == 'ps' ? s.$3[1] : _lang == 'fa' ? s.$3[2] : _lang == 'ar' ? s.$3[3] : s.$3[0];
+        final lbl = _lang == 'ps' ? s.$3[1] : _lang == 'fa' ? s.$3[2] : _lang == 'ar' ? s.$3[3] : _lang == 'ur' ? s.$3[4] : s.$3[0];
         final sel = _skills.contains(s.$1);
         return GestureDetector(
           onTap: () {
@@ -1894,6 +1935,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               TtsService().speak(lbl, 'fa');
             } else if (!_isEducated && _lang == 'ar') {
               TtsService().speak(lbl, 'ar');
+            } else if (!_isEducated && _lang == 'ur') {
+              TtsService().speak(lbl, 'ur');
             }
             setState(() {
               if (sel) {
@@ -1955,25 +1998,25 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   Widget _skillsEducated() {
     const skills = [
-      ('lifting',        ['Heavy lifting',   'درانه شیان',   'حمل بار', 'حمل الأشياء الثقيلة']),
-      ('cooking',        ['Cooking',         'پخلي',          'آشپزی', 'الطبخ']),
-      ('driving',        ['Driving',         'چلولو',         'رانندگی', 'القيادة']),
-      ('cleaning',       ['Cleaning',        'پاکوالی',       'نظافت', 'التنظيف']),
-      ('fixing',         ['Repair',          'سمون',          'تعمیر', 'الإصلاح']),
-      ('packing',        ['Packing',         'بسته کول',      'بسته‌بندی', 'التغليف']),
-      ('security',       ['Security',        'امنیت',         'امنیت', 'الأمن']),
-      ('forklift',       ['Forklift',        'فورکلیفت',      'لیفتراک', 'الرافعة الشوكية']),
-      ('farming',        ['Farming',         'کرنه',          'کشاورزی', 'الزراعة']),
-      ('sales',          ['Sales',           'پلور',          'فروش', 'المبيعات']),
-      ('sewing',         ['Sewing',          'ګنډل',          'خیاطی', 'الخياطة']),
-      ('construction',   ['Construction',    'جوړونه',        'ساخت‌وساز', 'البناء']),
-      ('mobile_repair',  ['Mobile repair',   'موبایل سمول',   'تعمیر موبایل', 'إصلاح الهاتف']),
-      ('amazon_packing', ['Warehouse',       'ګدام',          'انبارداری', 'المستودع']),
-      ('dhl',            ['Delivery',        'ډلیوري',        'تحویل', 'التوصيل']),
+      ('lifting',        ['Heavy lifting',   'درانه شیان',   'حمل بار', 'حمل الأشياء الثقيلة', 'بھاری چیزیں اٹھانا']),
+      ('cooking',        ['Cooking',         'پخلي',          'آشپزی', 'الطبخ', 'کھانا پکانا']),
+      ('driving',        ['Driving',         'چلولو',         'رانندگی', 'القيادة', 'ڈرائیونگ']),
+      ('cleaning',       ['Cleaning',        'پاکوالی',       'نظافت', 'التنظيف', 'صفائی']),
+      ('fixing',         ['Repair',          'سمون',          'تعمیر', 'الإصلاح', 'مرمت']),
+      ('packing',        ['Packing',         'بسته کول',      'بسته‌بندی', 'التغليف', 'پیکنگ']),
+      ('security',       ['Security',        'امنیت',         'امنیت', 'الأمن', 'سیکیورٹی']),
+      ('forklift',       ['Forklift',        'فورکلیفت',      'لیفتراک', 'الرافعة الشوكية', 'فورک لفٹ']),
+      ('farming',        ['Farming',         'کرنه',          'کشاورزی', 'الزراعة', 'کھیتی باڑی']),
+      ('sales',          ['Sales',           'پلور',          'فروش', 'المبيعات', 'فروخت']),
+      ('sewing',         ['Sewing',          'ګنډل',          'خیاطی', 'الخياطة', 'سلائی']),
+      ('construction',   ['Construction',    'جوړونه',        'ساخت‌وساز', 'البناء', 'تعمیرات']),
+      ('mobile_repair',  ['Mobile repair',   'موبایل سمول',   'تعمیر موبایل', 'إصلاح الهاتف', 'موبائل کی مرمت']),
+      ('amazon_packing', ['Warehouse',       'ګدام',          'انبارداری', 'المستودع', 'گودام']),
+      ('dhl',            ['Delivery',        'ډلیوري',        'تحویل', 'التوصيل', 'ڈیلیوری']),
     ];
     final q   = _skillSearchCtrl.text.toLowerCase();
     final all = skills.map((s) {
-      final lbl = _lang == 'ps' ? s.$2[1] : _lang == 'fa' ? s.$2[2] : _lang == 'ar' ? s.$2[3] : s.$2[0];
+      final lbl = _lang == 'ps' ? s.$2[1] : _lang == 'fa' ? s.$2[2] : _lang == 'ar' ? s.$2[3] : _lang == 'ur' ? s.$2[4] : s.$2[0];
       return (s.$1, lbl);
     }).toList();
     final filtered = q.isEmpty
@@ -2002,6 +2045,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               hintText: _lang == 'ps' ? 'مهارت لټول...'
                   : _lang == 'fa' ? 'جستجوی مهارت...'
                   : _lang == 'ar' ? 'ابحث عن مهارة...'
+                  : _lang == 'ur' ? 'مہارت تلاش کریں...'
                   : 'Search skills...',
               hintStyle: const TextStyle(color: _muted, fontSize: 13),
               prefixIcon: const Icon(Icons.search, color: _muted, size: 18),
@@ -2133,6 +2177,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 TtsService().speak(o.label, 'fa');
               } else if (!_isEducated && _lang == 'ar') {
                 TtsService().speak(o.arTts ?? o.label, 'ar');
+              } else if (!_isEducated && _lang == 'ur') {
+                TtsService().speak(o.urTts ?? o.label, 'ur');
               }
               onSelect(o.value);
             },
@@ -2256,6 +2302,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             hint: _lang == 'ps' ? 'د مرجع نوم'
                 : _lang == 'fa' ? 'نام مرجع'
                 : _lang == 'ar' ? 'اسم المرجع'
+                : _lang == 'ur' ? 'حوالہ دینے والے کا نام'
                 : 'Reference name',
             action: TextInputAction.next,
           ),
@@ -2265,6 +2312,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             hint: _lang == 'ps' ? 'د مرجع تیلیفون'
                 : _lang == 'fa' ? 'تلفن مرجع'
                 : _lang == 'ar' ? 'هاتف المرجع'
+                : _lang == 'ur' ? 'حوالہ دینے والے کا فون'
                 : 'Reference phone',
             type: TextInputType.phone,
             action: TextInputAction.done,
@@ -2406,6 +2454,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'د شرکت نوم ولټوئ یا پخپله ولیکئ...';
       case 'fa': return 'نام شرکت را جستجو یا خودتان تایپ کنید...';
       case 'ar': return 'ابحث عن اسم الشركة أو اكتبه بنفسك...';
+      case 'ur': return 'کمپنی کا نام تلاش کریں یا خود لکھیں...';
       default:   return 'Search or type company name...';
     }
   }
@@ -2415,6 +2464,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'دنده/رول (لکه Lagerhelfer)';
       case 'fa': return 'عنوان شغلی (مثلاً Lagerhelfer)';
       case 'ar': return 'المسمى الوظيفي (مثل Lagerhelfer)';
+      case 'ur': return 'عہدہ (جیسے Lagerhelfer)';
       default:   return 'Job title / role';
     }
   }
@@ -2424,6 +2474,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'ځای (ښار)';
       case 'fa': return 'محل (شهر)';
       case 'ar': return 'المكان (المدينة)';
+      case 'ur': return 'مقام (شہر)';
       default:   return 'Ort (place/location)';
     }
   }
@@ -2479,6 +2530,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'له کال';
       case 'fa': return 'از سال';
       case 'ar': return 'من سنة';
+      case 'ur': return 'سال سے';
       default:   return 'From (Year)';
     }
   }
@@ -2488,6 +2540,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'تر کال پورې';
       case 'fa': return 'تا سال';
       case 'ar': return 'إلى سنة';
+      case 'ur': return 'سال تک';
       default:   return 'Until (Year)';
     }
   }
@@ -2497,6 +2550,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'اوس مهال (لا دلته کار کوم)';
       case 'fa': return 'در حال حاضر (هنوز اینجا کار می‌کنم)';
       case 'ar': return 'حاليا (ما زلت أعمل هنا)';
+      case 'ur': return 'اس وقت (میں اب بھی یہاں کام کرتا ہوں)';
       default:   return 'Present / Currently working here';
     }
   }
@@ -2584,6 +2638,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     final jobLabel = _lang == 'ps' ? 'دنده ${index + 1}'
         : _lang == 'fa' ? 'شغل ${index + 1}'
         : _lang == 'ar' ? 'الوظيفة ${index + 1}'
+        : _lang == 'ur' ? 'ملازمت ${index + 1}'
         : 'Job ${index + 1}';
 
     return Container(
@@ -2671,11 +2726,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     final addLabel = _lang == 'ps' ? '+ بله دنده اضافه کړئ'
         : _lang == 'fa' ? '+ افزودن شغل دیگر'
         : _lang == 'ar' ? '+ إضافة وظيفة أخرى'
+        : _lang == 'ur' ? '+ ایک اور ملازمت شامل کریں'
         : '+ Add another job';
     final orderHint = _lang == 'ps'
         ? 'خپل تازه ترین دنده لومړی اضافه کړئ'
         : _lang == 'fa' ? 'ابتدا جدیدترین شغل خود را اضافه کنید'
         : _lang == 'ar' ? 'أضف أحدث وظيفة لك أولا'
+        : _lang == 'ur' ? 'پہلے اپنی تازہ ترین ملازمت شامل کریں'
         : 'Add your most recent job first';
 
     return Column(
@@ -2735,6 +2792,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'کارفرما وټاکئ';
       case 'fa': return 'کارفرما را انتخاب کنید';
       case 'ar': return 'اختر صاحب العمل';
+      case 'ur': return 'آجر منتخب کریں';
       default:   return 'Choose employer';
     }
   }
@@ -2744,6 +2802,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'نور (پخپله ولیکئ)';
       case 'fa': return 'دیگر (خودتان بنویسید)';
       case 'ar': return 'أخرى (اكتب بنفسك)';
+      case 'ur': return 'دیگر (خود لکھیں)';
       default:   return 'Other (type it yourself)';
     }
   }
@@ -2753,6 +2812,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return '+ بله دنده اضافه کړئ';
       case 'fa': return '+ افزودن شغل دیگر';
       case 'ar': return '+ إضافة وظيفة أخرى';
+      case 'ur': return '+ ایک اور ملازمت شامل کریں';
       default:   return '+ Add another job';
     }
   }
@@ -2762,6 +2822,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'خپل تازه ترین دنده لومړی اضافه کړئ';
       case 'fa': return 'ابتدا جدیدترین شغل خود را اضافه کنید';
       case 'ar': return 'أضف أحدث وظيفة لك أولا';
+      case 'ur': return 'پہلے اپنی تازہ ترین ملازمت شامل کریں';
       default:   return 'Add your most recent job first';
     }
   }
@@ -2771,6 +2832,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'دا له مخکینیو ډکو معلوماتو څخه راغلي، تاسو یې سمولی شئ';
       case 'fa': return 'این از اطلاعات قبلی شما بارگذاری شده، می‌توانید ویرایش کنید';
       case 'ar': return 'تم تحميل هذا من معلوماتك السابقة، يمكنك تعديله';
+      case 'ur': return 'یہ آپ کی پچھلی معلومات سے لیا گیا ہے، آپ اسے بدل سکتے ہیں';
       default:   return 'Loaded from your other CV, edit if needed';
     }
   }
@@ -2891,7 +2953,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 // & Lager"), so the same text is valid to
                                 // speak for Dari too — just pass 'fa' as
                                 // the TTS locale.
-                                if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') {
+                                if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur') {
                                   TtsService().speak(section.$1, _lang);
                                 }
                               },
@@ -2939,7 +3001,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                   // FIX 3: was Pashto-only. Employer names
                                   // are untranslated proper nouns (e.g.
                                   // "Amazon"), valid to speak for Dari too.
-                                  if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') {
+                                  if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur') {
                                     TtsService().speak(name, _lang);
                                   }
                                 },
@@ -3011,6 +3073,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     final jobLabel = _lang == 'ps' ? 'دنده ${index + 1}'
         : _lang == 'fa' ? 'شغل ${index + 1}'
         : _lang == 'ar' ? 'الوظيفة ${index + 1}'
+        : _lang == 'ur' ? 'ملازمت ${index + 1}'
         : 'Job ${index + 1}';
 
     return Container(
@@ -3127,6 +3190,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'مورنۍ ژبه';
       case 'fa': return 'زبان مادری';
       case 'ar': return 'اللغة الأم';
+      case 'ur': return 'مادری زبان';
       default:   return 'Muttersprache';
     }
   }
@@ -3142,18 +3206,19 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       case 'ps': return 'د هرې ژبې لپاره خپله کچه وټاکئ';
       case 'fa': return 'سطح خود را برای هر زبان انتخاب کنید';
       case 'ar': return 'اختر مستواك لكل لغة';
+      case 'ur': return 'ہر زبان کے لیے اپنا درجہ منتخب کریں';
       default:   return 'Select your level for each language';
     }
   }
 
   Widget _languageProficiencyEducated() {
     const langs = [
-      ['pashto',  'Paschtu',   'پښتو',    'پشتو', 'البشتو'],
-      ['dari',    'Dari/Farsi','دري/فارسي','دری/فارسی', 'الداري / الفارسية'],
-      ['urdu',    'Urdu',      'اردو',     'اردو', 'الأردية'],
-      ['arabic',  'Arabisch',  'عربي',     'عربی', 'العربية'],
-      ['english', 'Englisch',  'انګليسي',  'انگلیسی', 'الإنجليزية'],
-      ['german',  'Deutsch',   'جرمني',    'آلمانی', 'الألمانية'],
+      ['pashto',  'Paschtu',   'پښتو',    'پشتو', 'البشتو', 'پشتو'],
+      ['dari',    'Dari/Farsi','دري/فارسي','دری/فارسی', 'الداري / الفارسية', 'دری / فارسی'],
+      ['urdu',    'Urdu',      'اردو',     'اردو', 'الأردية', 'اردو'],
+      ['arabic',  'Arabisch',  'عربي',     'عربی', 'العربية', 'عربی'],
+      ['english', 'Englisch',  'انګليسي',  'انگلیسی', 'الإنجليزية', 'انگریزی'],
+      ['german',  'Deutsch',   'جرمني',    'آلمانی', 'الألمانية', 'جرمن'],
     ];
     // _languages keeps using the app's existing internal keys ('german',
     // 'english', ...) so review_screen.dart / the uneducated flow / saved
@@ -3213,7 +3278,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           children: langs.map((l) {
             final key = l[0];
             final germanName = l[1];
-            final lbl = _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[4] : l[1];
+            final lbl = _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[4] : _lang == 'ur' ? l[5] : l[1];
             final sel = _languages.contains(key);
             return GestureDetector(
               onTap: () => setState(() {
@@ -3285,7 +3350,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           for (final l in langs)
             if (_languages.contains(l[0]))
               levelRow(l[0], l[1],
-                  _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[4] : l[1]),
+                  _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[4] : _lang == 'ur' ? l[5] : l[1]),
           // Custom (free-text) languages typed via "Other" above — keyed by
           // their own raw text in both _languages and _languageProficiency,
           // same fallback-to-identity pattern used for custom
@@ -3304,12 +3369,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   Widget _languageProficiencyUneducated() {
     const langs = [
-      ['pashto',  'Paschtu',    'پښتو',      'پشتو',        'پښتو', 'البشتو'],
-      ['dari',    'Dari/Farsi', 'دري/فارسي', 'دری/فارسی',   'دري یا فارسی', 'الداري / الفارسية'],
-      ['urdu',    'Urdu',       'اردو',      'اردو',        'اردو', 'الأردية'],
-      ['arabic',  'Arabisch',   'عربي',      'عربی',        'عربي', 'العربية'],
-      ['english', 'Englisch',   'انګليسي',   'انگلیسی',     'انګليسي', 'الإنجليزية'],
-      ['german',  'Deutsch',    'جرمني',     'آلمانی',      'جرمني', 'الألمانية'],
+      ['pashto',  'Paschtu',    'پښتو',      'پشتو',        'پښتو', 'البشتو', 'پشتو'],
+      ['dari',    'Dari/Farsi', 'دري/فارسي', 'دری/فارسی',   'دري یا فارسی', 'الداري / الفارسية', 'دری / فارسی'],
+      ['urdu',    'Urdu',       'اردو',      'اردو',        'اردو', 'الأردية', 'اردو'],
+      ['arabic',  'Arabisch',   'عربي',      'عربی',        'عربي', 'العربية', 'عربی'],
+      ['english', 'Englisch',   'انګليسي',   'انگلیسی',     'انګليسي', 'الإنجليزية', 'انگریزی'],
+      ['german',  'Deutsch',    'جرمني',     'آلمانی',      'جرمني', 'الألمانية', 'جرمن'],
     ];
 
     Widget levelBtn(String label, bool selected, VoidCallback onTap) {
@@ -3356,7 +3421,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 // FIX 3: speaker icon was gated to Pashto only (invisible
                 // for Dari, not just silent). displayLabel is already the
                 // language-resolved text, valid for either.
-                if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') ...[
+                if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur') ...[
                   const SizedBox(width: 6),
                   GestureDetector(
                     onTap: () => TtsService().speak(displayLabel, _lang),
@@ -3375,7 +3440,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   levelBtn(level, current == level, () {
                     // FIX 3: level codes (A1, B1, ...) are language-neutral
                     // — valid to speak for Dari too, was Pashto-only.
-                    if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') {
+                    if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur') {
                       TtsService().speak(level, _lang);
                     }
                     setState(() {
@@ -3386,7 +3451,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 levelBtn(_motherTongueLabel, current == 'Muttersprache', () {
                   // FIX 3: _motherTongueLabel already resolves to the
                   // correct Dari text via _lang, was Pashto-only.
-                  if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') {
+                  if (_lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur') {
                     TtsService().speak(_motherTongueLabel, _lang);
                   }
                   setState(() {
@@ -3411,7 +3476,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           children: langs.map((l) {
             final key = l[0];
             final germanName = l[1];
-            final lbl = _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[5] : l[1];
+            final lbl = _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[5] : _lang == 'ur' ? l[6] : l[1];
             final psTts = l[4];
             final sel = _languages.contains(key);
             return GestureDetector(
@@ -3426,6 +3491,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   TtsService().speak(lbl, 'fa');
                 } else if (_lang == 'ar') {
                   TtsService().speak(lbl, 'ar');
+                } else if (_lang == 'ur') {
+                  TtsService().speak(lbl, 'ur');
                 }
                 setState(() {
                   if (sel) {
@@ -3496,7 +3563,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           for (final l in langs)
             if (_languages.contains(l[0]))
               levelRow(l[0], l[1],
-                  _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[5] : l[1]),
+                  _lang == 'ps' ? l[2] : _lang == 'fa' ? l[3] : _lang == 'ar' ? l[5] : _lang == 'ur' ? l[6] : l[1]),
           for (final custom in _languages
               .where((l) => !langs.any((preset) => preset[0] == l)))
             levelRow(custom, custom, custom),
@@ -3594,7 +3661,8 @@ class _Opt {
   final String label;
   final String? psTts;
   final String? arTts;
-  const _Opt(this.value, this.icon, this.label, [this.psTts, this.arTts]);
+  final String? urTts;
+  const _Opt(this.value, this.icon, this.label, [this.psTts, this.arTts, this.urTts]);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3736,7 +3804,7 @@ class _LangPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = lang == 'ps' ? 'PS' : lang == 'fa' ? 'FA' : lang == 'ar' ? 'AR' : 'EN';
+    final label = lang == 'ps' ? 'PS' : lang == 'fa' ? 'FA' : lang == 'ar' ? 'AR' : lang == 'ur' ? 'UR' : 'EN';
     return GestureDetector(
       onTap: onPick,
       child: Container(

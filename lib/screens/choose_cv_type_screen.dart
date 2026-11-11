@@ -44,7 +44,7 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
   late bool _voiceMode;
   bool _checking = false;
 
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur';
   bool get _showSpeaker => _voiceMode && _isRtl;
 
   @override
@@ -193,6 +193,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'اسناد درخواست خود را بسازید';
       case 'ar':
         return 'أنشئ مستندات طلبك';
+      case 'ur':
+        return 'اپنی درخواست کی دستاویزات بنائیں';
       default:
         return 'Create Application Documents';
     }
@@ -206,6 +208,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'سندی که می‌خواهید بسازید را انتخاب کنید';
       case 'ar':
         return 'اختر المستند الذي تريد إنشاءه';
+      case 'ur':
+        return 'وہ دستاویز چنیں جو آپ بنانا چاہتے ہیں';
       default:
         return 'Choose which document you want to create';
     }
@@ -219,6 +223,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'نامه پوششی';
       case 'ar':
         return 'رسالة التغطية';
+      case 'ur':
+        return 'کور لیٹر';
       default:
         return 'Cover Letter';
     }
@@ -232,6 +238,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'به‌طور خودکار از اطلاعات شما ساخته می‌شود';
       case 'ar':
         return 'تُنشأ تلقائيا من معلوماتك المحفوظة';
+      case 'ur':
+        return 'آپ کی محفوظ معلومات سے خودکار طور پر بنتا ہے';
       default:
         return 'Auto-generated from your saved details';
     }
@@ -249,6 +257,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'برگه روی جلد درخواست، به‌طور خودکار ساخته می‌شود';
       case 'ar':
         return 'صفحة غلاف الطلب، تُنشأ تلقائيا';
+      case 'ur':
+        return 'درخواست کا سرورق، خودکار طور پر بنتا ہے';
       default:
         return 'Application cover page, auto-generated';
     }
@@ -262,6 +272,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'ابتدا با ساختن یک رزومه، اطلاعات شخصی خود را اضافه کنید';
       case 'ar':
         return 'أضف معلوماتك الشخصية أولا عن طريق إنشاء سيرة ذاتية';
+      case 'ur':
+        return 'اپنی تفصیلات شامل کرنے کے لیے پہلے نوکری کا CV یا Ausbildung CV بنائیں';
       default:
         return 'Please create a Job CV or Ausbildung CV first to add your details';
     }
@@ -275,6 +287,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'رزومه شغلی';
       case 'ar':
         return 'سيرة ذاتية للوظيفة';
+      case 'ur':
+        return 'نوکری کا CV';
       default:
         return 'Job CV';
     }
@@ -288,6 +302,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'برای پیدا کردن یک شغل';
       case 'ar':
         return 'للبحث عن وظيفة';
+      case 'ur':
+        return 'جرمنی میں نوکری تلاش کرنے کے لیے';
       default:
         return 'For finding a job in Germany';
     }
@@ -304,6 +320,8 @@ class _ChooseCvTypeScreenState extends State<ChooseCvTypeScreen> {
         return 'برای درخواست کارآموزی (Ausbildung)';
       case 'ar':
         return 'للتقدم إلى التدريب المهني (Ausbildung)';
+      case 'ur':
+        return 'Ausbildung کے لیے درخواست دینے کے واسطے';
       default:
         return 'For applying to vocational training (Ausbildung)';
     }

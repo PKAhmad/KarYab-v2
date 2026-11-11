@@ -288,6 +288,7 @@ class _AusbildungDocumentPreviewScreenState
       case 'ps': return 'د زده کړې کار اسناد';
       case 'fa': return 'اسناد کارآموزی';
       case 'ar': return 'مستندات Ausbildung';
+      case 'ur': return 'Ausbildung کی دستاویزات';
       default:   return 'Ausbildung Documents';
     }
   }
@@ -297,6 +298,7 @@ class _AusbildungDocumentPreviewScreenState
       case 'ps': return 'CV';
       case 'fa': return 'CV';
       case 'ar': return 'CV';
+      case 'ur': return 'CV';
       default:   return 'CV';
     }
   }
@@ -306,6 +308,7 @@ class _AusbildungDocumentPreviewScreenState
       case 'ps': return 'کینډۍ وټاکئ';
       case 'fa': return 'انتخاب قالب';
       case 'ar': return 'اختيار القالب';
+      case 'ur': return 'نمونہ چنیں';
       default:   return 'Choose Template';
     }
   }
@@ -315,6 +318,7 @@ class _AusbildungDocumentPreviewScreenState
       case 'ps': return 'ډاونلوډ کړئ';
       case 'fa': return 'دانلود';
       case 'ar': return 'تنزيل';
+      case 'ur': return 'ڈاؤن لوڈ کریں';
       default:   return 'Download CV (PDF)';
     }
   }
@@ -324,6 +328,7 @@ class _AusbildungDocumentPreviewScreenState
       case 'ps': return 'CV په ډاونلوډ کې خوندي شو';
       case 'fa': return 'CV در دانلودها ذخیره شد';
       case 'ar': return 'تم حفظ السيرة الذاتية في التنزيلات';
+      case 'ur': return 'CV ڈاؤن لوڈز میں محفوظ ہو گیا';
       default:   return 'CV saved to Downloads';
     }
   }
@@ -333,6 +338,7 @@ class _AusbildungDocumentPreviewScreenState
       case 'ps': return 'ځوابونه سمول';
       case 'fa': return 'ویرایش پاسخ‌ها';
       case 'ar': return 'تعديل الإجابات';
+      case 'ur': return 'جوابات کی ترمیم کریں';
       default:   return 'Edit answers';
     }
   }
@@ -342,6 +348,7 @@ class _AusbildungDocumentPreviewScreenState
       case 'ps': return 'د زده کړې دندې وګورئ';
       case 'fa': return 'مشاهده آگهی‌های کارآموزی';
       case 'ar': return 'عرض إعلانات Ausbildung';
+      case 'ur': return 'Ausbildung کی نوکریاں دیکھیں';
       default:   return 'Ausbildung Postings';
     }
   }
@@ -537,7 +544,7 @@ class _AusbildungDocumentPreviewScreenState
               KPrimaryCta(
                 icon: Icons.download_rounded,
                 label: _downloadLabel,
-                isRtl: (_lang == 'ps' || _lang == 'fa' || _lang == 'ar'),
+                isRtl: (_lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur'),
                 isSelected: false,
                 onTap: () {
                 if (!_saving) _download();
@@ -545,7 +552,7 @@ class _AusbildungDocumentPreviewScreenState
               ),
               if (_saving)
                 Positioned.directional(
-                  textDirection: (_lang == 'ps' || _lang == 'fa' || _lang == 'ar') ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: (_lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur') ? TextDirection.rtl : TextDirection.ltr,
                   start: 8,
                   top: 13,
                   child: Container(

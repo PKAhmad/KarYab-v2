@@ -9,7 +9,7 @@
 class WorkPermitStrings {
   const WorkPermitStrings._();
 
-  static String _s(String lang, String en, String de, String ps, String fa, String ar) {
+  static String _s(String lang, String en, String de, String ps, String fa, String ar, String ur) {
     switch (lang) {
       case 'en':
         return en;
@@ -19,6 +19,8 @@ class WorkPermitStrings {
         return fa;
       case 'ar':
         return ar;
+      case 'ur':
+        return ur;
       case 'de':
       default:
         return de;
@@ -33,6 +35,7 @@ class WorkPermitStrings {
         'د کار اجازې لیک',
         'نامه اجازه کار',
         'رسالة تصريح العمل',
+        'کام کی اجازت کا خط',
       );
 
   /// What this letter is and who decides. Shown at the top of the flow.
@@ -65,6 +68,12 @@ class WorkPermitStrings {
             'الرسالة من المكتب هذا التصريح. KarYab لا يرسل '
             'الرسالة عنك. أنت تقرأها وتتحقق من بياناتك '
             'وترسلها بنفسك.',
+        'اگر آپ کے پاس نوکری یا Ausbildung کی پیشکش ہے، لیکن آپ کے '
+            'رہائشی اجازت نامے سے آپ کو ابھی کام کرنے کی اجازت نہیں ہے، '
+            'تو پہلے Ausländerbehörde (غیر ملکیوں کا دفتر) کو راضی ہونا '
+            'چاہیے۔ یہ خط دفتر سے اسی اجازت کی درخواست کرتا ہے۔ KarYab '
+            'یہ خط آپ کے لیے نہیں بھیجتا۔ آپ اسے پڑھتے ہیں، اپنا ڈیٹا '
+            'دیکھتے ہیں اور خود بھیجتے ہیں۔',
       );
 
   static String yourDataTitle(String lang) => _s(
@@ -74,6 +83,7 @@ class WorkPermitStrings {
         'ستاسو معلومات (ستاسو له پروفایل څخه)',
         'اطلاعات شما (از پروفایل شما)',
         'بياناتك (من ملفك)',
+        'آپ کا ڈیٹا (آپ کے پروفائل سے)',
       );
 
   static String needProfile(String lang) => _s(
@@ -88,6 +98,7 @@ class WorkPermitStrings {
             'کنید. نامه به این اطلاعات نیاز دارد.',
         'يرجى حفظ اسمك وعنوانك وتاريخ ميلادك في ملفك '
             'أولا. الرسالة تحتاج إلى هذه البيانات.',
+        'براہ کرم پہلے اپنا نام، پتہ اور تاریخ پیدائش اپنے پروفائل میں محفوظ کریں۔ خط کو ان کی ضرورت ہے۔',
       );
 
   static String authorityName(String lang) => _s(
@@ -97,6 +108,7 @@ class WorkPermitStrings {
         'د دفتر نوم',
         'نام اداره',
         'اسم المكتب',
+        'دفتر کا نام',
       );
 
   static String authorityNameHint(String lang) => _s(
@@ -106,6 +118,7 @@ class WorkPermitStrings {
         'د بېلګې په توګه: Ausländerbehörde Berlin',
         'برای مثال: Ausländerbehörde Berlin',
         'على سبيل المثال: Ausländerbehörde Berlin',
+        'مثال: Ausländerbehörde Berlin',
       );
 
   static String authorityCity(String lang) => _s(
@@ -115,6 +128,7 @@ class WorkPermitStrings {
         'د دفتر ښار',
         'شهر اداره',
         'مدينة المكتب',
+        'دفتر کا شہر',
       );
 
   static String savedOffer(String lang) => _s(
@@ -124,6 +138,7 @@ class WorkPermitStrings {
         'خوندي شوی کار یا غوښتنلیک وکاروئ (اختیاري)',
         'استفاده از کار یا درخواست ذخیره شده (اختیاری)',
         'استخدام وظيفة أو طلب محفوظ (اختياري)',
+        'محفوظ شدہ نوکری یا درخواست استعمال کریں (اختیاری)',
       );
 
   static String enterManually(String lang) => _s(
@@ -133,6 +148,7 @@ class WorkPermitStrings {
         'پخپله یې ولیکم',
         'خودم وارد می‌کنم',
         'سأدخله بنفسي',
+        'میں خود لکھوں گا',
       );
 
   static String jobTitle(String lang) => _s(
@@ -142,6 +158,7 @@ class WorkPermitStrings {
         'دندې نوم یا د روزنې مسلک',
         'عنوان شغل یا حرفه آموزشی',
         'المسمى الوظيفي أو مهنة Ausbildung',
+        'نوکری کا عنوان یا Ausbildung کا پیشہ',
       );
 
   static String company(String lang) => _s(
@@ -151,6 +168,7 @@ class WorkPermitStrings {
         'شرکت',
         'شرکت',
         'الشركة',
+        'کمپنی',
       );
 
   static String isAusbildung(String lang) => _s(
@@ -160,6 +178,7 @@ class WorkPermitStrings {
         'دا د روزنې ځای دی',
         'این یک جای آموزشی (Ausbildung) است',
         'هذا مكان Ausbildung',
+        'یہ ایک Ausbildung کی جگہ ہے',
       );
 
   static String startDate(String lang) => _s(
@@ -169,6 +188,7 @@ class WorkPermitStrings {
         'د پیل ټاکلې نېټه',
         'تاریخ شروع مورد نظر',
         'تاريخ البدء المطلوب',
+        'شروع کرنے کی مطلوبہ تاریخ',
       );
 
   static String pickDate(String lang) => _s(
@@ -178,6 +198,7 @@ class WorkPermitStrings {
         'نېټه وټاکئ',
         'انتخاب تاریخ',
         'اختيار التاريخ',
+        'تاریخ منتخب کریں',
       );
 
   static String letterTitle(String lang) => _s(
@@ -187,6 +208,7 @@ class WorkPermitStrings {
         'ستاسو لیک (په الماني)',
         'نامه شما (به آلمانی)',
         'رسالتك (بالألمانية)',
+        'آپ کا خط (جرمن میں)',
       );
 
   static String explanationTitle(String lang) => _s(
@@ -196,6 +218,7 @@ class WorkPermitStrings {
         'په دې لیک کې څه لیکل شوي دي',
         'در این نامه چه نوشته شده است',
         'ما هو مكتوب في هذه الرسالة',
+        'اس خط میں کیا لکھا ہے',
       );
 
   static String listen(String lang) => _s(
@@ -205,6 +228,7 @@ class WorkPermitStrings {
         'واورئ',
         'گوش دادن',
         'الاستماع',
+        'سنیں',
       );
 
   static String confirmRead(String lang) => _s(
@@ -217,6 +241,7 @@ class WorkPermitStrings {
         'نامه و توضیح را خوانده‌ام و بررسی کرده‌ام که اطلاعاتم درست است.',
         'لقد قرأت الرسالة والشرح وتحققت من أن '
             'بياناتي صحيحة.',
+        'میں نے خط اور وضاحت پڑھ لی ہے اور دیکھ لیا ہے کہ میرا ڈیٹا درست ہے۔',
       );
 
   static String sendShare(String lang) => _s(
@@ -226,6 +251,7 @@ class WorkPermitStrings {
         'لیک واستوئ یا یې شریک کړئ',
         'نامه را بفرستید یا به اشتراک بگذارید',
         'إرسال الرسالة أو مشاركتها',
+        'خط بھیجیں یا شیئر کریں',
       );
 
   static String openInEmail(String lang) => _s(
@@ -235,6 +261,7 @@ class WorkPermitStrings {
         'په برېښنالیک اپ کې پرانیزئ',
         'باز کردن در برنامه ایمیل',
         'الفتح في تطبيق البريد الإلكتروني',
+        'ای میل ایپ میں کھولیں',
       );
 
   static String savePdf(String lang) => _s(
@@ -244,6 +271,7 @@ class WorkPermitStrings {
         'د PDF په توګه خوندي کړئ',
         'ذخیره به صورت PDF',
         'الحفظ كملف PDF',
+        'PDF کے طور پر محفوظ کریں',
       );
 
   static String savedNote(String lang) => _s(
@@ -253,6 +281,7 @@ class WorkPermitStrings {
         'یوه کاپي ستاسو له لیکونو سره خوندي شوه.',
         'یک نسخه نزد نامه‌های شما ذخیره شد.',
         'تم حفظ نسخة مع رسائلك.',
+        'ایک کاپی آپ کے خطوط کے ساتھ محفوظ ہو گئی ہے۔',
       );
 
   static String pdfSaved(String lang) => _s(
@@ -262,6 +291,7 @@ class WorkPermitStrings {
         'PDF په ډاونلوډونو کې خوندي شو.',
         'PDF در دانلودها ذخیره شد.',
         'تم حفظ PDF في التنزيلات.',
+        'PDF ڈاؤن لوڈز میں محفوظ ہو گئی۔',
       );
 
   static String fillFirst(String lang) => _s(
@@ -274,5 +304,6 @@ class WorkPermitStrings {
         'لطفا ابتدا اداره، شرکت، شغل و تاریخ شروع را وارد کنید.',
         'يرجى ملء المكتب والشركة والوظيفة وتاريخ '
             'البدء أولا.',
+        'براہ کرم پہلے دفتر، کمپنی، نوکری اور شروع کی تاریخ بھریں۔',
       );
 }

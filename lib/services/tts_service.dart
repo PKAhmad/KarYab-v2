@@ -41,6 +41,9 @@ class TtsService {
     // voices (ar-MA-MounaNeural / ar-MA-JamalNeural) if a Maghrebi
     // voice is ever wanted instead; see the Phase 12 report.
     'ar': 'ar-SA-HamedNeural',
+    // Urdu (Phase 15): ur-PK Asad, a male voice, matching the male
+    // guidance voices used for ps/fa/ar.
+    'ur': 'ur-PK-AsadNeural',
     'en': 'de-DE-KatjaNeural',
     'de': 'de-DE-KatjaNeural',
   };
@@ -49,6 +52,7 @@ class TtsService {
     'ps': 'ps-AF',
     'fa': 'fa-IR',
     'ar': 'ar-SA',
+    'ur': 'ur-PK',
     'en': 'de-DE',
     'de': 'de-DE',
   };

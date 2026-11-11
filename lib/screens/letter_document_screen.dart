@@ -105,7 +105,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
   bool _deckblattCreated = false;
 
   bool get _isCoverLetter => widget.docType == LetterDocType.coverLetter;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur';
 
   @override
   void initState() {
@@ -390,6 +390,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
         case 'ps': return 'د پوښتنلیک لیک';
         case 'fa': return 'نامه پوششی';
         case 'ar': return 'رسالة تغطية';
+        case 'ur': return 'کور لیٹر';
         default:   return 'Cover Letter';
       }
     }
@@ -402,11 +403,13 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
     required String ps,
     required String fa,
     required String ar,
+    required String ur,
   }) {
     switch (_lang) {
       case 'ps': return ps;
       case 'fa': return fa;
       case 'ar': return ar;
+      case 'ur': return ur;
       case 'de': return de;
       default:   return en;
     }
@@ -418,6 +421,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
         ps: 'هغه اسناد چې په Deckblatt کې لیکل کیږي',
         fa: 'مدارکی که روی Deckblatt فهرست می‌شوند',
         ar: 'المستندات التي ستكتب على Deckblatt',
+        ur: 'وہ دستاویزات جو Deckblatt پر لکھی جائیں گی',
       );
 
   String get _unterlagenHint => _t(
@@ -426,22 +430,23 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
         ps: 'یوازې هغه اسناد وټاکئ چې رښتیا یې لیږئ. Deckblatt به یوازې همدا اسناد ولیکي.',
         fa: 'فقط مدارکی را انتخاب کنید که واقعا ارسال می‌کنید. Deckblatt دقیقا همین‌ها را فهرست می‌کند.',
         ar: 'اختر فقط ما سترسله حقا. سيكتب Deckblatt هذه المستندات فقط.',
+        ur: 'صرف وہی چنیں جو آپ واقعی بھیجیں گے۔ Deckblatt پر صرف یہی دستاویزات لکھی جائیں گی۔',
       );
 
   String _stdUnterlageHelp(String key) {
     switch (key) {
       case 'lebenslauf':
-        return _t(en: 'CV', de: '', ps: 'CV', fa: 'رزومه', ar: 'سيرة ذاتية');
+        return _t(en: 'CV', de: '', ps: 'CV', fa: 'رزومه', ar: 'سيرة ذاتية', ur: 'CV');
       case 'anschreiben':
-        return _t(en: 'Cover letter', de: '', ps: 'د پوښتنلیک لیک', fa: 'نامه پوششی', ar: 'رسالة تغطية');
+        return _t(en: 'Cover letter', de: '', ps: 'د پوښتنلیک لیک', fa: 'نامه پوششی', ar: 'رسالة تغطية', ur: 'کور لیٹر');
       case 'zeugnisse':
-        return _t(en: 'Certificates', de: '', ps: 'تصدیق‌نامې', fa: 'گواهی‌نامه‌ها', ar: 'شهادات');
+        return _t(en: 'Certificates', de: '', ps: 'تصدیق‌نامې', fa: 'گواهی‌نامه‌ها', ar: 'شهادات', ur: 'اسناد');
       case 'sprachzertifikat':
-        return _t(en: 'Language certificate', de: '', ps: 'د ژبې تصدیق‌نامه', fa: 'گواهی زبان', ar: 'شهادة لغة');
+        return _t(en: 'Language certificate', de: '', ps: 'د ژبې تصدیق‌نامه', fa: 'گواهی زبان', ar: 'شهادة لغة', ur: 'زبان کا سرٹیفکیٹ');
       case 'fuehrerschein':
-        return _t(en: 'Driving licence', de: '', ps: 'د موټر چلولو جواز', fa: 'گواهی‌نامه رانندگی', ar: 'رخصة قيادة');
+        return _t(en: 'Driving licence', de: '', ps: 'د موټر چلولو جواز', fa: 'گواهی‌نامه رانندگی', ar: 'رخصة قيادة', ur: 'ڈرائیونگ لائسنس');
       default:
-        return _t(en: 'Internship certificate', de: '', ps: 'د کارورزۍ تصدیق‌نامه', fa: 'گواهی کارآموزی', ar: 'شهادة تدريب عملي');
+        return _t(en: 'Internship certificate', de: '', ps: 'د کارورزۍ تصدیق‌نامه', fa: 'گواهی کارآموزی', ar: 'شهادة تدريب عملي', ur: 'انٹرن شپ سرٹیفکیٹ');
     }
   }
 
@@ -451,10 +456,11 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
         ps: 'بل سند اضافه کړئ',
         fa: 'سند دیگری اضافه کنید',
         ar: 'أضف مستندا آخر',
+        ur: 'ایک اور دستاویز شامل کریں',
       );
 
   String get _addLabel =>
-      _t(en: 'Add', de: 'Hinzufügen', ps: 'اضافه کړئ', fa: 'افزودن', ar: 'إضافة');
+      _t(en: 'Add', de: 'Hinzufügen', ps: 'اضافه کړئ', fa: 'افزودن', ar: 'إضافة', ur: 'شامل کریں');
 
   String get _maxReachedLabel => _t(
         en: 'Maximum of 8 documents reached',
@@ -462,6 +468,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
         ps: 'تر ډېره ۸ اسناد کېدای شي',
         fa: 'حداکثر ۸ سند ممکن است',
         ar: 'يمكن 8 مستندات كحد أقصى',
+        ur: 'زیادہ سے زیادہ 8 دستاویزات ہو سکتی ہیں',
       );
 
   String get _createDeckblattLabel => _t(
@@ -470,6 +477,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
         ps: 'Deckblatt جوړ کړئ',
         fa: 'ساخت Deckblatt',
         ar: 'اصنع Deckblatt',
+        ur: 'Deckblatt بنائیں',
       );
 
   String get _changeDocumentsLabel => _t(
@@ -478,6 +486,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
         ps: 'اسناد بدل کړئ',
         fa: 'تغییر مدارک',
         ar: 'تغيير المستندات',
+        ur: 'دستاویزات بدلیں',
       );
 
   String get _createPdfLabel {
@@ -485,6 +494,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'PDF جوړ کړئ';
       case 'fa': return 'ساخت PDF';
       case 'ar': return 'اصنع PDF';
+      case 'ur': return 'PDF بنائیں';
       default:   return 'Create PDF';
     }
   }
@@ -494,6 +504,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'Betreff (موضوع)';
       case 'fa': return 'Betreff (موضوع)';
       case 'ar': return 'Betreff (الموضوع)';
+      case 'ur': return 'Betreff (موضوع)';
       default:   return 'Betreff (Subject)';
     }
   }
@@ -503,6 +514,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'پیل';
       case 'fa': return 'مقدمه';
       case 'ar': return 'المقدمة';
+      case 'ur': return 'آغاز';
       default:   return 'Opening';
     }
   }
@@ -512,6 +524,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'د وړتیاوو پاراګراف';
       case 'fa': return 'بند مهارت‌ها';
       case 'ar': return 'فقرة المهارات';
+      case 'ur': return 'مہارتوں کا پیراگراف';
       default:   return 'Skills paragraph';
     }
   }
@@ -521,6 +534,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'پای';
       case 'fa': return 'پایان';
       case 'ar': return 'الخاتمة';
+      case 'ur': return 'اختتام';
       default:   return 'Closing';
     }
   }
@@ -530,6 +544,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'نوی متن جوړ کړئ';
       case 'fa': return 'ساخت متن جدید';
       case 'ar': return 'اصنع نصا جديدا';
+      case 'ur': return 'نیا متن بنائیں';
       default:   return 'Regenerate';
     }
   }
@@ -539,6 +554,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'ستاسو بدلونونه بدل شي؟';
       case 'fa': return 'تغییرات شما جایگزین شود؟';
       case 'ar': return 'هل تريد استبدال تغييراتك؟';
+      case 'ur': return 'آپ کی تبدیلیاں بدل دی جائیں؟';
       default:   return 'Replace your changes?';
     }
   }
@@ -548,6 +564,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'نوی متن به هغه متن بدل کړي چې تاسو سم کړی دی.';
       case 'fa': return 'متن جدید جایگزین متنی می‌شود که ویرایش کرده‌اید.';
       case 'ar': return 'سيحل النص الجديد محل النص الذي عدلته.';
+      case 'ur': return 'نیا متن اس متن کی جگہ لے گا جس کی آپ نے ترمیم کی ہے۔';
       default:   return 'A new text will replace the text you edited.';
     }
   }
@@ -557,6 +574,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'لغوه کړئ';
       case 'fa': return 'لغو';
       case 'ar': return 'إلغاء';
+      case 'ur': return 'منسوخ کریں';
       default:   return 'Cancel';
     }
   }
@@ -566,6 +584,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'بدل کړئ';
       case 'fa': return 'جایگزین کن';
       case 'ar': return 'استبدال';
+      case 'ur': return 'بدل دیں';
       default:   return 'Replace';
     }
   }
@@ -575,6 +594,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'د لیک متن تل په آلماني دی. تاسو کولی شئ هر ساحه سم کړئ.';
       case 'fa': return 'متن نامه همیشه به آلمانی است. می‌توانید هر بخش را ویرایش کنید.';
       case 'ar': return 'نص الرسالة دائما بالألمانية. يمكنك تعديل كل جزء.';
+      case 'ur': return 'خط کا متن ہمیشہ جرمن میں ہوتا ہے۔ آپ ہر حصے کی ترمیم کر سکتے ہیں۔';
       default:   return 'The letter text is always German. You can edit every section.';
     }
   }
@@ -584,6 +604,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'ډاونلوډ کړئ';
       case 'fa': return 'دانلود';
       case 'ar': return 'تنزيل';
+      case 'ur': return 'ڈاؤن لوڈ';
       default:   return 'Download PDF';
     }
   }
@@ -593,6 +614,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'کینډۍ وټاکئ';
       case 'fa': return 'انتخاب قالب';
       case 'ar': return 'اختيار القالب';
+      case 'ur': return 'نمونہ چنیں';
       default:   return 'Choose Template';
     }
   }
@@ -602,6 +624,7 @@ class _LetterDocumentScreenState extends State<LetterDocumentScreen> {
       case 'ps': return 'سند په ډاونلوډ کې خوندي شو';
       case 'fa': return 'سند در دانلودها ذخیره شد';
       case 'ar': return 'تم حفظ المستند في التنزيلات';
+      case 'ur': return 'دستاویز ڈاؤن لوڈز میں محفوظ ہو گئی';
       default:   return 'Saved to Downloads';
     }
   }

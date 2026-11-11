@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   AuthService get _auth => widget.authService ?? karyabAuth;
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur';
 
   @override
   void dispose() {

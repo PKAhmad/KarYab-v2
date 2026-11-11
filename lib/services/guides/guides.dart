@@ -4,6 +4,7 @@ import 'guides_de.dart';
 import 'guides_en.dart';
 import 'guides_fa.dart';
 import 'guides_ps.dart';
+import 'guides_ur.dart';
 
 export 'guide_model.dart';
 
@@ -18,7 +19,7 @@ export 'guide_model.dart';
 // in the Phase 11 report for the CEO's proofread. No em-dashes.
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// The two guide tracks in [lang] ('en', 'de', 'ps', 'fa', 'ar').
+/// The two guide tracks in [lang] ('en', 'de', 'ps', 'fa', 'ar', 'ur').
 /// Track order is fixed: exam first, then Ausbildung.
 List<GuideTrack> guidesForLanguage(String lang) {
   switch (lang) {
@@ -30,6 +31,8 @@ List<GuideTrack> guidesForLanguage(String lang) {
       return kGuidesFa;
     case 'ar':
       return kGuidesAr;
+    case 'ur':
+      return kGuidesUr;
     case 'de':
     default:
       return kGuidesDe;
@@ -45,7 +48,7 @@ GuideTrack? guideTrackFor(String lang, String trackId) {
 }
 
 /// Every language the guides ship in (content integrity tests use it).
-const List<String> kGuideLanguages = ['en', 'de', 'ps', 'fa', 'ar'];
+const List<String> kGuideLanguages = ['en', 'de', 'ps', 'fa', 'ar', 'ur'];
 
 /// Month the guide content was last checked against the official
 /// sources. Shown in the footer of the guides home.
@@ -61,6 +64,7 @@ class GuideStrings {
     String ps,
     String fa,
     String ar,
+    String ur,
   ) {
     switch (lang) {
       case 'en':
@@ -71,6 +75,8 @@ class GuideStrings {
         return fa;
       case 'ar':
         return ar;
+      case 'ur':
+        return ur;
       case 'de':
       default:
         return de;
@@ -79,7 +85,7 @@ class GuideStrings {
 
   /// Module title: home card, More sheet entry and screen title.
   static String title(String lang) =>
-      _s(lang, 'Guides', 'Wegweiser', 'لارښودونه', 'راهنماها', 'الأدلة');
+      _s(lang, 'Guides', 'Wegweiser', 'لارښودونه', 'راهنماها', 'الأدلة', 'رہنمائیں');
 
   /// Subtitle of the home dashboard card.
   static String homeCardSub(String lang) => _s(
@@ -89,6 +95,7 @@ class GuideStrings {
     'ګام پر ګام: د الماني ژبې ازموینه او له بهر څخه Ausbildung',
     'گام به گام: امتحان آلمانی و Ausbildung از خارج',
     'خطوة بخطوة: امتحان اللغة الألمانية والتدريب المهني (Ausbildung) من الخارج',
+    'قدم بہ قدم: جرمن امتحان اور بیرون ملک سے Ausbildung',
   );
 
   /// What the guides are, at the top of the guides home.
@@ -110,6 +117,9 @@ class GuideStrings {
     'هذه الأدلة تريك الطريق الرسمي، خطوة بخطوة. نفّذ خطوة بعد '
         'الأخرى، وعلّم الخطوة عندما تنتهي. يمكنك الاستماع إلى '
         'كل خطوة.',
+    'یہ رہنمائیں آپ کو سرکاری راستہ دکھاتی ہیں، قدم بہ قدم۔ ایک '
+        'قدم کے بعد دوسرا کریں، اور جب کوئی قدم مکمل ہو جائے تو '
+        'اسے نشان زد کریں۔ آپ ہر قدم سن سکتے ہیں۔',
   );
 
   /// Progress line: how many steps of a track are done.
@@ -120,6 +130,7 @@ class GuideStrings {
     'له $total ګامونو څخه $done شوي دي',
     '$done از $total مرحله انجام شد',
     'تم إنجاز $done من $total خطوات',
+    '$total مراحل میں سے $done مکمل',
   );
 
   /// Plain step count for small labels.
@@ -130,6 +141,7 @@ class GuideStrings {
     '$total ګامونه',
     '$total مرحله',
     '$total خطوات',
+    '$total مراحل',
   );
 
   /// Heading of the documents list on a step page.
@@ -140,11 +152,12 @@ class GuideStrings {
     'دا اسناد درته اړین دي',
     'این مدارک را لازم دارید',
     'الأوراق التي تحتاجها',
+    'آپ کو درکار دستاویزات',
   );
 
   /// Heading of the warning box on a step page.
   static String warningTitle(String lang) =>
-      _s(lang, 'Warning', 'Warnung', 'خبرداری', 'هشدار', 'تحذير');
+      _s(lang, 'Warning', 'Warnung', 'خبرداری', 'هشدار', 'تحذير', 'انتباہ');
 
   /// The done button on a step page, when the step is open.
   static String markDone(String lang) => _s(
@@ -154,6 +167,7 @@ class GuideStrings {
     'بشپړ یې وګڼه',
     'تمام شده علامت بزن',
     'علّم كمنتهية',
+    'مکمل کے طور پر نشان زد کریں',
   );
 
   /// The same button, when the step is already done.
@@ -164,6 +178,7 @@ class GuideStrings {
     'بشپړ شو. د بېرته کولو لپاره ټپ کړئ',
     'تمام شد. برای برگرداندن بزنید',
     'انتهت. اضغط للتراجع',
+    'مکمل ہو گیا۔ واپس کرنے کے لیے ٹیپ کریں',
   );
 
   /// Honest note at the bottom of the guides home.
@@ -180,6 +195,8 @@ class GuideStrings {
         'می‌توانند تغییر کنند. همیشه صفحه‌های رسمی را بررسی کنید.',
     'الأدلة تشرح الطريق الرسمي. القواعد والمبالغ يمكن أن '
         'تتغير. افحص دائمًا الصفحات الرسمية.',
+    'رہنمائیں سرکاری عمل کی وضاحت کرتی ہیں۔ قوانین اور رقوم '
+        'بدل سکتی ہیں۔ ہمیشہ سرکاری ویب سائٹس جانچیں۔',
   );
 
   /// The "last checked" line under the footer note.
@@ -190,6 +207,7 @@ class GuideStrings {
     'وروستی ځل کتل شوی: نومبر 2026',
     'آخرین بررسی: نوامبر 2026',
     'آخر فحص: نوفمبر 2026',
+    'آخری جانچ: نومبر 2026',
   );
 
   /// Button label for an in-app jump action.
@@ -203,6 +221,7 @@ class GuideStrings {
           'د Ausbildung ځایونه ولټوئ',
           'جای Ausbildung را جستجو کنید',
           'ابحث عن أماكن تدريب مهني',
+          'Ausbildung کی جگہیں تلاش کریں',
         );
       case GuideAction.cvBuilder:
         return _s(
@@ -212,6 +231,7 @@ class GuideStrings {
           'خپل CV جوړ کړئ',
           'CV خود را بسازید',
           'اصنع سيرتك الذاتية (CV)',
+          'اپنا CV بنائیں',
         );
       case GuideAction.coverLetter:
         return _s(
@@ -221,6 +241,7 @@ class GuideStrings {
           'پوښلیک ولیکئ',
           'نامه پوششی بنویسید',
           'اكتب رسالة تقديم',
+          'کور لیٹر لکھیں',
         );
       case GuideAction.officialLetters:
         return _s(
@@ -230,6 +251,7 @@ class GuideStrings {
           'رسمي لیکونه پرانیزئ',
           'نامه‌های رسمی را باز کنید',
           'افتح الرسائل الرسمية',
+          'سرکاری خطوط کھولیں',
         );
       case GuideAction.deutschCourses:
         return _s(
@@ -239,6 +261,7 @@ class GuideStrings {
           'د الماني کورس ومومئ',
           'دوره آلمانی پیدا کنید',
           'ابحث عن دورة لغة ألمانية',
+          'جرمن کورس تلاش کریں',
         );
       case GuideAction.examGuide:
         return _s(
@@ -248,6 +271,7 @@ class GuideStrings {
           'د ازموینې لارښود پرانیزئ',
           'راهنمای امتحان را باز کنید',
           'افتح دليل الامتحان',
+          'امتحان کی رہنما کھولیں',
         );
     }
   }

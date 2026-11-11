@@ -56,7 +56,7 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
         leading: IconButton(
           // In Pashto/Dari the way back points right (Phase 5 RTL pass).
           icon: Icon(
-            (lang == 'ps' || lang == 'fa' || lang == 'ar')
+            (lang == 'ps' || lang == 'fa' || lang == 'ar' || lang == 'ur')
                 ? Icons.arrow_forward_ios_rounded
                 : Icons.arrow_back_ios_new_rounded,
             color: Colors.white,
@@ -71,7 +71,9 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
                   ? 'صفحه کار'
                   : lang == 'ar'
                       ? 'صفحة الوظيفة'
-                      : widget.title,
+                      : lang == 'ur'
+                          ? 'نوکری کا صفحہ'
+                          : widget.title,
           style: TextStyle(
             fontFamily: karyabFontFamily(lang),
             color: Colors.white,
@@ -93,7 +95,9 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
                       ? 'کد را وارد کنید → Absenden → ایمیل را کپی کنید → برگردید'
                       : lang == 'ar'
                           ? 'أدخل الرمز → انقر على Absenden → انسخ البريد الإلكتروني → ارجع'
-                          : 'Enter code → Click Absenden → Copy email → Go back',
+                          : lang == 'ur'
+                              ? 'کوڈ لکھیں → Absenden پر کلک کریں → ای میل کاپی کریں → واپس جائیں'
+                              : 'Enter code → Click Absenden → Copy email → Go back',
               style: TextStyle(
                 fontFamily: karyabFontFamily(lang),
                 color: KLiquid.navyTop,
@@ -142,7 +146,9 @@ class _InAppBrowserScreenState extends State<InAppBrowserScreen> {
                         ? 'ایمیل پیدا شد؟ کپی کنید سپس دکمه برگشت را بزنید'
                         : lang == 'ar'
                             ? 'وجدت البريد الإلكتروني؟ انسخه ثم انقر على زر الرجوع'
-                            : 'Found the email? Copy it then tap the back button',
+                            : lang == 'ur'
+                                ? 'ای میل مل گئی؟ اسے کاپی کریں، پھر واپس کا بٹن دبائیں'
+                                : 'Found the email? Copy it then tap the back button',
                 style: TextStyle(
                   fontFamily: karyabFontFamily(lang),
                   color: Colors.white70,

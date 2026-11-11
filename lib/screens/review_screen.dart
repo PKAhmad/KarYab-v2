@@ -85,6 +85,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
     'mobile_repair': 'إصلاح الهاتف','amazon_packing': 'المستودع',
     'dhl': 'توصيل الطرود',
   };
+  static const _skillUr = {
+    'lifting': 'بھاری چیزیں اٹھانا', 'cooking': 'کھانا پکانا',
+    'driving': 'گاڑی چلانا',         'cleaning': 'صفائی',
+    'fixing': 'مرمت',                'packing': 'پیکنگ',
+    'security': 'حفاظت',             'forklift': 'فورک لفٹ',
+    'farming': 'کھیتی باڑی',         'sales': 'فروخت',
+    'sewing': 'سلائی',               'construction': 'تعمیرات',
+    'mobile_repair': 'موبائل کی مرمت','amazon_packing': 'گودام کا کام',
+    'dhl': 'پارسل پہنچانا',
+  };
 
   static const _workExpEn = {
     'more2': 'Yes, > 2 years',   'less2': 'Yes, < 2 years',
@@ -101,6 +111,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
   static const _workExpAr = {
     'more2': 'نعم، أكثر من سنتين', 'less2': 'نعم، أقل من سنتين',
     'small': 'وظائف صغيرة فقط',   'never': 'لم أعمل أبدا',
+  };
+  static const _workExpUr = {
+    'more2': 'جی ہاں، 2 سال سے زیادہ', 'less2': 'جی ہاں، 2 سال سے کم',
+    'small': 'صرف چھوٹے کام',   'never': 'کبھی کام نہیں کیا',
   };
 
   static const _workTypeEn = {
@@ -119,6 +133,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
     'construction': 'البناء', 'cleaning': 'التنظيف',
     'kitchen': 'المطبخ / المطعم', 'driving': 'القيادة',
   };
+  static const _workTypeUr = {
+    'construction': 'تعمیرات', 'cleaning': 'صفائی',
+    'kitchen': 'باورچی خانہ / ریستوران', 'driving': 'گاڑی چلانا',
+  };
 
   static const _toolsEn = {
     'power_tools': 'Power tools',   'kitchen_equip': 'Kitchen equipment',
@@ -135,6 +153,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
   static const _toolsAr = {
     'power_tools': 'أدوات كهربائية', 'kitchen_equip': 'معدات المطبخ',
     'tractor': 'جرار / مركبات ثقيلة', 'no_tools': 'لا خبرة في الأدوات',
+  };
+  static const _toolsUr = {
+    'power_tools': 'بجلی کے اوزار', 'kitchen_equip': 'باورچی خانے کا سامان',
+    'tractor': 'ٹریکٹر / بھاری گاڑیاں', 'no_tools': 'اوزار کا تجربہ نہیں',
   };
 
   static const _licenseEn = {
@@ -153,6 +175,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
     'german_license': 'رخصة قيادة ألمانية',    'foreign_license': 'رخصة قيادة أجنبية',
     'want_license': 'لا، أريد أن أتعلم', 'no_license': 'لا',
   };
+  static const _licenseUr = {
+    'german_license': 'جرمن لائسنس',    'foreign_license': 'غیر ملکی لائسنس',
+    'want_license': 'نہیں، سیکھنا چاہتا ہوں', 'no_license': 'نہیں',
+  };
 
   static const _langEn = {
     'pashto': 'Pashto', 'dari': 'Dari / Farsi', 'urdu': 'Urdu',
@@ -169,6 +195,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
   static const _langAr = {
     'pashto': 'الباشتو', 'dari': 'الداري / الفارسية', 'urdu': 'الأردية',
     'arabic': 'العربية', 'english': 'الإنجليزية',  'german': 'الألمانية', 'other': 'أخرى',
+  };
+  static const _langUr = {
+    'pashto': 'پشتو', 'dari': 'دری / فارسی', 'urdu': 'اردو',
+    'arabic': 'عربی', 'english': 'انگریزی',  'german': 'جرمن', 'other': 'دیگر',
   };
 
   static const _availEn = {
@@ -187,6 +217,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
     'fulltime': 'دوام كامل (40 ساعة)', 'parttime': 'دوام جزئي (20 ساعة)',
     'flexible': 'مرن',                  'weekends': 'عطلات نهاية الأسبوع فقط',
   };
+  static const _availUr = {
+    'fulltime': 'پورا وقت (40 گھنٹے)', 'parttime': 'جز وقتی (20 گھنٹے)',
+    'flexible': 'لچکدار',               'weekends': 'صرف ہفتے کے آخر میں',
+  };
 
   static const _startEn = {
     'immediately': 'Immediately',    'two_weeks': 'Within 2 weeks',
@@ -204,14 +238,19 @@ class _ReviewScreenState extends State<ReviewScreen> {
     'immediately': 'فورا',        'two_weeks': 'خلال أسبوعين',
     'one_month': 'خلال شهر واحد', 'unsure': 'لست متأكدا بعد',
   };
+  static const _startUr = {
+    'immediately': 'فوراً',        'two_weeks': '2 ہفتوں کے اندر',
+    'one_month': 'ایک مہینے کے اندر', 'unsure': 'ابھی یقین نہیں',
+  };
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  static String _t(String lang, String en, String ps, String fa, String ar) {
+  static String _t(String lang, String en, String ps, String fa, String ar, String ur) {
     switch (lang) {
       case 'ps': return ps;
       case 'fa': return fa;
       case 'ar': return ar;
+      case 'ur': return ur;
       default:   return en;
     }
   }
@@ -223,9 +262,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
     required Map<String, String> ps,
     required Map<String, String> fa,
     required Map<String, String> ar,
+    required Map<String, String> ur,
   }) {
     if (key == null || key.isEmpty) return '—';
-    final map = lang == 'ps' ? ps : lang == 'fa' ? fa : lang == 'ar' ? ar : en;
+    final map = lang == 'ps' ? ps : lang == 'fa' ? fa : lang == 'ar' ? ar : lang == 'ur' ? ur : en;
     return map[key] ?? key;
   }
 
@@ -253,7 +293,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
   @override
   Widget build(BuildContext context) {
     final lang      = context.watch<LanguageProvider>().language;
-    final isRtl     = lang == 'ps' || lang == 'fa' || lang == 'ar';
+    final isRtl     = lang == 'ps' || lang == 'fa' || lang == 'ar' || lang == 'ur';
     final voiceMode = context.read<LanguageProvider>().voiceMode;
     final p         = widget.profile;
 
@@ -309,7 +349,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
               _t(lang, 'Review Your Information',
                   'خپل معلومات وګورئ',
                   'اطلاعات خود را بررسی کنید',
-                  'راجع معلوماتك'),
+                  'راجع معلوماتك',
+                  'اپنی معلومات دیکھیں'),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: _navy,
@@ -427,7 +468,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   _t(lang, 'Ready to Apply ✓',
                       'د درخواست لپاره چمتو ✓',
                       'آماده درخواست ✓',
-                      'جاهز للتقدم ✓'),
+                      'جاهز للتقدم ✓',
+                      'درخواست کے لیے تیار ✓'),
                   style: const TextStyle(
                     color: Color(0xFF0E7A20),
                     fontSize: 13,
@@ -447,28 +489,28 @@ class _ReviewScreenState extends State<ReviewScreen> {
   Widget _buildPersonalSection(UserProfile p, String lang, bool isRtl) {
     return _SectionCard(
       icon: Icons.person_rounded,
-      title: _t(lang, 'Personal Information', 'شخصي معلومات', 'اطلاعات شخصی', 'المعلومات الشخصية'),
+      title: _t(lang, 'Personal Information', 'شخصي معلومات', 'اطلاعات شخصی', 'المعلومات الشخصية', 'ذاتی معلومات'),
       isRtl: isRtl,
       children: [
         _DataRowWidget(
-          label: _t(lang, 'Date of Birth', 'د زیږیدو نیټه', 'تاریخ تولد', 'تاريخ الميلاد'),
+          label: _t(lang, 'Date of Birth', 'د زیږیدو نیټه', 'تاریخ تولد', 'تاريخ الميلاد', 'تاریخ پیدائش'),
           value: p.dobFormatted,
           isRtl: isRtl,
         ),
         _DataRowWidget(
-          label: _t(lang, 'Country', 'هیواد', 'کشور', 'البلد'),
+          label: _t(lang, 'Country', 'هیواد', 'کشور', 'البلد', 'ملک'),
           value: p.country != null && p.country!.isNotEmpty
               ? _countryFullName(p.country!)
               : '—',
           isRtl: isRtl,
         ),
         _DataRowWidget(
-          label: _t(lang, 'Street Address', 'کوڅه', 'خیابان', 'الشارع'),
+          label: _t(lang, 'Street Address', 'کوڅه', 'خیابان', 'الشارع', 'گلی کا پتہ'),
           value: p.street.isEmpty ? '—' : p.street,
           isRtl: isRtl,
         ),
         _DataRowWidget(
-          label: _t(lang, 'City & Postal', 'ښار', 'شهر', 'المدينة'),
+          label: _t(lang, 'City & Postal', 'ښار', 'شهر', 'المدينة', 'شہر'),
           value: p.city.isEmpty ? '—' : p.city,
           isRtl: isRtl,
         ),
@@ -483,11 +525,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
         .split(',')
         .where((s) => s.isNotEmpty)
         .toList();
-    final skillMap = lang == 'ps' ? _skillPs : lang == 'fa' ? _skillFa : lang == 'ar' ? _skillAr : _skillEn;
+    final skillMap = lang == 'ps' ? _skillPs : lang == 'fa' ? _skillFa : lang == 'ar' ? _skillAr : lang == 'ur' ? _skillUr : _skillEn;
 
     return _SectionCard(
       icon: Icons.work_rounded,
-      title: _t(lang, 'Work & Skills', 'کار او مهارتونه', 'کار و مهارت‌ها', 'العمل والمهارات'),
+      title: _t(lang, 'Work & Skills', 'کار او مهارتونه', 'کار و مهارت‌ها', 'العمل والمهارات', 'کام اور مہارتیں'),
       isRtl: isRtl,
       children: [
         if (skillKeys.isNotEmpty) ...[
@@ -502,34 +544,34 @@ class _ReviewScreenState extends State<ReviewScreen> {
           ),
         ],
         _DataRowWidget(
-          label: _t(lang, 'Experience', 'تجربه', 'تجربه', 'الخبرة'),
+          label: _t(lang, 'Experience', 'تجربه', 'تجربه', 'الخبرة', 'تجربہ'),
           value: _resolve(p.workExperience, lang,
-              en: _workExpEn, ps: _workExpPs, fa: _workExpFa, ar: _workExpAr),
+              en: _workExpEn, ps: _workExpPs, fa: _workExpFa, ar: _workExpAr, ur: _workExpUr),
           isRtl: isRtl,
         ),
         if (p.workType != null)
           _DataRowWidget(
-            label: _t(lang, 'Work Type', 'د کار ډول', 'نوع کار', 'نوع العمل'),
+            label: _t(lang, 'Work Type', 'د کار ډول', 'نوع کار', 'نوع العمل', 'کام کی قسم'),
             value: _resolve(p.workType, lang,
-                en: _workTypeEn, ps: _workTypePs, fa: _workTypeFa, ar: _workTypeAr),
+                en: _workTypeEn, ps: _workTypePs, fa: _workTypeFa, ar: _workTypeAr, ur: _workTypeUr),
             isRtl: isRtl,
           ),
         _DataRowWidget(
-          label: _t(lang, 'Tools', 'وسیلې', 'ابزار', 'الأدوات'),
+          label: _t(lang, 'Tools', 'وسیلې', 'ابزار', 'الأدوات', 'اوزار'),
           value: _resolve(p.tools, lang,
-              en: _toolsEn, ps: _toolsPs, fa: _toolsFa, ar: _toolsAr),
+              en: _toolsEn, ps: _toolsPs, fa: _toolsFa, ar: _toolsAr, ur: _toolsUr),
           isRtl: isRtl,
         ),
         _DataRowWidget(
-          label: _t(lang, 'Driving License', 'د موټر جواز', 'گواهینامه', 'رخصة القيادة'),
+          label: _t(lang, 'Driving License', 'د موټر جواز', 'گواهینامه', 'رخصة القيادة', 'ڈرائیونگ لائسنس'),
           value: _resolve(p.drivingLicense, lang,
-              en: _licenseEn, ps: _licensePs, fa: _licenseFa, ar: _licenseAr),
+              en: _licenseEn, ps: _licensePs, fa: _licenseFa, ar: _licenseAr, ur: _licenseUr),
           isRtl: isRtl,
         ),
         if (p.previousEmployers.isNotEmpty) ...[
           const SizedBox(height: 10),
           Text(
-            _t(lang, 'Previous Employers', 'پخوانۍ کارونه', 'کارفرمایان قبلی', 'أصحاب العمل السابقون'),
+            _t(lang, 'Previous Employers', 'پخوانۍ کارونه', 'کارفرمایان قبلی', 'أصحاب العمل السابقون', 'پچھلے آجر'),
             textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             style: const TextStyle(
                 color: _muted, fontSize: 12, fontWeight: FontWeight.w600),
@@ -554,12 +596,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
   // ── Section 3: Languages & Availability ───────────────────────────────────
 
   Widget _buildLangSection(UserProfile p, String lang, bool isRtl) {
-    final langMap = lang == 'ps' ? _langPs : lang == 'fa' ? _langFa : lang == 'ar' ? _langAr : _langEn;
+    final langMap = lang == 'ps' ? _langPs : lang == 'fa' ? _langFa : lang == 'ar' ? _langAr : lang == 'ur' ? _langUr : _langEn;
 
     return _SectionCard(
       icon: Icons.language_rounded,
       title: _t(lang, 'Languages & Availability',
-          'ژبې او شتون', 'زبان‌ها و در دسترس بودن', 'اللغات والتوفر'),
+          'ژبې او شتون', 'زبان‌ها و در دسترس بودن', 'اللغات والتوفر', 'زبانیں اور دستیابی'),
       isRtl: isRtl,
       children: [
         if (p.languages.isNotEmpty) ...[
@@ -590,15 +632,15 @@ class _ReviewScreenState extends State<ReviewScreen> {
           ),
         ],
         _DataRowWidget(
-          label: _t(lang, 'Availability', 'شتون', 'در دسترس', 'التوفر'),
+          label: _t(lang, 'Availability', 'شتون', 'در دسترس', 'التوفر', 'دستیابی'),
           value: _resolve(p.availability, lang,
-              en: _availEn, ps: _availPs, fa: _availFa, ar: _availAr),
+              en: _availEn, ps: _availPs, fa: _availFa, ar: _availAr, ur: _availUr),
           isRtl: isRtl,
         ),
         _DataRowWidget(
-          label: _t(lang, 'Start Date', 'د پیل نیټه', 'تاریخ شروع', 'تاريخ البدء'),
+          label: _t(lang, 'Start Date', 'د پیل نیټه', 'تاریخ شروع', 'تاريخ البدء', 'شروع کی تاریخ'),
           value: _resolve(p.startDate, lang,
-              en: _startEn, ps: _startPs, fa: _startFa, ar: _startAr),
+              en: _startEn, ps: _startPs, fa: _startFa, ar: _startAr, ur: _startUr),
           isRtl: isRtl,
         ),
       ],
@@ -612,8 +654,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
     // Shortened Pashto label — the previous phrase ("edit your answers
     // again") overflowed the button at this width; "سمون" ("Edit/Fix")
     // conveys the same action and fits.
-    final editLabel   = _t(lang, 'Edit', 'سمون', 'ویرایش', 'تعديل');
-    final createLabel = _t(lang, 'Create My CV', 'زما سییوی جوړ کړئ', 'CV من را بسازید', 'إنشاء سيرتي الذاتية');
+    final editLabel   = _t(lang, 'Edit', 'سمون', 'ویرایش', 'تعديل', 'ترمیم');
+    final createLabel = _t(lang, 'Create My CV', 'زما سییوی جوړ کړئ', 'CV من را بسازید', 'إنشاء سيرتي الذاتية', 'میرا CV بنائیں');
 
     return SafeArea(
       child: Container(
@@ -657,7 +699,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                 ? 'خپلې ځوابونه سمول'
                                 : lang == 'ar'
                                     ? 'تعديل إجاباتك'
-                                    : 'ویرایش پاسخ‌ها',
+                                    : lang == 'ur'
+                                        ? 'اپنے جوابات کی ترمیم کریں'
+                                        : 'ویرایش پاسخ‌ها',
                             lang,
                           ),
                           child: const Icon(Icons.volume_up_rounded,
@@ -719,7 +763,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                 ? 'زما سییوی جوړ کړئ'
                                 : lang == 'ar'
                                     ? 'إنشاء سيرتي الذاتية'
-                                    : 'CV من را بسازید',
+                                    : lang == 'ur'
+                                        ? 'میرا CV بنائیں'
+                                        : 'CV من را بسازید',
                             lang,
                           ),
                           child: const Icon(Icons.volume_up_rounded,

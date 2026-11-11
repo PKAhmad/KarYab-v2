@@ -21,6 +21,7 @@ class OfficialLetterStrings {
     String ps,
     String fa,
     String ar,
+    String ur,
   ) {
     switch (lang) {
       case 'en':
@@ -31,6 +32,8 @@ class OfficialLetterStrings {
         return fa;
       case 'ar':
         return ar;
+      case 'ur':
+        return ur;
       case 'de':
       default:
         return de;
@@ -45,6 +48,7 @@ class OfficialLetterStrings {
     'رسمي لیکونه',
     'نامه‌های رسمی',
     'رسائل رسمية',
+    'سرکاری خطوط',
   );
 
   /// Subtitle of the home dashboard card.
@@ -57,6 +61,7 @@ class OfficialLetterStrings {
     'به یک اداره نامه بنویسید، مدارک خود را پیوست کنید و نامه را به '
         'صورت PDF بفرستید',
     'اكتب إلى مكتب وأرفق أوراقك وأرسل الرسالة بصيغة PDF',
+    'کسی دفتر کو خط لکھیں، اپنے کاغذات منسلک کریں، خط PDF کے طور پر بھیجیں',
   );
 
   /// What the module does and who sends the letter.
@@ -95,6 +100,13 @@ class OfficialLetterStrings {
         'تحتاجه، ويكتب KarYab رسالة ألمانية صحيحة ببياناتك. يمكنك '
         'إرفاق أوراقك، مثلا نماذج وكالة العمل (Agentur für Arbeit). '
         'تقرأ الرسالة وترسلها بنفسك من بريدك الإلكتروني.',
+    'کبھی آپ کو کسی دفتر کو خط لکھنا پڑتا ہے: کام کی اجازت کے لیے، '
+        'ملاقات کے وقت کے لیے، انٹیگریشن کورس کے لیے، یا دستاویزات '
+        'بھیجنے کے لیے۔ یہاں آپ دفتر اور اپنی ضرورت منتخب کرتے ہیں، '
+        'اور KarYab آپ کے ڈیٹا کے ساتھ ایک درست جرمن خط لکھتا ہے۔ '
+        'آپ اپنے کاغذات منسلک کر سکتے ہیں، مثال کے طور پر Agentur '
+        'für Arbeit کے فارم۔ آپ خط پڑھتے ہیں اور اسے خود اپنی ای '
+        'میل سے بھیجتے ہیں۔',
   );
 
   static String stepOf(String lang, int step, int total) => _s(
@@ -104,16 +116,17 @@ class OfficialLetterStrings {
     'ګام $step له $total څخه',
     'مرحله $step از $total',
     'الخطوة $step من $total',
+    'مرحلہ $step از $total',
   );
 
   static String stepOffice(String lang) =>
-      _s(lang, 'Office', 'Amt', 'دفتر', 'اداره', 'مكتب');
+      _s(lang, 'Office', 'Amt', 'دفتر', 'اداره', 'مكتب', 'دفتر');
 
   static String stepPurpose(String lang) =>
-      _s(lang, 'Purpose', 'Anliegen', 'موخه', 'هدف', 'الغرض');
+      _s(lang, 'Purpose', 'Anliegen', 'موخه', 'هدف', 'الغرض', 'مقصد');
 
   static String stepAttachments(String lang) =>
-      _s(lang, 'Attachments', 'Anlagen', 'ضمیمې', 'پیوست‌ها', 'المرفقات');
+      _s(lang, 'Attachments', 'Anlagen', 'ضمیمې', 'پیوست‌ها', 'المرفقات', 'منسلکات');
 
   static String stepReview(String lang) => _s(
     lang,
@@ -122,18 +135,19 @@ class OfficialLetterStrings {
     'کتنه او استول',
     'بررسی و ارسال',
     'المراجعة والإرسال',
+    'جانچیں اور بھیجیں',
   );
 
   static String back(String lang) =>
-      _s(lang, 'Back', 'Zurück', 'شاته', 'برگشت', 'رجوع');
+      _s(lang, 'Back', 'Zurück', 'شاته', 'برگشت', 'رجوع', 'واپس');
 
   static String continueLabel(String lang) =>
-      _s(lang, 'Continue', 'Weiter', 'مخکې', 'ادامه', 'متابعة');
+      _s(lang, 'Continue', 'Weiter', 'مخکې', 'ادامه', 'متابعة', 'آگے بڑھیں');
 
   // ── Office step ──────────────────────────────────────────────────────
 
   static String whichOffice(String lang) =>
-      _s(lang, 'Which office?', 'Welches Amt?', 'کوم دفتر؟', 'کدام اداره؟', 'أي مكتب؟');
+      _s(lang, 'Which office?', 'Welches Amt?', 'کوم دفتر؟', 'کدام اداره؟', 'أي مكتب؟', 'کون سا دفتر؟');
 
   static String officeType(String lang, OfficeType type) {
     switch (type) {
@@ -145,6 +159,7 @@ class OfficialLetterStrings {
           'د بهرنیانو دفتر (Ausländerbehörde)',
           'اداره اتباع خارجی (Ausländerbehörde)',
           'مكتب الأجانب (Ausländerbehörde)',
+          'Ausländerbehörde (غیر ملکیوں کا دفتر)',
         );
       case OfficeType.buergerbuero:
         return _s(
@@ -154,6 +169,7 @@ class OfficialLetterStrings {
           'د ښاریانو دفتر (Bürgerbüro)',
           'دفتر شهروندان (Bürgerbüro)',
           'مكتب المواطنين (Bürgerbüro)',
+          'Bürgerbüro (شہریوں کا دفتر)',
         );
       case OfficeType.jobcenter:
         return 'Jobcenter';
@@ -165,6 +181,7 @@ class OfficialLetterStrings {
           'د کار اداره (Agentur für Arbeit)',
           'اداره کار (Agentur für Arbeit)',
           'وكالة العمل (Agentur für Arbeit)',
+          'Agentur für Arbeit (روزگار کی ایجنسی)',
         );
       case OfficeType.other:
         return _s(
@@ -174,6 +191,7 @@ class OfficialLetterStrings {
           'بل دفتر',
           'اداره دیگر',
           'مكتب آخر',
+          'کوئی دوسرا دفتر',
         );
     }
   }
@@ -185,6 +203,7 @@ class OfficialLetterStrings {
     'د دفتر نوم',
     'نام اداره',
     'اسم المكتب',
+    'دفتر کا نام',
   );
 
   static String officeNameHint(String lang) => _s(
@@ -193,6 +212,7 @@ class OfficialLetterStrings {
     'Zum Beispiel: Ausländerbehörde Berlin',
     'د بېلګې په توګه: Ausländerbehörde Berlin',
     'برای مثال: Ausländerbehörde Berlin',
+    'مثال: Ausländerbehörde Berlin',
     'مثال: Ausländerbehörde Berlin',
   );
 
@@ -203,6 +223,7 @@ class OfficialLetterStrings {
     'د دفتر برېښنالیک پته',
     'آدرس ایمیل اداره',
     'عنوان البريد الإلكتروني للمكتب',
+    'دفتر کا ای میل پتہ',
   );
 
   static String officeEmailHint(String lang) => _s(
@@ -211,6 +232,7 @@ class OfficialLetterStrings {
     'Zum Beispiel: poststelle@amt-berlin.de',
     'د بېلګې په توګه: poststelle@amt-berlin.de',
     'برای مثال: poststelle@amt-berlin.de',
+    'مثال: poststelle@amt-berlin.de',
     'مثال: poststelle@amt-berlin.de',
   );
 
@@ -221,6 +243,7 @@ class OfficialLetterStrings {
     'مهرباني وکړئ سم برېښنالیک ولیکئ.',
     'لطفا یک آدرس ایمیل درست وارد کنید.',
     'من فضلك أدخل عنوان بريد إلكتروني صحيح.',
+    'براہ کرم درست ای میل پتہ لکھیں۔',
   );
 
   static String officeStreet(String lang) => _s(
@@ -230,6 +253,7 @@ class OfficialLetterStrings {
     'د دفتر سړک او د کور شمېره',
     'خیابان و شماره پلاک اداره',
     'شارع المكتب ورقم المبنى',
+    'دفتر کی گلی اور گھر کا نمبر',
   );
 
   static String officeCity(String lang) => _s(
@@ -239,6 +263,7 @@ class OfficialLetterStrings {
     'د دفتر پوستي کوډ او ښار',
     'کد پستی و شهر اداره',
     'الرمز البريدي ومدينة المكتب',
+    'دفتر کا پوسٹ کوڈ اور شہر',
   );
 
   static String officePostalOptional(String lang) => _s(
@@ -253,6 +278,7 @@ class OfficialLetterStrings {
         'می‌فرستید، می‌توانید آن را خالی بگذارید.',
     'العنوان مكتوب في الرسالة. إذا أرسلت الرسالة بالبريد '
         'الإلكتروني فقط، يمكنك تركه فارغا.',
+    'پتہ خط میں لکھا جاتا ہے۔ اگر آپ خط صرف ای میل سے بھیجتے ہیں تو اسے خالی چھوڑ سکتے ہیں۔',
   );
 
   static String fillOfficeFirst(String lang) => _s(
@@ -264,6 +290,7 @@ class OfficialLetterStrings {
     'مهرباني وکړئ لومړی د دفتر نوم او سم برېښنالیک ډک کړئ.',
     'لطفا ابتدا نام اداره و یک آدرس ایمیل درست را وارد کنید.',
     'من فضلك أدخل أولا اسم المكتب وعنوان بريد إلكتروني صحيح.',
+    'براہ کرم پہلے دفتر کا نام اور درست ای میل پتہ بھریں۔',
   );
 
   // ── Purpose step ─────────────────────────────────────────────────────
@@ -275,6 +302,7 @@ class OfficialLetterStrings {
     'تاسو څه ته اړتیا لرئ؟',
     'چه چیزی نیاز دارید؟',
     'ماذا تحتاج؟',
+    'آپ کو کیا چاہیے؟',
   );
 
   static String purposeName(String lang, OfficialPurpose purpose) {
@@ -287,6 +315,7 @@ class OfficialLetterStrings {
           'د کار اجازه',
           'اجازه کار',
           'تصريح العمل',
+          'کام کی اجازت',
         );
       case OfficialPurpose.integrationCourse:
         return _s(
@@ -296,6 +325,7 @@ class OfficialLetterStrings {
           'د ادغام کورس اجازه',
           'اجازه دوره ادغام',
           'تصريح دورة الاندماج',
+          'انٹیگریشن کورس کی اجازت',
         );
       case OfficialPurpose.permitExtension:
         return _s(
@@ -305,6 +335,7 @@ class OfficialLetterStrings {
           'وخت: د اوسېدو اجازه غځول',
           'قرار: تمدید اجازه اقامت',
           'موعد: تمديد تصريح الإقامة',
+          'ملاقات: رہائشی اجازت نامے میں توسیع',
         );
       case OfficialPurpose.appointmentGeneral:
         return _s(
@@ -314,6 +345,7 @@ class OfficialLetterStrings {
           'په یوه دفتر کې وخت',
           'قرار در یک اداره',
           'موعد في مكتب',
+          'کسی دفتر میں ملاقات کا وقت',
         );
       case OfficialPurpose.appointmentRegistration:
         return _s(
@@ -323,6 +355,7 @@ class OfficialLetterStrings {
           'وخت: د کور پته ثبتول',
           'قرار: ثبت نشانی خانه',
           'موعد: تسجيل عنوان السكن',
+          'ملاقات: اپنے گھر کا اندراج',
         );
       case OfficialPurpose.appointmentJob:
         return _s(
@@ -332,6 +365,7 @@ class OfficialLetterStrings {
           'وخت: Jobcenter یا د کار اداره',
           'قرار: Jobcenter یا اداره کار',
           'موعد: Jobcenter أو وكالة العمل',
+          'ملاقات: Jobcenter یا روزگار کی ایجنسی',
         );
       case OfficialPurpose.submitDocuments:
         return _s(
@@ -341,6 +375,7 @@ class OfficialLetterStrings {
           'یوه دفتر ته سندونه استول',
           'ارسال مدارک به یک اداره',
           'إرسال مستندات إلى مكتب',
+          'کسی دفتر کو دستاویزات بھیجنا',
         );
       case OfficialPurpose.question:
         return _s(
@@ -350,6 +385,7 @@ class OfficialLetterStrings {
           'پوښتنه وکړئ یا بله ستونزه',
           'یک سؤال بپرسید یا مشکل دیگری',
           'اطرح سؤالا أو مشكلة أخرى',
+          'سوال پوچھیں یا کوئی دوسرا مسئلہ',
         );
     }
   }
@@ -361,6 +397,7 @@ class OfficialLetterStrings {
     'د کورس چلوونکی (اختیاري، که یې پېژنئ)',
     'برگزارکننده دوره (اختیاری، اگر می‌شناسید)',
     'منظم الدورة (اختياري، إذا كنت تعرف واحدا)',
+    'کورس کرانے والا (اختیاری، اگر آپ کسی کو جانتے ہیں)',
   );
 
   static String courseStart(String lang) => _s(
@@ -370,6 +407,7 @@ class OfficialLetterStrings {
     'د کورس د پیل ټاکلې نېټه (اختیاري)',
     'شروع دلخواه دوره (اختیاری)',
     'بداية الدورة التي تريدها (اختياري)',
+    'کورس شروع کرنے کی مطلوبہ تاریخ (اختیاری)',
   );
 
   static String germanLevel(String lang) => _s(
@@ -379,6 +417,7 @@ class OfficialLetterStrings {
     'ستاسو د الماني ژبې کچه (اختیاري)',
     'سطح زبان آلمانی شما (اختیاری)',
     'مستواك في اللغة الألمانية (اختياري)',
+    'آپ کی جرمن زبان کی سطح (اختیاری)',
   );
 
   static String germanLevelHint(String lang) => _s(
@@ -387,6 +426,7 @@ class OfficialLetterStrings {
     'Zum Beispiel: A1, A2, B1',
     'د بېلګې په توګه: A1، A2، B1',
     'برای مثال: A1، A2، B1',
+    'مثال: A1، A2، B1',
     'مثال: A1، A2، B1',
   );
 
@@ -397,6 +437,7 @@ class OfficialLetterStrings {
     'ستاسو د اوسېدو اجازه تر دې نېټې پورې اعتبار لري',
     'اجازه اقامت شما تا این تاریخ اعتبار دارد',
     'تصريح إقامتك صالح حتى هذا التاريخ',
+    'آپ کا رہائشی اجازت نامہ اس تاریخ تک درست ہے',
   );
 
   static String terminReason(String lang) => _s(
@@ -406,6 +447,7 @@ class OfficialLetterStrings {
     'ستاسو موضوع په یوه کرښه کې',
     'موضوع شما در یک خط',
     'موضوعك في سطر واحد',
+    'آپ کا موضوع ایک سطر میں',
   );
 
   static String newAddress(String lang) => _s(
@@ -415,6 +457,7 @@ class OfficialLetterStrings {
     'ستاسو نوی پته (سړک، پوستي کوډ، ښار)',
     'نشانی جدید شما (خیابان، کد پستی، شهر)',
     'عنوانك الجديد (الشارع، الرمز البريدي، المدينة)',
+    'آپ کا نیا پتہ (گلی، پوسٹ کوڈ، شہر)',
   );
 
   static String moveInDate(String lang) => _s(
@@ -424,6 +467,7 @@ class OfficialLetterStrings {
     'د کډه کېدو نېټه',
     'تاریخ اسباب‌کشی',
     'تاريخ الانتقال إلى السكن',
+    'نئے گھر میں جانے کی تاریخ',
   );
 
   static String terminTopic(String lang) => _s(
@@ -433,6 +477,7 @@ class OfficialLetterStrings {
     'تاسو د څه په اړه خبرې کول غواړئ؟',
     'می‌خواهید درباره چه چیزی صحبت کنید؟',
     'عن ماذا تريد أن تتحدث؟',
+    'آپ کس بارے میں بات کرنا چاہتے ہیں؟',
   );
 
   static String documentNames(String lang) => _s(
@@ -442,6 +487,7 @@ class OfficialLetterStrings {
     'د سندونو نومونه، په هره کرښه کې یو',
     'نام مدارک، در هر خط یکی',
     'أسماء المستندات، واحد في كل سطر',
+    'دستاویزات کے نام، ہر سطر میں ایک',
   );
 
   static String documentNamesHint(String lang) => _s(
@@ -451,6 +497,7 @@ class OfficialLetterStrings {
     'د بېلګې په توګه:\nپاسپورت\nد کار تړون',
     'برای مثال:\nگذرنامه\nقرارداد کار',
     'مثال:\nجواز سفر\nعقد عمل',
+    'مثال:\nپاسپورٹ\nکام کا معاہدہ',
   );
 
   static String questionSubject(String lang) => _s(
@@ -460,6 +507,7 @@ class OfficialLetterStrings {
     'ستاسو د لیک سرلیک',
     'عنوان نامه شما',
     'عنوان رسالتك',
+    'آپ کے خط کی سرخی',
   );
 
   static String questionText(String lang) => _s(
@@ -470,6 +518,7 @@ class OfficialLetterStrings {
     'خپله پوښتنه یا ستونزه په خپلو ټکو ولیکئ',
     'سؤال یا مشکل خود را با کلمات خودتان بنویسید',
     'اكتب سؤالك أو مشكلتك بكلماتك الخاصة',
+    'اپنا سوال یا مسئلہ اپنے الفاظ میں لکھیں',
   );
 
   static String fillPurposeFirst(String lang) => _s(
@@ -479,6 +528,7 @@ class OfficialLetterStrings {
     'مهرباني وکړئ لومړی ورکې برخې ډکې کړئ.',
     'لطفا ابتدا قسمت‌های خالی را پر کنید.',
     'من فضلك املأ الحقول الناقصة أولا.',
+    'براہ کرم پہلے خالی خانے بھریں۔',
   );
 
   static String docsNeeded(String lang) => _s(
@@ -493,12 +543,13 @@ class OfficialLetterStrings {
         'اضافه کنید.',
     'من فضلك اكتب اسم مستند واحد على الأقل، أو أضف ملفا في '
         'الخطوة التالية.',
+    'براہ کرم کم از کم ایک دستاویز کا نام لکھیں، یا اگلے مرحلے میں فائل شامل کریں۔',
   );
 
   // ── Attachments step ─────────────────────────────────────────────────
 
   static String attachmentsTitle(String lang) =>
-      _s(lang, 'Attachments', 'Anlagen', 'ضمیمې', 'پیوست‌ها', 'المرفقات');
+      _s(lang, 'Attachments', 'Anlagen', 'ضمیمې', 'پیوست‌ها', 'المرفقات', 'منسلکات');
 
   static String attachmentsIntro(String lang) => _s(
     lang,
@@ -527,6 +578,11 @@ class OfficialLetterStrings {
         'نماذج وكالة العمل (Agentur für Arbeit) التي ملأها صاحب عملك، '
         'مثلا النموذج الخاص بعملك. تصبح الملفات صفحات في نهاية ملف PDF '
         'الخاص برسالتك، وتكتب أسماؤها في الرسالة.',
+    'اس خط کے لیے کاغذات شامل کریں۔ کام کی اجازت کے لیے Agentur '
+        'für Arbeit کے وہ فارم منسلک کریں جو آپ کے آجر نے بھرے ہیں، '
+        'مثال کے طور پر آپ کی نوکری کے بارے میں فارم۔ فائلیں آپ '
+        'کے خط کی PDF کے آخر میں صفحات بن جاتی ہیں، اور ان کے نام '
+        'خط میں لکھے جاتے ہیں۔',
   );
 
   static String attachButton(String lang) => _s(
@@ -536,6 +592,7 @@ class OfficialLetterStrings {
     'فایلونه ورزیات کړئ',
     'افزودن فایل‌ها',
     'إضافة ملفات',
+    'فائلیں شامل کریں',
   );
 
   static String attachLimitNote(String lang) => _s(
@@ -554,10 +611,11 @@ class OfficialLetterStrings {
         'ادامه دهید.',
     '6 ملفات على الأكثر، وكل ملف 10 MB على الأكثر. ملفات PDF '
         'والصور (JPG، PNG) ممكنة. يمكنك أيضا المتابعة بدون ملفات.',
+    'زیادہ سے زیادہ 6 فائلیں، ہر ایک زیادہ سے زیادہ 10 MB۔ PDF فائلیں اور تصاویر (JPG, PNG) ممکن ہیں۔ آپ بغیر فائلوں کے بھی آگے بڑھ سکتے ہیں۔',
   );
 
   static String attachRemove(String lang) =>
-      _s(lang, 'Remove', 'Entfernen', 'لرې کړئ', 'حذف', 'حذف');
+      _s(lang, 'Remove', 'Entfernen', 'لرې کړئ', 'حذف', 'حذف', 'ہٹائیں');
 
   static String attachTooMany(String lang) => _s(
     lang,
@@ -566,6 +624,7 @@ class OfficialLetterStrings {
     'تاسو تر ټولو زیات ۶ فایلونه ورزیات کولای شئ.',
     'حداکثر می‌توانید ۶ فایل اضافه کنید.',
     'يمكنك إضافة 6 ملفات على الأكثر.',
+    'آپ زیادہ سے زیادہ 6 فائلیں شامل کر سکتے ہیں۔',
   );
 
   static String attachTooBig(String lang) => _s(
@@ -578,6 +637,7 @@ class OfficialLetterStrings {
         'مگابایت باشد.',
     'هذا الملف كبير جدا. يمكن أن يكون حجم الملف 10 MB على '
         'الأكثر.',
+    'یہ فائل بہت بڑی ہے۔ ایک فائل زیادہ سے زیادہ 10 MB ہو سکتی ہے۔',
   );
 
   static String attachSkippedPdf(String lang) => _s(
@@ -592,6 +652,7 @@ class OfficialLetterStrings {
         'بدون آن ساخته شد.',
     'لم يمكن وضع ملف PDF واحد في ملف PDF الخاص بالرسالة. تم '
         'إنشاء الرسالة بدونه رغم ذلك.',
+    'ایک PDF فائل خط کی PDF میں نہیں ڈالی جا سکی۔ خط پھر بھی اس کے بغیر بن گیا۔',
   );
 
   // ── Review / send ────────────────────────────────────────────────────
@@ -609,6 +670,7 @@ class OfficialLetterStrings {
         'درباره درخواست شما تصمیم می‌گیرد.',
     'ملاحظة: هذه الرسالة نموذج وليست مشورة قانونية. المكتب '
         'يقرر بشأن طلبك.',
+    'نوٹ: یہ خط ایک نمونہ ہے اور قانونی مشورہ نہیں ہے۔ آپ کی درخواست کے بارے میں دفتر فیصلہ کرتا ہے۔',
   );
 
   static String sendEmail(String lang) => _s(
@@ -618,6 +680,7 @@ class OfficialLetterStrings {
     'په برېښنالیک واستوئ',
     'ارسال با ایمیل',
     'الإرسال بالبريد الإلكتروني',
+    'ای میل سے بھیجیں',
   );
 
   static String sendEmailNote(String lang) => _s(
@@ -635,6 +698,7 @@ class OfficialLetterStrings {
     'يفتح تطبيق البريد الإلكتروني الخاص بك مع نص الرسالة وملف '
         'PDF. راجع كل شيء هناك واضغط على «إرسال» في تطبيق البريد '
         'الخاص بك.',
+    'آپ کی ای میل ایپ خط کے متن اور PDF کے ساتھ کھلتی ہے۔ وہاں سب کچھ دیکھیں اور اپنی ای میل ایپ میں بھیجیں دبائیں۔',
   );
 
   static String fallbackTitle(String lang) => _s(
@@ -644,6 +708,7 @@ class OfficialLetterStrings {
     'په دوو پړاوونو کې استول',
     'ارسال در دو مرحله',
     'الإرسال في خطوتين',
+    'دو مرحلوں میں بھیجیں',
   );
 
   static String fallbackBody(String lang) => _s(
@@ -674,6 +739,11 @@ class OfficialLetterStrings {
         'الخطوة 2: يفتح ملف PDF في عرض المشاركة، اختر هناك أيضا '
         'تطبيق البريد الخاص بك، حتى يصل ملف PDF إلى نفس الرسالة. قبل '
         'الإرسال تحقق من أن ملف PDF مرفق.',
+    'آپ کی ای میل ایپ PDF خود نہیں لیتی۔ مرحلہ 1: آپ کی ای میل '
+        'ایپ خط کے متن کے ساتھ کھلتی ہے۔ مرحلہ 2: PDF شیئر '
+        'والی اسکرین میں کھلتی ہے، وہاں بھی اپنی ای میل ایپ '
+        'منتخب کریں، تاکہ PDF اسی ای میل میں آ جائے۔ بھیجنے '
+        'سے پہلے دیکھ لیں کہ PDF منسلک ہے۔',
   );
 
   static String fallbackGo(String lang) => _s(
@@ -683,6 +753,7 @@ class OfficialLetterStrings {
     'لومړی ګام پیل کړئ',
     'شروع مرحله ۱',
     'بدء الخطوة 1',
+    'مرحلہ 1 شروع کریں',
   );
 
   static String emailOpened(String lang) => _s(
@@ -696,5 +767,6 @@ class OfficialLetterStrings {
         'بزنید.',
     'تطبيق البريد الإلكتروني الخاص بك مفتوح. لا تنس أن تضغط '
         'على «إرسال» هناك.',
+    'آپ کی ای میل ایپ کھلی ہے۔ وہاں بھیجیں دبانا نہ بھولیں۔',
   );
 }

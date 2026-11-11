@@ -75,7 +75,7 @@ class _WorkPermitScreenState extends State<WorkPermitScreen> {
     }
   }
 
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur';
 
   @override
   void initState() {

@@ -35,7 +35,7 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
   bool _loading = true;
 
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur';
 
   @override
   void initState() {
@@ -69,6 +69,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'نامه‌های من';
           case 'ar':
             return 'رسائلي';
+          case 'ur':
+            return 'میرے خطوط';
           default:
             return 'My Letters';
         }
@@ -80,6 +82,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'آخرین تغییر';
           case 'ar':
             return 'آخر تحديث';
+          case 'ur':
+            return 'آخری تبدیلی';
           default:
             return 'Updated';
         }
@@ -91,6 +95,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'باز کردن';
           case 'ar':
             return 'فتح';
+          case 'ur':
+            return 'کھولیں';
           default:
             return 'Open';
         }
@@ -102,6 +108,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'کپی گرفتن';
           case 'ar':
             return 'عمل نسخة';
+          case 'ur':
+            return 'نقل بنائیں';
           default:
             return 'Make a copy';
         }
@@ -113,6 +121,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'تغییر نام';
           case 'ar':
             return 'تغيير الاسم';
+          case 'ur':
+            return 'نام بدلیں';
           default:
             return 'Rename';
         }
@@ -124,6 +134,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'حذف';
           case 'ar':
             return 'حذف';
+          case 'ur':
+            return 'حذف کریں';
           default:
             return 'Delete';
         }
@@ -135,6 +147,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'این نامه حذف شود؟ این کار قابل بازگشت نیست.';
           case 'ar':
             return 'هل تريد حذف هذه الرسالة؟ لا يمكن التراجع عن هذا.';
+          case 'ur':
+            return 'یہ خط حذف کر دیں؟ یہ عمل واپس نہیں ہو سکتا۔';
           default:
             return 'Delete this letter? This cannot be undone.';
         }
@@ -146,6 +160,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'لغو';
           case 'ar':
             return 'إلغاء';
+          case 'ur':
+            return 'منسوخ کریں';
           default:
             return 'Cancel';
         }
@@ -157,6 +173,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'ذخیره';
           case 'ar':
             return 'حفظ';
+          case 'ur':
+            return 'محفوظ کریں';
           default:
             return 'Save';
         }
@@ -168,6 +186,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'نامه جدید';
           case 'ar':
             return 'رسالة جديدة';
+          case 'ur':
+            return 'نیا خط';
           default:
             return 'New letter';
         }
@@ -179,6 +199,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'هنوز نامه‌ای نیست. اولین نامه پوششی خود را بسازید.';
           case 'ar':
             return 'لا توجد رسالة بعد. اصنع أول رسالة لك.';
+          case 'ur':
+            return 'ابھی کوئی خط نہیں ہے۔ اپنا پہلا کور لیٹر بنائیں۔';
           default:
             return 'No letters yet. Create your first cover letter.';
         }
@@ -190,6 +212,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'نسخه قدیمی';
           case 'ar':
             return 'نسخة قديمة';
+          case 'ur':
+            return 'پرانا ورژن';
           default:
             return 'Old version';
         }
@@ -201,6 +225,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'این نامه در نسخه قدیمی ساخته شده بود. متن آن اینجا باز نمی‌شود.';
           case 'ar':
             return 'تم صنع هذه الرسالة في النسخة القديمة. لا يمكن فتح نصها هنا.';
+          case 'ur':
+            return 'یہ خط پرانے ورژن میں بنایا گیا تھا۔ اس کا متن یہاں نہیں کھل سکتا۔';
           default:
             return 'This letter was created in the old version. Its text cannot be opened here.';
         }
@@ -212,6 +238,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'به جای آن نامه جدید بسازید';
           case 'ar':
             return 'اصنع رسالة جديدة بدلا منها';
+          case 'ur':
+            return 'اس کی جگہ نیا خط بنائیں';
           default:
             return 'Create a new letter instead';
         }
@@ -223,6 +251,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return ' کپی';
           case 'ar':
             return ' نسخة';
+          case 'ur':
+            return ' نقل';
           default:
             return ' copy';
         }
@@ -234,6 +264,8 @@ class _MyLettersScreenState extends State<MyLettersScreen> {
             return 'هنوز شرکتی نیست';
           case 'ar':
             return 'لا توجد شركة بعد';
+          case 'ur':
+            return 'ابھی کوئی کمپنی نہیں';
           default:
             return 'No company yet';
         }

@@ -155,6 +155,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
     required String ps,
     required String fa,
     required String ar,
+    required String ur,
   }) {
     switch (lang) {
       case 'de':
@@ -165,6 +166,8 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         return fa;
       case 'ar':
         return ar;
+      case 'ur':
+        return ur;
       default:
         return en;
     }
@@ -178,6 +181,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'دا برېښنالیک سم نه دی. مهرباني وکړئ وګورئ او بیا هڅه وکړئ.',
         fa: 'این ایمیل درست نیست. لطفا بررسی کنید و دوباره تلاش کنید.',
         ar: 'هذا البريد الإلكتروني غير صحيح. من فضلك راجعه وحاول مرة أخرى.',
+        ur: 'یہ ای میل پتہ درست نہیں ہے۔ براہ کرم اسے دیکھیں اور دوبارہ کوشش کریں۔',
       );
     case AuthErrorKind.weakPassword:
       return msg(
@@ -186,6 +190,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'پټنوم ډېر کمزوری دی. لږ تر لږه 6 توري وکاروئ.',
         fa: 'رمز عبور خیلی ضعیف است. حداقل 6 حرف استفاده کنید.',
         ar: 'كلمة المرور ضعيفة جدا. من فضلك استخدم 6 أحرف على الأقل.',
+        ur: 'پاس ورڈ بہت کمزور ہے۔ براہ کرم کم از کم 6 حروف استعمال کریں۔',
       );
     case AuthErrorKind.emailAlreadyInUse:
       return msg(
@@ -194,6 +199,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'دې برېښنالیک سره حساب پخوا جوړ شوی دی. مهرباني وکړئ ننوځئ.',
         fa: 'با این ایمیل قبلا حساب ساخته شده است. لطفا وارد شوید.',
         ar: 'يوجد حساب بهذا البريد الإلكتروني من قبل. من فضلك سجل الدخول.',
+        ur: 'اس ای میل سے پہلے ہی ایک اکاؤنٹ موجود ہے۔ براہ کرم اس کے بجائے سائن ان کریں۔',
       );
     case AuthErrorKind.wrongCredentials:
       return msg(
@@ -202,6 +208,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'برېښنالیک یا پټنوم سم نه دی.',
         fa: 'ایمیل یا رمز عبور درست نیست.',
         ar: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+        ur: 'ای میل یا پاس ورڈ درست نہیں ہے۔',
       );
     case AuthErrorKind.userDisabled:
       return msg(
@@ -210,6 +217,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'دا حساب بند شوی دی.',
         fa: 'این حساب غیرفعال شده است.',
         ar: 'تم تعطيل هذا الحساب.',
+        ur: 'یہ اکاؤنٹ بند کر دیا گیا ہے۔',
       );
     case AuthErrorKind.network:
       return msg(
@@ -218,6 +226,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'انټرنیټ نشته. خپل اتصال وګورئ او بیا هڅه وکړئ.',
         fa: 'اتصال اینترنت وجود ندارد. اتصال خود را بررسی کنید و دوباره تلاش کنید.',
         ar: 'لا يوجد اتصال بالإنترنت. من فضلك راجع اتصالك وحاول مرة أخرى.',
+        ur: 'انٹرنیٹ کنکشن نہیں ہے۔ براہ کرم اپنا کنکشن دیکھیں اور دوبارہ کوشش کریں۔',
       );
     case AuthErrorKind.tooManyRequests:
       return msg(
@@ -226,6 +235,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'ډېرې هڅې وشوې. لږ وخت وروسته بیا هڅه وکړئ.',
         fa: 'تلاش‌های زیادی انجام شد. کمی صبر کنید و دوباره تلاش کنید.',
         ar: 'تمت محاولات كثيرة. من فضلك انتظر قليلا وحاول مرة أخرى.',
+        ur: 'بہت زیادہ کوششیں ہو گئیں۔ براہ کرم تھوڑا انتظار کریں اور دوبارہ کوشش کریں۔',
       );
     case AuthErrorKind.googleCancelled:
       return msg(
@@ -234,6 +244,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'د Google ننوتل لغوه شو.',
         fa: 'ورود با Google لغو شد.',
         ar: 'تم إلغاء تسجيل الدخول بواسطة Google.',
+        ur: 'Google سائن ان منسوخ ہو گیا۔',
       );
     case AuthErrorKind.googleNotConfigured:
       return msg(
@@ -242,6 +253,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'د Google ننوتل لا شتون نه لري. مهرباني وکړئ برېښنالیک وکاروئ یا بې حسابه دوام ورکړئ.',
         fa: 'ورود با Google هنوز در دسترس نیست. لطفا از ایمیل استفاده کنید یا بدون حساب ادامه دهید.',
         ar: 'تسجيل الدخول بواسطة Google غير متاح بعد. من فضلك استخدم البريد الإلكتروني أو تابع بدون حساب.',
+        ur: 'Google سائن ان ابھی دستیاب نہیں ہے۔ براہ کرم ای میل استعمال کریں یا اکاؤنٹ کے بغیر جاری رکھیں۔',
       );
     case AuthErrorKind.requiresRecentLogin:
       return msg(
@@ -250,6 +262,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'د خوندیتوب لپاره، لومړی ووځئ او بیا ننوځئ، بیا هڅه وکړئ.',
         fa: 'برای امنیت، اول خارج شوید و دوباره وارد شوید، بعد تلاش کنید.',
         ar: 'من أجل الأمان، من فضلك سجل الخروج ثم سجل الدخول مرة أخرى، ثم حاول مرة أخرى.',
+        ur: 'حفاظت کے لیے، براہ کرم سائن آؤٹ کریں، دوبارہ سائن ان کریں اور پھر دوبارہ کوشش کریں۔',
       );
     case AuthErrorKind.unknown:
       return msg(
@@ -258,6 +271,7 @@ String authErrorMessage(AuthErrorKind kind, String lang) {
         ps: 'یو څه سم نه شو. بیا هڅه وکړئ.',
         fa: 'مشکلی پیش آمد. دوباره تلاش کنید.',
         ar: 'حدث خطأ ما. من فضلك حاول مرة أخرى.',
+        ur: 'کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔',
       );
   }
 }

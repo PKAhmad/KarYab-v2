@@ -21,6 +21,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'بررسی رزومه';
         case 'ar':
           return 'فحص السيرة الذاتية';
+        case 'ur':
+          return 'میرا CV چیک کریں';
         default:
           return 'Check my CV';
       }
@@ -32,6 +34,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'آیا رزومه شما برای کارفرمایان و برنامه‌ها آماده است؟';
         case 'ar':
           return 'هل سيرتك الذاتية جاهزة لأصحاب العمل وبرامج التقديم؟';
+        case 'ur':
+          return 'کیا آپ کا CV نوکری دینے والوں اور درخواست کے پروگراموں کے لیے تیار ہے؟';
         default:
           return 'Is your CV ready for employers and application software?';
       }
@@ -43,6 +47,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'رزومه شما $detail صفحه دارد. این خوب است.';
         case 'ar':
           return 'عدد صفحات سيرتك الذاتية $detail. هذا جيد.';
+        case 'ur':
+          return 'آپ کے CV میں $detail صفحات ہیں۔ یہ اچھا ہے۔';
         default:
           return 'Your CV has $detail page(s). That is a good length.';
       }
@@ -54,6 +60,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'رزومه شما $detail صفحه دارد. در آلمان رزومه معمولاً ۱ تا ۲ صفحه است.';
         case 'ar':
           return 'عدد صفحات سيرتك الذاتية $detail. في ألمانيا تكون السيرة الذاتية عادة من 1 إلى 2 صفحة.';
+        case 'ur':
+          return 'آپ کے CV میں $detail صفحات ہیں۔ جرمنی میں CV عام طور پر 1 سے 2 صفحات کا ہوتا ہے۔';
         default:
           return 'Your CV has $detail pages. In Germany a CV is usually 1 to 2 pages.';
       }
@@ -65,6 +73,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'این قالب برای برنامه‌های درخواست (ATS) خوب است: ساده و بدون عکس.';
         case 'ar':
           return 'هذا القالب جيد لبرامج التقديم (ATS): شكله بسيط وبدون صورة.';
+        case 'ur':
+          return 'یہ سانچہ درخواست کے پروگراموں (ATS) کے لیے اچھا ہے: سادہ شکل اور تصویر کے بغیر۔';
         default:
           return 'This template is good for application software (ATS): simple layout, no photo.';
       }
@@ -76,6 +86,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'قالب عکس‌دار ممکن است برخی برنامه‌ها (ATS) را گیج کند. برای درخواست آنلاین ATS Blue امن‌تر است.';
         case 'ar':
           return 'القالب الذي فيه صورة قد يربك بعض البرامج (ATS). قالب ATS Blue أكثر أمانا عند التقديم عبر الإنترنت.';
+        case 'ur':
+          return 'تصویر والا سانچہ بعض پروگراموں (ATS) کو الجھا سکتا ہے۔ آن لائن درخواست کے لیے ATS Blue زیادہ محفوظ ہے۔';
         default:
           return 'Templates with a photo and sidebar can confuse application software (ATS). ATS Blue is safer for online applications.';
       }
@@ -87,6 +99,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'این قالب بدون عکس است. برای پورتال‌های آنلاین ATS Blue امن‌ترین انتخاب است.';
         case 'ar':
           return 'هذا القالب بدون صورة. للبوابات عبر الإنترنت، قالب ATS Blue هو الخيار الأكثر أمانا.';
+        case 'ur':
+          return 'اس سانچے میں تصویر نہیں ہے۔ آن لائن پورٹلز کے لیے ATS Blue سب سے محفوظ انتخاب ہے۔';
         default:
           return 'This template has no photo. For online portals, ATS Blue is the safest choice.';
       }
@@ -98,6 +112,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'ایمیل موجود است.';
         case 'ar':
           return 'البريد الإلكتروني موجود.';
+        case 'ur':
+          return 'ای میل ایڈریس موجود ہے۔';
         default:
           return 'Email address is included.';
       }
@@ -109,6 +125,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'ایمیل موجود نیست. کارفرما نمی‌تواند با شما تماس بگیرد.';
         case 'ar':
           return 'لا يوجد بريد إلكتروني. لا يستطيع صاحب العمل التواصل معك.';
+        case 'ur':
+          return 'ای میل ایڈریس نہیں ہے۔ نوکری دینے والا آپ سے رابطہ نہیں کر سکتا۔';
         default:
           return 'No email address. Employers cannot contact you.';
       }
@@ -120,6 +138,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'شماره تلفن موجود است.';
         case 'ar':
           return 'رقم الهاتف موجود.';
+        case 'ur':
+          return 'فون نمبر موجود ہے۔';
         default:
           return 'Phone number is included.';
       }
@@ -131,6 +151,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'شماره تلفن موجود نیست. کارفرما نمی‌تواند با شما تماس بگیرد.';
         case 'ar':
           return 'لا يوجد رقم هاتف. لا يستطيع صاحب العمل التواصل معك.';
+        case 'ur':
+          return 'فون نمبر نہیں ہے۔ نوکری دینے والا آپ سے رابطہ نہیں کر سکتا۔';
         default:
           return 'No phone number. Employers cannot contact you.';
       }
@@ -142,6 +164,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'هنوز مهارتی اضافه نشده است. بسیاری از کارفرمایان به دنبال مهارت‌ها می‌گردند.';
         case 'ar':
           return 'لم تضف أي مهارات بعد. كثير من أصحاب العمل يبحثون عن المهارات.';
+        case 'ur':
+          return 'ابھی کوئی مہارت شامل نہیں کی گئی۔ بہت سے نوکری دینے والے مہارتیں تلاش کرتے ہیں۔';
         default:
           return 'No skills added yet. Many employers search by skills.';
       }
@@ -153,6 +177,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'زبان‌ها موجود است.';
         case 'ar':
           return 'اللغات موجودة.';
+        case 'ur':
+          return 'زبانیں موجود ہیں۔';
         default:
           return 'Languages are included.';
       }
@@ -164,6 +190,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'هنوز زبانی اضافه نشده است.';
         case 'ar':
           return 'لم تضف أي لغة بعد.';
+        case 'ur':
+          return 'ابھی کوئی زبان شامل نہیں کی گئی۔';
         default:
           return 'No languages added yet.';
       }
@@ -175,6 +203,8 @@ String atsText(String lang, String key, {String detail = ''}) {
           return 'بخش «$detail» خالی است و در PDF نمی‌آید.';
         case 'ar':
           return 'القسم «$detail» فارغ ولن يظهر في ملف PDF.';
+        case 'ur':
+          return 'حصہ «$detail» خالی ہے اور PDF میں نہیں آئے گا۔';
         default:
           return 'The section "$detail" is empty and will not appear in the PDF.';
       }
@@ -194,6 +224,8 @@ String atsSectionName(String lang, String section) {
           return 'تحصیلات';
         case 'ar':
           return 'التعليم';
+        case 'ur':
+          return 'تعلیم';
         default:
           return 'Education';
       }
@@ -205,6 +237,8 @@ String atsSectionName(String lang, String section) {
           return 'مهارت‌ها';
         case 'ar':
           return 'المهارات';
+        case 'ur':
+          return 'مہارتیں';
         default:
           return 'Skills';
       }
@@ -216,6 +250,8 @@ String atsSectionName(String lang, String section) {
           return 'تجربه کاری';
         case 'ar':
           return 'الخبرة العملية';
+        case 'ur':
+          return 'کام کا تجربہ';
         default:
           return 'Work experience';
       }
@@ -227,6 +263,8 @@ String atsSectionName(String lang, String section) {
           return 'کارفرمایان قبلی';
         case 'ar':
           return 'أصحاب العمل السابقون';
+        case 'ur':
+          return 'پچھلے نوکری دینے والے';
         default:
           return 'Previous employers';
       }
@@ -238,6 +276,8 @@ String atsSectionName(String lang, String section) {
           return 'ابزار و کامپیوتر';
         case 'ar':
           return 'الأدوات والحاسوب';
+        case 'ur':
+          return 'اوزار اور کمپیوٹر';
         default:
           return 'Tools and IT';
       }
@@ -249,6 +289,8 @@ String atsSectionName(String lang, String section) {
           return 'زبان‌ها';
         case 'ar':
           return 'اللغات';
+        case 'ur':
+          return 'زبانیں';
         default:
           return 'Languages';
       }
@@ -260,6 +302,8 @@ String atsSectionName(String lang, String section) {
           return 'آمادگی';
         case 'ar':
           return 'الجاهزية';
+        case 'ur':
+          return 'دستیابی';
         default:
           return 'Availability';
       }
@@ -271,6 +315,8 @@ String atsSectionName(String lang, String section) {
           return 'مهارت‌ها (ESCO)';
         case 'ar':
           return 'المهارات (ESCO)';
+        case 'ur':
+          return 'مہارتیں (ESCO)';
         default:
           return 'Skills (ESCO)';
       }
@@ -282,6 +328,8 @@ String atsSectionName(String lang, String section) {
           return 'معرفی کوتاه';
         case 'ar':
           return 'نبذة قصيرة';
+        case 'ur':
+          return 'مختصر تعارف';
         default:
           return 'Profile summary';
       }
@@ -346,7 +394,7 @@ class AtsCheckPanel extends StatefulWidget {
 class _AtsCheckPanelState extends State<AtsCheckPanel> {
   bool _expanded = false;
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar' || widget.language == 'ur';
 
   void _toggle() {
     setState(() => _expanded = !_expanded);

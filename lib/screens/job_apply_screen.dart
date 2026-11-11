@@ -125,13 +125,15 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
     // Only the PS/FA "how to apply" description voice plays automatically
     // on this screen; the job title/company name is not read aloud.
-    if (_language == 'ps' || _language == 'fa' || _language == 'ar') {
+    if (_language == 'ps' || _language == 'fa' || _language == 'ar' || _language == 'ur') {
       Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted && TtsService().soundEnabled) {
           final text = _language == 'ps'
               ? 'تاسو کولای شئ له دوو لارو غوښتنه وکړئ: د آنلاین فورم له لارې یا مستقیم شرکت ادرس ته لاړ شئ'
               : _language == 'ar'
               ? 'يمكنك التقديم بطريقتين: عن طريق النموذج عبر الإنترنت أو الذهاب مباشرة إلى الشركة'
+              : _language == 'ur'
+              ? 'آپ دو طریقوں سے درخواست دے سکتے ہیں: آن لائن فارم کے ذریعے یا براہ راست کمپنی جا کر'
               : 'می‌توانید به دو روش درخواست دهید: از طریق فرم آنلاین یا مستقیم به شرکت مراجعه کنید';
           TtsService().speak(text, _language);
         }
@@ -177,7 +179,7 @@ class _JobApplyScreenState extends State<JobApplyScreen>
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  bool get _isRtl => _language == 'ps' || _language == 'fa' || _language == 'ar';
+  bool get _isRtl => _language == 'ps' || _language == 'fa' || _language == 'ar' || _language == 'ur';
 
   // Inserted into the cover letter's opening paragraph right after the job
   // title, e.g. "... als Lagerhelfer in Vollzeit bei ...". Empty when no
@@ -254,6 +256,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'درخواست کار';
       case 'ar':
         return 'التقديم على وظيفة';
+      case 'ur':
+        return 'ملازمت کے لیے درخواست';
       default:
         return 'Apply for Job';
     }
@@ -267,6 +271,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'چگونه می‌خواهید درخواست دهید؟';
       case 'ar':
         return 'كيف تريد التقديم؟';
+      case 'ur':
+        return 'آپ کیسے درخواست دینا چاہتے ہیں؟';
       default:
         return 'How would you like to apply?';
     }
@@ -280,6 +286,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'درخواست از طریق فرم آنلاین';
       case 'ar':
         return 'التقديم عن طريق النموذج عبر الإنترنت';
+      case 'ur':
+        return 'آن لائن فارم کے ذریعے درخواست';
       default:
         return 'Apply via Online Form';
     }
@@ -293,6 +301,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'فرم درخواست رسمی را باز کنید';
       case 'ar':
         return 'افتح نموذج التقديم الرسمي';
+      case 'ur':
+        return 'سرکاری درخواست فارم کھولیں';
       default:
         return 'Open the official application form';
     }
@@ -306,6 +316,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'درخواست از طریق ایمیل';
       case 'ar':
         return 'التقديم عن طريق البريد الإلكتروني';
+      case 'ur':
+        return 'ای میل کے ذریعے درخواست';
       default:
         return 'Apply via Email';
     }
@@ -319,6 +331,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'CV و نامه پوششی خود را ایمیل کنید';
       case 'ar':
         return 'أرسل سيرتك الذاتية CV ورسالة التغطية بالبريد الإلكتروني';
+      case 'ur':
+        return 'اپنا CV اور کور لیٹر ای میل کے ذریعے بھیجیں';
       default:
         return 'Send your CV and cover letter by email';
     }
@@ -332,6 +346,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'تماس با شرکت';
       case 'ar':
         return 'الاتصال بالشركة';
+      case 'ur':
+        return 'کمپنی کو فون کریں';
       default:
         return 'Call the Company';
     }
@@ -345,6 +361,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'زنگ بزنید و درباره موقعیت بپرسید';
       case 'ar':
         return 'اتصل واسأل عن الوظيفة';
+      case 'ur':
+        return 'فون کریں اور ملازمت کے بارے میں پوچھیں';
       default:
         return 'Call and ask about the position';
     }
@@ -358,6 +376,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'ارسال CV از طریق واتساپ';
       case 'ar':
         return 'إرسال CV عن طريق واتساب';
+      case 'ur':
+        return 'WhatsApp کے ذریعے CV بھیجیں';
       default:
         return 'Send CV via WhatsApp';
     }
@@ -371,6 +391,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'مستقیم در واتساپ پیام بدهید';
       case 'ar':
         return 'راسلهم مباشرة على واتساب';
+      case 'ur':
+        return 'انہیں براہ راست WhatsApp پر پیغام بھیجیں';
       default:
         return 'Message them directly on WhatsApp';
     }
@@ -384,6 +406,9 @@ class _JobApplyScreenState extends State<JobApplyScreen>
       case 'ar':
         return 'مرحبا، أنا مهتم بوظيفة ${widget.jobTitle} في شركة '
             '${widget.companyName}. لقد أرفقت سيرتي الذاتية CV. متى يمكنني الحضور للمقابلة؟';
+      case 'ur':
+        return 'السلام علیکم، مجھے کمپنی ${widget.companyName} میں ${widget.jobTitle} '
+            'کی ملازمت میں دلچسپی ہے۔ میں نے اپنا CV منسلک کر دیا ہے۔ انٹرویو کے لیے میں کب آ سکتا ہوں؟';
       default:
         return 'Hello, I am interested in the position ${widget.jobTitle} at '
             '${widget.companyName}. I have attached my CV. '
@@ -399,6 +424,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'درخواست حضوری';
       case 'ar':
         return 'الذهاب إلى الشركة بنفسك';
+      case 'ur':
+        return 'خود کمپنی کے پتے پر جائیں';
       default:
         return 'Go to The Company Address';
     }
@@ -412,6 +439,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'با CV چاپ شده مستقیماً به شرکت مراجعه کنید';
       case 'ar':
         return 'اذهب مباشرة إلى الشركة مع سيرتك الذاتية CV المطبوعة';
+      case 'ur':
+        return 'اپنا چھپا ہوا CV لے کر براہ راست کمپنی جائیں اور خود درخواست دیں';
       default:
         return 'Go directly to the company with your printed CV and apply in person';
     }
@@ -425,6 +454,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'نکات:';
       case 'ar':
         return 'نصائح:';
+      case 'ur':
+        return 'خود جا کر درخواست دینے کے لیے تجاویز:';
       default:
         return 'Tips for applying in person:';
     }
@@ -453,6 +484,13 @@ class _JobApplyScreenState extends State<JobApplyScreen>
           'اطلب التحدث مع المدير',
           'اذهب في الصباح بين 9 و11',
         ];
+      case 'ur':
+        return [
+          'اپنے CV کی چھپی ہوئی کاپیاں ساتھ لائیں',
+          'صاف ستھرے اور مناسب کپڑے پہنیں',
+          'منیجر سے بات کرنے کو کہیں',
+          'صبح 9 سے 11 بجے کے درمیان جائیں',
+        ];
       default:
         return [
           'Bring printed copies of your CV',
@@ -471,6 +509,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'نامه پوششی';
       case 'ar':
         return 'رسالة التغطية';
+      case 'ur':
+        return 'کور لیٹر (Anschreiben)';
       default:
         return 'Cover Letter (Anschreiben)';
     }
@@ -484,6 +524,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'کاپی';
       case 'ar':
         return 'نسخ';
+      case 'ur':
+        return 'کاپی';
       default:
         return 'Copy';
     }
@@ -497,6 +539,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'کاپی شد!';
       case 'ar':
         return 'تم النسخ!';
+      case 'ur':
+        return 'کاپی ہو گیا!';
       default:
         return 'Copied!';
     }
@@ -510,6 +554,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'دانلود PDF';
       case 'ar':
         return 'تنزيل PDF';
+      case 'ur':
+        return 'PDF ڈاؤن لوڈ';
       default:
         return 'Download PDF';
     }
@@ -523,6 +569,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'نامه پوششی در دانلودها ذخیره شد';
       case 'ar':
         return 'تم حفظ رسالة التغطية في التنزيلات';
+      case 'ur':
+        return 'کور لیٹر ڈاؤن لوڈز میں محفوظ ہو گیا';
       default:
         return 'Cover letter saved to Downloads';
     }
@@ -538,6 +586,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'برای این موقعیت، نامه پوششی شخصی خود را بسازید';
       case 'ar':
         return 'أنشئ رسالة التغطية الخاصة بك لهذه الوظيفة';
+      case 'ur':
+        return 'اس ملازمت کے لیے اپنا کور لیٹر خود بنائیں';
       default:
         return 'Create your own cover letter for this position.';
     }
@@ -551,6 +601,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'ایجاد نامه پوششی برای این شغل';
       case 'ar':
         return 'إنشاء رسالة تغطية لهذه الوظيفة';
+      case 'ur':
+        return 'اس ملازمت کے لیے کور لیٹر بنائیں';
       case 'de':
         return 'Anschreiben für diese Stelle erstellen';
       default:
@@ -566,6 +618,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'ابتدا با ساختن یک رزومه، اطلاعات شخصی خود را اضافه کنید';
       case 'ar':
         return 'أضف معلوماتك الشخصية أولا عن طريق إنشاء سيرة ذاتية';
+      case 'ur':
+        return 'اپنی معلومات شامل کرنے کے لیے پہلے ملازمت کا CV یا Ausbildung CV بنائیں';
       default:
         return 'Please create a Job CV or Ausbildung CV first to add your details';
     }
@@ -817,6 +871,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
         return 'PDF ذخیره نشد. دوباره تلاش کنید.';
       case 'ar':
         return 'تعذر حفظ PDF. حاول مرة أخرى.';
+      case 'ur':
+        return 'PDF محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔';
       default:
         return 'Could not save PDF. Please try again.';
     }
@@ -1340,6 +1396,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                         ? 'دا بټن تاسو د کار آنلاین فورم ته بیایي'
                         : _language == 'ar'
                         ? 'هذا الزر يأخذك إلى نموذج التقديم عبر الإنترنت'
+                        : _language == 'ur'
+                        ? 'یہ بٹن آپ کو ملازمت کے آن لائن فارم پر لے جاتا ہے'
                         : 'این دکمه شما را به فرم آنلاین درخواست می‌برد',
                     _language,
                   )
@@ -1364,6 +1422,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                         ? 'ستاسو CV بریښنالیک ته واستوئ'
                         : _language == 'ar'
                         ? 'أرسل سيرتك الذاتية CV عبر البريد الإلكتروني'
+                        : _language == 'ur'
+                        ? 'اپنا CV ای میل کے ذریعے بھیجیں'
                         : 'CV خود را از طریق ایمیل ارسال کنید',
                     _language,
                   )
@@ -1388,6 +1448,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                         ? 'شرکت ته زنګ ووهئ'
                         : _language == 'ar'
                         ? 'اتصل بالشركة'
+                        : _language == 'ur'
+                        ? 'کمپنی کو فون کریں'
                         : 'با شرکت تماس بگیرید',
                     _language,
                   )
@@ -1412,6 +1474,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                         ? 'د واټساپ له لارې CV واستوئ'
                         : _language == 'ar'
                         ? 'أرسل سيرتك الذاتية CV عبر واتساب'
+                        : _language == 'ur'
+                        ? 'WhatsApp کے ذریعے CV بھیجیں'
                         : 'CV خود را از طریق واتساپ ارسال کنید',
                     _language,
                   )
@@ -1451,6 +1515,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                         ? 'تاسو کولی شئ مستقیم دی کمپنی ادرس ته لاړ شی'
                         : _language == 'ar'
                         ? 'اذهب مباشرة إلى عنوان الشركة'
+                        : _language == 'ur'
+                        ? 'براہ راست کمپنی کے پتے پر جائیں'
                         : 'مستقیماً به آدرس شرکت مراجعه کنید',
                     _language,
                   )
@@ -1576,6 +1642,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
                       ? 'د دې کار لپاره تاسو کولی شئ د کار غوښتنې لیک ډاونلوډ کړئ'
                       : _language == 'ar'
                       ? 'يمكنك تنزيل رسالة التغطية لهذه الوظيفة'
+                      : _language == 'ur'
+                      ? 'اس ملازمت کے لیے آپ کور لیٹر ڈاؤن لوڈ کر سکتے ہیں'
                       : 'برای این شغل می‌توانید نامه پوششی را دانلود کنید',
                   _language,
                 ),
@@ -1606,6 +1674,8 @@ class _JobApplyScreenState extends State<JobApplyScreen>
               ? 'با کلیک روی دکمه دانلود در زیر، می‌توانید یک نامه پوششی آماده دانلود کنید'
               : _language == 'ar'
               ? 'يمكنك تنزيل رسالة تغطية جاهزة لهذه الوظيفة بالضغط على زر التنزيل في الأسفل'
+              : _language == 'ur'
+              ? 'اس ملازمت کے لیے تیار کور لیٹر نیچے ڈاؤن لوڈ بٹن دبا کر ڈاؤن لوڈ کریں'
               : 'Download a ready-made cover letter for this job below.',
           textDirection: _isRtl ? TextDirection.rtl : TextDirection.ltr,
           style: const TextStyle(color: _muted, fontSize: 12, height: 1.5),
@@ -2217,7 +2287,7 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
   late final Future<Map<String, File?>> _docsFuture;
   bool _isGenerating = false;
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar' || widget.language == 'ur';
 
   String get _jobTypeSuffix {
     switch (widget.jobType) {
@@ -2253,6 +2323,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         ? 'دغه توره بټن په کلیک کولو سره تاسو ته به دغه تصویر پشان کوډ ښکاره شی،هغه کوډ هلته ولیکئ او له هغه ځایه ایمیل کاپی کړئ  او بیرته یی دلته ولیکئ'
         : widget.language == 'ar'
         ? 'افتح أولا صفحة الوظيفة، وأدخل رمز الأمان وانسخ بريد الشركة الإلكتروني، ثم ارجع والصق البريد الإلكتروني هنا'
+        : widget.language == 'ur'
+        ? 'پہلے ملازمت کا صفحہ کھولیں، سیکیورٹی کوڈ لکھیں اور کمپنی کی ای میل کاپی کریں، پھر واپس آ کر ای میل یہاں لگائیں'
         : 'ابتدا صفحه کار را باز کنید، کد امنیتی را وارد کنید و ایمیل شرکت را کپی کنید، سپس برگردید و ایمیل را اینجا بچسبانید';
     TtsService().speak(text, widget.language);
   }
@@ -2316,6 +2388,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         return 'تکمیل فرم آنلاین';
       case 'ar':
         return 'ملء النموذج عبر الإنترنت';
+      case 'ur':
+        return 'آن لائن فارم پُر کرنا';
       default:
         return 'Apply via Online Form';
     }
@@ -2329,6 +2403,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         return '۱. دکمه زیر را بزنید تا فرم باز شود';
       case 'ar':
         return '١. اضغط على الزر في الأسفل لفتح النموذج';
+      case 'ur':
+        return '1. فارم کھولنے کے لیے نیچے والا بٹن دبائیں';
       default:
         return '1. Tap the button below to open the form';
     }
@@ -2342,6 +2418,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         return '۲. اگر CAPTCHA دیدید، تصاویر خواسته‌شده را انتخاب کنید';
       case 'ar':
         return '٢. إذا رأيت CAPTCHA، فاختر الصور المطلوبة';
+      case 'ur':
+        return '2. اگر CAPTCHA نظر آئے تو دکھایا گیا کوڈ لکھیں';
       default:
         return '2. If you see a CAPTCHA, Fil the Code as Shown';
     }
@@ -2355,6 +2433,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         return '۳. ایمیل شرکت را کپی کنید، سپس برگردید';
       case 'ar':
         return '٣. انسخ بريد الشركة الإلكتروني، ثم ارجع إلى هنا';
+      case 'ur':
+        return '3. کمپنی کی ای میل کاپی کریں، پھر یہاں واپس آئیں';
       default:
         return '3. Copy the company email, then return here';
     }
@@ -2368,6 +2448,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         return 'باز کردن فرم';
       case 'ar':
         return 'فتح النموذج';
+      case 'ur':
+        return 'درخواست فارم کھولیں';
       default:
         return 'Open Application Form';
     }
@@ -2381,6 +2463,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         return 'سپس ایمیل شرکت را اینجا بچسبانید';
       case 'ar':
         return 'ثم الصق بريد الشركة الإلكتروني هنا';
+      case 'ur':
+        return 'پھر کمپنی کی ای میل نیچے لگائیں اور بھیجیں';
       default:
         return 'Then paste the company email below and send';
     }
@@ -2394,6 +2478,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
         return 'ارسال از Gmail';
       case 'ar':
         return 'الإرسال عبر Gmail';
+      case 'ur':
+        return 'Gmail کے ذریعے بھیجیں';
       default:
         return 'Send via Gmail';
     }
@@ -2427,6 +2513,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                 ? 'لطفاً ابتدا ایمیل را وارد کنید'
                 : widget.language == 'ar'
                 ? 'الصق بريد الشركة الإلكتروني أولا من فضلك'
+                : widget.language == 'ur'
+                ? 'براہ کرم پہلے کمپنی کی ای میل لگائیں'
                 : 'Please paste the company email first',
           ),
           backgroundColor: Colors.red,
@@ -2460,6 +2548,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                     ? 'خطا در ایجاد اسناد'
                     : widget.language == 'ar'
                     ? 'تعذر تجهيز المستندات'
+                    : widget.language == 'ur'
+                    ? 'دستاویزات تیار نہیں ہو سکیں'
                     : 'Could not prepare documents',
               ),
               backgroundColor: Colors.red,
@@ -2493,6 +2583,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                 ? 'Gmail را انتخاب کنید → ایمیل را در To: جای‌گذاری کنید (کپی شده)'
                 : widget.language == 'ar'
                 ? 'اختر Gmail ثم الصق البريد الإلكتروني في حقل To: (تم نسخه)'
+                : widget.language == 'ur'
+                ? 'Gmail منتخب کریں → To: میں ای میل لگائیں (کاپی ہو گئی ہے)'
                 : 'Select Gmail → Paste email in To: field (already copied)',
           ),
           duration: const Duration(seconds: 6),
@@ -2840,6 +2932,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                             ? 'لطفاً ابتدا CV خود را بسازید یا دانلود کنید'
                             : widget.language == 'ar'
                             ? 'أنشئ سيرتك الذاتية CV أو نزّلها أولا من فضلك'
+                            : widget.language == 'ur'
+                            ? 'براہ کرم پہلے اپنا CV بنائیں یا ڈاؤن لوڈ کریں'
                             : 'Please create or download your CV first',
                         style: TextStyle(
                           color: Colors.red.shade400,
@@ -2892,6 +2986,8 @@ class _CaptchaGuideSheetState extends State<_CaptchaGuideSheet> {
                                 ? 'در حال آماده‌سازی...'
                                 : widget.language == 'ar'
                                 ? 'جار التجهيز...'
+                                : widget.language == 'ur'
+                                ? 'تیار ہو رہا ہے...'
                                 : 'Preparing...')
                           : _gmailLabel,
                     ),
@@ -2948,7 +3044,7 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
 
   late final Future<Map<String, File?>> _docsFuture;
 
-  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar';
+  bool get _isRtl => widget.language == 'ps' || widget.language == 'fa' || widget.language == 'ar' || widget.language == 'ur';
 
   @override
   void initState() {
@@ -3012,6 +3108,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                 ? 'اوس خپل CV د ضمیمه تڼۍ سره ضمیمه کړئ'
                 : widget.language == 'ar'
                 ? 'أرفق الآن سيرتك الذاتية CV باستخدام زر الإرفاق في Gmail'
+                : widget.language == 'ur'
+                ? 'اب اپنا CV Gmail میں منسلک کرنے والے بٹن سے منسلک کریں'
                 : 'Now attach your CV using the attachment button in Gmail',
           ),
           duration: const Duration(seconds: 5),
@@ -3124,6 +3222,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                                 ? 'ایمیل شرکت کپی شد!'
                                 : widget.language == 'ar'
                                 ? 'تم نسخ بريد الشركة الإلكتروني!'
+                                : widget.language == 'ur'
+                                ? 'کمپنی کی ای میل کاپی ہو گئی!'
                                 : 'Company email copied to clipboard!',
                             style: const TextStyle(
                               color: _navy,
@@ -3167,6 +3267,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     ? 'ایمیل به‌صورت خودکار کپی شد ✓'
                     : widget.language == 'ar'
                     ? 'تم نسخ البريد الإلكتروني تلقائيا ✓'
+                    : widget.language == 'ur'
+                    ? 'ای میل خود کار طریقے سے کاپی ہو گئی ✓'
                     : 'Email copied automatically ✓',
               ),
               _buildStep(
@@ -3177,6 +3279,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     ? 'دکمه «باز کردن Gmail» را بزنید'
                     : widget.language == 'ar'
                     ? 'اضغط على زر «فتح Gmail»'
+                    : widget.language == 'ur'
+                    ? 'نیچے والا «Gmail کھولیں» بٹن دبائیں'
                     : "Tap 'Open Gmail' button below",
               ),
               _buildStep(
@@ -3187,6 +3291,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     ? 'Gmail را از صفحه اشتراک‌گذاری انتخاب کنید'
                     : widget.language == 'ar'
                     ? 'اختر Gmail من صفحة المشاركة'
+                    : widget.language == 'ur'
+                    ? 'شیئر صفحے سے Gmail منتخب کریں'
                     : 'Select Gmail from share sheet',
               ),
               _buildStep(
@@ -3197,6 +3303,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     ? 'در Gmail ایمیل را در فیلد To: جای‌گذاری کنید (کپی شده)'
                     : widget.language == 'ar'
                     ? 'في Gmail الصق البريد الإلكتروني في حقل To: (تم نسخه)'
+                    : widget.language == 'ur'
+                    ? 'Gmail میں ای میل To: خانے میں لگائیں (کاپی ہو چکی ہے)'
                     : 'In Gmail paste email in To: field (already copied to your clipboard)',
               ),
               _buildStep(
@@ -3207,6 +3315,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     ? 'CV و نامه پوششی شما ضمیمه شده‌اند'
                     : widget.language == 'ar'
                     ? 'سيرتك الذاتية CV ورسالة التغطية مرفقة'
+                    : widget.language == 'ur'
+                    ? 'آپ کا CV اور کور لیٹر منسلک ہیں'
                     : 'Your CV and cover letter are attached',
               ),
 
@@ -3219,6 +3329,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     ? 'فایل‌های آماده برای ضمیمه:'
                     : widget.language == 'ar'
                     ? 'الملفات الجاهزة للإرفاق:'
+                    : widget.language == 'ur'
+                    ? 'منسلک کرنے کے لیے تیار فائلیں:'
                     : 'Files available to attach:',
                 style: const TextStyle(
                   color: _navy,
@@ -3271,6 +3383,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                         ? 'باز کردن Gmail'
                         : widget.language == 'ar'
                         ? 'فتح Gmail'
+                        : widget.language == 'ur'
+                        ? 'Gmail کھولیں'
                         : 'Open Gmail',
                   ),
                   style: ElevatedButton.styleFrom(
@@ -3297,6 +3411,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                     ? 'ایمیل را در فیلد To: Gmail بچسبانید، سپس CV خود را از Downloads ضمیمه کنید'
                     : widget.language == 'ar'
                     ? 'الصق البريد الإلكتروني في حقل To: في Gmail، ثم أرفق سيرتك الذاتية CV من التنزيلات'
+                    : widget.language == 'ur'
+                    ? 'ای میل Gmail کے To: خانے میں لگائیں، پھر اپنا CV ڈاؤن لوڈز سے منسلک کریں'
                     : "Paste the email in Gmail's To: field, then attach your CV from Downloads",
                 style: const TextStyle(
                   color: _muted,
@@ -3324,6 +3440,8 @@ class _GmailInstructionSheetState extends State<_GmailInstructionSheet> {
                         ? 'باشه'
                         : widget.language == 'ar'
                         ? 'تم'
+                        : widget.language == 'ur'
+                        ? 'ہو گیا'
                         : 'Done',
                     style: const TextStyle(
                       color: _muted,

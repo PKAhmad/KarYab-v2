@@ -57,7 +57,7 @@ class _AccountScreenState extends State<AccountScreen> {
   AuthService get _auth => widget.authService ?? karyabAuth;
   CloudBackupService get _backup => widget.backupService ?? karyabBackup;
   String get _lang => widget.language;
-  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar';
+  bool get _isRtl => _lang == 'ps' || _lang == 'fa' || _lang == 'ar' || _lang == 'ur';
 
   @override
   void initState() {
