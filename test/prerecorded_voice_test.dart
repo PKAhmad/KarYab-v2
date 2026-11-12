@@ -8,23 +8,25 @@ import 'package:karyab/services/prerecorded_voice.dart';
 // recorded texts in ps/fa/ar.
 void main() {
   group('prerecorded voice assets', () {
-    test('manifest covers pilot 11 per language + full Pashto/Persian packs',
-        () {
+    test(
+        'manifest covers pilot 11 per language + full Pashto/Persian/Arabic '
+        'packs', () {
       expect(kPrerecordedVoice.keys, containsAll(<String>['ps', 'fa', 'ar']));
       // Pilot: 11 clips in each of ps/fa/ar. Full packs: +224 Pashto
-      // clips (workspace/karyab/voice/full/ps-list.json) and +221
-      // Persian clips (workspace/karyab/voice/full/fa-list.json).
+      // clips (workspace/karyab/voice/full/ps-list.json), +221
+      // Persian clips (workspace/karyab/voice/full/fa-list.json) and
+      // +224 Arabic clips (workspace/karyab/voice/full/ar-list.json).
       expect(kPrerecordedVoice['ps']!.length, 235,
           reason: 'ps should have 11 pilot + 224 full-pack clips');
       expect(kPrerecordedVoice['fa']!.length, 232,
           reason: 'fa should have 11 pilot + 221 full-pack clips');
-      expect(kPrerecordedVoice['ar']!.length, 11,
-          reason: 'ar should have 11 clips');
+      expect(kPrerecordedVoice['ar']!.length, 235,
+          reason: 'ar should have 11 pilot + 224 full-pack clips');
       var total = 0;
       kPrerecordedVoice.forEach((lang, byText) {
         total += byText.length;
       });
-      expect(total, 478);
+      expect(total, 702);
     });
 
     test('every entry has its asset file present and larger than 1 KB', () {
@@ -106,6 +108,33 @@ void main() {
       expect(
         prerecordedVoiceAsset('fa', 'این راهنماها راه رسمی را به شما نشان می‌دهند، گام به گام. یک گام را بعد از دیگری انجام بدهید، و وقتی یک گام تمام شد آن را علامت بزنید. می‌توانید هر گام را بشنوید.'),
         'audio/fa/fa_guides_intro.mp3',
+      );
+    });
+
+    test('hits for full-pack Arabic texts (permissions, questionnaire, '
+        'guides)', () {
+      expect(
+        prerecordedVoiceAsset('ar', 'هذا الزر يعطي إذن الكاميرا'),
+        'audio/ar/ar_permissions_camera.mp3',
+      );
+      expect(
+        prerecordedVoiceAsset('ar', 'ما هي المهارات التي لديك؟'),
+        'audio/ar/ar_questionnaire_q8_skills.mp3',
+      );
+      expect(
+        prerecordedVoiceAsset(
+            'ar',
+            'سجّل بالطريقة الرسمية. سجّل فقط في الصفحات الرسمية لـ telc أو '
+            'معهد Goethe أو ÖSD، أو في مركز امتحان مرخّص.. أماكن الامتحان '
+            'محدودة وتنتهي بسرعة. سجّل مبكرًا، عندما تعرف موعد امتحانك.. '
+            'ادفع فقط رسوم الامتحان الرسمية. احتفظ بالإيصال والتأكيد.. '
+            'الأوراق التي تحتاجها. جواز سفرك أو بطاقة هويتك. رسوم الامتحان، '
+            'تدفع كما يطلب المركز (بطاقة أو تحويل بنكي). تحذير. لا تدفع '
+            'أبدًا لوسيط أو وكيل يعدك بمكان في الامتحان أو بشهادة. في '
+            'باكستان يأخذ الوسطاء حوالي 300 دولار لتسجيل Goethe B1. المكان '
+            'غير مضمون، والشهادة المشتراة لا قيمة لها ويمكن أن تسبب لك '
+            'مشاكل كبيرة. التسجيل آمن فقط في الصفحات الرسمية.'),
+        'audio/ar/ar_guides_exam_step_register.mp3',
       );
     });
 
